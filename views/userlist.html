@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Benutzerliste Responsive</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../styles/userlist.css">
+    <link rel="stylesheet" href="../styles/footer.css">
+</head>
+<body>
+
+<!-- Navigation -->
+<div id="navigation"></div>
+
+<div class="container py-4">
+    <h5 class="text-center mb-0 sticky-header py-2">Benutzerliste</h5>
+
+    <!-- Filter & Sortierung -->
+    <div class="row g-2 sticky-filter">
+        <div class="col-12 col-md-6">
+            <input id="filter-all" class="form-control form-control-sm" placeholder="Filtern..." />
+        </div>
+        <div class="col-12 col-md-6">
+            <select id="sort-dropdown" class="form-select form-select-sm">
+                <option value="">Sortieren nach...</option>
+                <option value="username">Benutzername</option>
+                <option value="firstname">Vorname</option>
+                <option value="surname">Nachname</option>
+                <option value="email">E-Mail</option>
+                <option value="zipcode">PLZ</option>
+                <option value="active">Status</option>
+                <option value="admin">Admin</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Tabelle (Desktop) -->
+    <div class="table-responsive table-view mt-3">
+        <table class="table table-sm table-striped" id="user-table">
+            <thead class="table-light">
+            <tr>
+                <th class="sortable" data-key="username">Benutzername</th>
+                <th class="sortable" data-key="firstname">Vorname</th>
+                <th class="sortable" data-key="surname">Nachname</th>
+                <th class="sortable" data-key="email">E-Mail</th>
+                <th class="sortable" data-key="zipcode">PLZ</th>
+                <th class="sortable text-center" data-key="active">Status</th>
+                <th class="sortable text-center" data-key="admin">Admin</th>
+            </tr>
+            </thead>
+            <tbody id="table-body"></tbody>
+        </table>
+    </div>
+
+    <!-- Cards (Mobil/Tablet) -->
+    <div id="card-container" class="card-view mt-3"></div>
+</div>
+<div id="footer"></div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+<script src="../controller/navigation.js"></script>
+<script src="../controller/userlist.js"></script>
+<script src="../controller/footer.js"></script>
+</body>
+</html>

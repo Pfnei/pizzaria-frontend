@@ -1,0 +1,36 @@
+body, html {
+    height: 100%;
+    background-color: #f0f2f5;
+    font-family: Arial, sans-serif;
+}
+.register-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 40px;
+    padding-bottom: 40px;
+}
+.register-box {
+    background-color: #ffffff;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 800px;
+}
+.register-title {
+    text-align: center;
+    font-weight: 600;
+    font-size: 24px;
+    margin-bottom: 30px;
+}
+#successMessage {
+    display: none;
+}
+#diversDetailsGroup {
+    display: none;
+}
+::placeholder {
+    color: #6c757d;
+    opacity: 1;
+}

@@ -1,0 +1,53 @@
+body {
+    background-color: #f0f2f5;
+    font-family: Arial, sans-serif;
+}
+
+.form-card {
+    background: white;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    margin: auto;
+    margin-top: 60px;
+}
+
+.form-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.form-header h1 {
+    font-size: 28px;
+}
+
+.profile-pic {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: block;
+    margin: 0 auto 20px auto;
+}
+
+.profile-pic img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.top-right-link {
+    position: absolute;
+    top: 20px;
+    right: 40px;
+}
+
+#diversDetailsGroup {
+    display: none;
+}
+
+::placeholder {
+    color: #6c757d;
+    opacity: 1;
+}

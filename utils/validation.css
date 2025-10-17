@@ -1,0 +1,13 @@
+.validation-feedback-ok {
+    color: red;
+    font-size: 0.75rem;
+    display: none;
+    white-space: pre-line;
+}
+
+.validation-feedback-nok {
+    color: red;
+    font-size: 0.75rem;
+    display: block;
+    white-space: pre-line;
+}

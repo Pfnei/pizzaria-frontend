@@ -1,0 +1,16 @@
+body, html {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+}
+
+.bg-secondary-light {
+    background-color: #f7f5f3 !important;
+}
+
+.card {
+    padding: 0.5rem;
+}
+
+.item-price {
+    min-width: 60px;
+}

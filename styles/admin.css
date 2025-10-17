@@ -1,0 +1,32 @@
+body {
+    background-color: #f0f2f5;
+}
+.admin-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+}
+.admin-title {
+    text-align: center;
+    font-size: 26px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+.status-badge {
+    padding: 5px 10px;
+    border-radius: 5px;
+    color: #fff;
+}
+.status-aktiv {
+    background-color: #28a745;
+}
+.status-deaktiviert {
+    background-color: #dc3545;
+}
+#searchInput {
+    max-width: 300px;
+    margin-bottom: 15px;
+}

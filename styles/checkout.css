@@ -1,0 +1,26 @@
+body {
+    background-color: #f8f9fa;
+}
+
+h4 {
+    font-weight: 600;
+}
+
+.table {
+    margin-bottom: 20px;
+}
+
+.card {
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+
+.btn-primary {
+    font-size: 1.1rem;
+    padding: 10px 0;
+}
+
+input, textarea {
+    border-radius: 5px;
+}

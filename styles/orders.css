@@ -1,0 +1,30 @@
+body {
+    background-color: #f0f2f5;
+}
+
+h1 {
+    text-align: center;
+    font-weight: 600;
+}
+
+.table-responsive {
+    margin-top: 20px;
+}
+
+.status-badge {
+    padding: 5px 10px;
+    border-radius: 5px;
+    color: #fff;
+}
+
+.status-pending {
+    background-color: #ffc107;
+}
+
+.status-completed {
+    background-color: #28a745;
+}
+
+.status-canceled {
+    background-color: #dc3545;
+}

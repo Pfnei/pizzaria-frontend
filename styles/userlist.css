@@ -1,0 +1,41 @@
+.table-view {
+    display: block;
+}
+.card-view {
+    display: none;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+@media (max-width: 767.98px) {
+    .table-view {
+        display: none;
+    }
+    .card-view {
+        display: flex;
+    }
+}
+.sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: #fff;
+}
+.sticky-filter {
+    position: sticky;
+    top: 3rem;
+    z-index: 90;
+    background: #fff;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+th.sortable {
+    cursor: pointer;
+}
+th.sortable::after {
+    content: ' ⇅';
+    font-size: 0.7em;
+    color: #aaa;
+}
+.badge {
+    cursor: pointer;
+}
