@@ -1,0 +1,59 @@
+# ===============================
+# Frontend .gitignore (HTML/CSS/JS)
+# ===============================
+
+# Node.js & npm
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+pnpm-lock.yaml
+
+# Build / Distribution / Output
+dist/
+build/
+tmp/
+temp/
+.cache/
+coverage/
+*.log
+
+# IDEs & Tools
+### VS Code ###
+.vscode/
+.history/
+*.code-workspace
+
+### IntelliJ IDEA / WebStorm ###
+.idea/
+*.iml
+out/
+
+### Eclipse (falls zufällig benutzt) ###
+.project
+.classpath
+.settings/
+
+# System Files
+### macOS ###
+.DS_Store
+.AppleDouble
+.LSOverride
+
+### Windows ###
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Environment / Secrets
+.env
+*.env
+.env.local
+.env.*.local
+
+# Other generated files
+*.min.js.map
+*.map
+*.zip
+*.tar.gz
