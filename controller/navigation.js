@@ -1,11 +1,12 @@
 import {UserStorageService} from "../services/UserStorageService.js";
-import {getMainEndpoint, someEndpoint} from "../utils/checkEndpoints.js";
+import {getMainEndpoint, getMainEndpointFromUrl, someEndpoint} from "../utils/checkEndpoints.js";
 import {AuthStorageService} from "../services/AuthStorageService.js";
 
 $(function () {
     $('#navigation').load('../views/navigation.html', function () {
         navBarVisibility();
         registerEvents();
+        console.log(document.referrer || "Kein Referrer verfügbar");
     });
 });
 
@@ -13,8 +14,6 @@ function navBarVisibility() {
     //Login Button,
     if (someEndpoint(["register", "login"]) || UserStorageService.isLoggedIn()) {
         $('#navLogin').hide();
-        console.log(UserStorageService.getUser())
-        console.log(UserStorageService.isAdmin())
     } else {
         $('#navLogin').show();
     }
@@ -58,7 +57,12 @@ function navBarVisibility() {
         $('#navOrderList').hide();
     }
 
-
+  //navback document.referrer = history.back() - no NavBack coming from index
+    if (getMainEndpointFromUrl(document.referrer) === "index") {
+        $('#navBack').hide();
+    } else {
+        $('#navBack').show();;
+    }
 
 }
 
@@ -72,4 +76,10 @@ function registerEvents() {
         } catch {}
         window.location.href = this.href;
     });
+    $("#navBack").on("click", function (e) {
+        e.preventDefault();
+        history.back();
+    });
+
+
 }
