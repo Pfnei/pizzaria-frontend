@@ -24,9 +24,25 @@ function login (email, password) {
            AuthStorageService.setToken(data.accessToken);
            console.log(UserStorageService.getUser());
            //window.location.href = "../views/menu.html"
-        })
-       .fail(api.handleError.bind(api));
-    /* wäre ident
+       }).fail(function(error) {
+        console.log(error)
+        if(error.status === 404) {
+            alert("Resource nicht gefunden. Bitte melden Sie sich beim Adminsitrator: admin@technikum-wien.at");
+            return;
+        }
+        if(error.status === 403) {
+            alert("Email oder Passwort falsch.");
+            return;
+        }
+        if (error.status >= 500) {
+            alert("Interner Serverfehler. Bitte später erneut versuchen.");
+            return;
+        }
+        alert("Allgemeiner Fehler beim Ladend er Daten.")
+
+    })
+    /* wäre möglich - beide Aufrufe sind ident
+     .fail(api.handleError.bind(api));
     .fail((xhr, textStatus, error) => api.handleError(xhr, textStatus, error));
      */
     }
