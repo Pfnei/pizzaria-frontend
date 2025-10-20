@@ -22,7 +22,8 @@ function login (email, password) {
        .done(function (data) {
            UserStorageService.setUser(data);
            AuthStorageService.setToken(data.accessToken);
-           window.location.href = "../views/menu.html"
+           console.log(UserStorageService.getUser());
+           //window.location.href = "../views/menu.html"
         })
        .fail(api.handleError.bind(api));
     /* wäre ident

@@ -11,8 +11,6 @@ export class UserStorageService {
             lastname: data?.user?.lastname,
             isActive: data?.user?.active,
             isAdmin: data?.user?.admin,
-            tokenExp: data?.authentication?.payload?.exp,
-            // keep previous avatar if present (e.g., after refresh)
             avatarDataUrl: prev.avatarDataUrl ?? ""
         };
         localStorage.setItem(STORAGE_KEY, JSON.stringify(storedUser));
