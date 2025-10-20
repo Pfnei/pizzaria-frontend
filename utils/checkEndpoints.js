@@ -2,18 +2,29 @@ const urlbase = "/pizzaria-frontend/views"
 
 export function getMainEndpoint(base = urlbase) {
     const url = new URL(window.location.href);
-    //console.log (url);
-    let path = url.pathname;
+    return endpointFromPath(url.pathname, base);
+}
 
+export function getMainEndpointFromUrl(input, base = urlbase) {
+    if (!input) return ""; 
+    let url;
+    try {
+        url = (input instanceof URL) ? input : new URL(String(input), window.location.origin);
+    } catch {
+        return ""; 
+    }
+    return endpointFromPath(url.pathname, base);
+}
+
+function endpointFromPath(path, base) {
     // removes base path
     if (base && path.startsWith(base)) path = path.slice(base.length);
-
     // removes .html
-    if (path.endsWith(".html")) path = path.substring(0,path.length-5);
-
+    if (path.endsWith(".html")) path = path.slice(0, -5);
     const seg = path.split("/").filter(Boolean);
-    return (seg[0] || ""); // "/" bei root
+    return seg[0] || "";
 }
+
 
 // ep = Endpoint-String, z. B. "users"
 export function isEndpoint(ep, base = urlbase) {

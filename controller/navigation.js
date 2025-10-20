@@ -1,32 +1,44 @@
 import {UserStorageService} from "../services/UserStorageService.js";
-import {getMainEndpoint, someEndpoint} from "../utils/checkEndpoints.js";
+import {getMainEndpoint, getMainEndpointFromUrl, someEndpoint} from "../utils/checkEndpoints.js";
 import {AuthStorageService} from "../services/AuthStorageService.js";
 
 $(function () {
+    renderNavbar();
+});
+
+function renderNavbar() {
     $('#navigation').load('../views/navigation.html', function () {
         navBarVisibility();
         registerEvents();
+        //console.log(document.referrer || "Kein Referrer verfügbar");
     });
-});
+}
+
 
 function navBarVisibility() {
+
+    //no Support Menu on Register, Login
+    if (someEndpoint(["register", "login"])) {
+        UserStorageService.clearUser();
+        $('#navTogglerSupportContent').hide();
+    }
+
+
     //Login Button,
     if (someEndpoint(["register", "login"]) || UserStorageService.isLoggedIn()) {
         $('#navLogin').hide();
-        console.log(UserStorageService.getUser())
-        console.log(UserStorageService.isAdmin())
     } else {
         $('#navLogin').show();
     }
     //UserMenu , Orders
     if (UserStorageService.isLoggedIn()) {
-        $('#userMenu').show();
+        $('#navUserMenu').show();
         $('#navOrderList').show();
         const nbr = $('#navbar-right');
         nbr.removeClass("mt-3");
         nbr.addClass("mt-1");
     } else {
-        $('#userMenu').hide();
+        $('#navUserMenu').hide();
         $('#navOrderList').hide();
         const nbr = $('#navbar-right');
         nbr.removeClass("mt-1");
@@ -41,10 +53,7 @@ function navBarVisibility() {
         sc.removeClass("me-4");
     }
 
-    //no Support Menu on Register, Login
-    if (someEndpoint(["register", "login"])) {
-        $('#navTogglerSupportContent').hide();
-   }
+
 
 
     //AdminTools
@@ -58,7 +67,16 @@ function navBarVisibility() {
         $('#navOrderList').hide();
     }
 
-
+  //navback document.referrer = history.back()
+    // oder wenn der aktulle gleich dem vorigen ist
+    if (getMainEndpointFromUrl(document.referrer) === "index" ||
+        getMainEndpointFromUrl(document.referrer) === "login" ||
+        getMainEndpointFromUrl(document.referrer) === getMainEndpoint()
+    ) {
+        $('#navBack').hide();
+    } else {
+        $('#navBack').show();;
+    }
 
 }
 
@@ -71,5 +89,13 @@ function registerEvents() {
             UserStorageService.clearUser();
         } catch {}
         window.location.href = this.href;
+    });
+    $("#navBack").on("click", function (e) {
+        e.preventDefault();
+        history.back();
+    });
+    //  (Back/Forward)
+    window.addEventListener('pageshow', function (e) {
+        renderNavbar();
     });
 }

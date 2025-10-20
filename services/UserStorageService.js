@@ -80,7 +80,6 @@ export class UserStorageService {
     }
 
     static isLoggedIn() {
-        console.log(!!this.getUser());
         return !!this.getUser();
     }
 
