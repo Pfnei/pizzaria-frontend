@@ -1,6 +1,6 @@
 const STORAGE_KEY = "user";
 
-export class UserStorageService {
+class UserStorageService {
     static setUser(data) {
         const prev = this.getUser() || {};
         const storedUser = {
