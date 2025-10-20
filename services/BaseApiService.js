@@ -1,9 +1,11 @@
-class ApiClient {
+import { AuthStorageService } from "./AuthStorageService.js";
+
+export class ApiClient {
     constructor(baseUrl) {
         this.baseUrl = String(baseUrl || "");
     }
 
-    // ------- Konfiguration -------
+    // ------- Configuration -------
     setBaseUrl(url) { this.baseUrl = String(url || ""); return this; }
     getBaseUrl()    { return this.baseUrl; }
 
@@ -21,7 +23,7 @@ class ApiClient {
 
     normalizeOptions(opts) {
         const out = Object.assign({headers: {}}, opts);
-        const token = authStorage.getToken();
+        const token = AuthStorageService.getToken();
         if (token && !out.headers.Authorization) {
             out.headers.Authorization = "Bearer " + token;
         }
@@ -35,7 +37,7 @@ class ApiClient {
         }, options));
     }
 
-    // ------- Basis-HTTP-Methoden -------
+    // ------- Basic HTTP methods -------
     get(path, options) {
         return this.request("GET", path, options);
     }
@@ -64,26 +66,96 @@ class ApiClient {
         return this.request("DELETE", path, options);
     }
 
-    // ------- Convenience mit ID -------
-    // Beispiel: getById("users", "123") -> GET {base}/users/123
+    // ------- Convenience with ID -------
+    // Example: getById("users", "123") -> GET {base}/users/123
     getById(resourceOrBasePath, id, options) {
         const encodedId = encodeURIComponent(String(id));
         return this.get(this.joinUrl(resourceOrBasePath, encodedId), options);
     }
 
-    // patchById("users", "123", { isActive: true })
+    // Example: patchById("users", "123", { isActive: true })
     patchById(resourceOrBasePath, id, body, options) {
         const encodedId = encodeURIComponent(String(id));
         return this.patch(this.joinUrl(resourceOrBasePath, encodedId), body, options);
     }
 
-    // deleteById("users", "123")
+    // Example: deleteById("users", "123")
     deleteById(resourceOrBasePath, id, options) {
         const encodedId = encodeURIComponent(String(id));
         return this.delete(this.joinUrl(resourceOrBasePath, encodedId), undefined, options);
     }
+
+
+    //----------Error Messages--------------------
+
+    extractErrorDetail(xhr) {
+        // try to read JSON error payload (e.g., { message: "...", errors: [...] })
+        try {
+            if (xhr && xhr.responseJSON) {
+                const j = xhr.responseJSON;
+                if (j.message) return String(j.message);
+                if (Array.isArray(j.errors) && j.errors.length) {
+                    // take the first error entry
+                    const first = j.errors[0];
+                    // handle common shapes
+                    if (typeof first === "string") return first;
+                    if (first.defaultMessage) return first.defaultMessage;
+                    if (first.message) return first.message;
+                }
+            }
+            if (xhr && typeof xhr.responseText === "string" && xhr.responseText.trim()) {
+                return xhr.responseText.trim();
+            }
+        } catch {}
+        return null;
+    }
+
+    /**
+     * Universal error handler for .fail(...)
+     * Usage: .fail(api.handleError.bind(api))
+     */
+    handleError(xhr, textStatus, errorThrown, opts = {}) {
+        const { redirectOn401 = true, silent = false } = opts;
+        const status = xhr && typeof xhr.status === "number" ? xhr.status : 0;
+        const detail = this.extractErrorDetail(xhr);
+        // Xhr is not filled with suitable values
+        const url = (xhr && xhr.responseURL) || (xhr && xhr?.settings?.url) || "";
+        const method = (xhr && xhr?.settings?.type) || "";
+
+        // Technical console logging --->  Xhr is not filled with suitable values
+        console.error(
+            "[API ERROR]",
+            { status, textStatus, errorThrown, method, url, detail, xhr }
+        );
+
+        if (silent) return;
+
+        if (status === 401) {
+            alert("Sitzung abgelaufen oder nicht angemeldet. Bitte melden Sie sich erneut an.");
+            if (redirectOn401) {
+                try { AuthStorageService.clearToken(); } catch {}
+                // adjust target if your login page differs
+                window.location.href = "/login.html";
+            }
+            return;
+        }
+        if (status === 403) {
+            alert("Keine Berechtigung, diese Aktion auszuführen.");
+            return;
+        }
+        if (status === 404) {
+            alert("Ressource nicht gefunden. Bitte melden Sie sich beim Administrator:");
+            return;
+        }
+        if (status >= 500) {
+            alert("Interner Serverfehler. Bitte später erneut versuchen.");
+            return;
+        }
+
+        // Fallback message
+        alert("Allgemeiner Fehler beim Laden der Daten.");
+    }
 }
 
 // ---- Singleton
-window.api = new ApiClient("http://localhost:8080");
-
+export const api = new ApiClient("http://localhost:8080");

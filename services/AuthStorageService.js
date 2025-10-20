@@ -1,5 +1,5 @@
 
-class authStorage
+export class AuthStorageService
 {
     static setToken(token)
     {
