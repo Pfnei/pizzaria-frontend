@@ -80,21 +80,20 @@ export class UserStorageService {
     }
 
     static isLoggedIn() {
+        console.log(!!this.getUser());
         return !!this.getUser();
     }
 
-    static isTokenNotExpired() {
-        const user = this.getUser();
-        if (!user || typeof user.tokenExp !== "number") return false;
-        const now = Math.floor(Date.now() / 1000);
-        return user.tokenExp > now;
-    }
 
     static isItemCreatedByUser(entityUserId) {
         return entityUserId === this.getUserId();
     }
 
-    static isAdmin()     { return this.getUser().user.isAdmin; }
+    static isAdmin()     {
+        if (this.isLoggedIn()){
+        return this.getUser().isAdmin; }
+        return false;
+    }
 
 
         static getFullName() {

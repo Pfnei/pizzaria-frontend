@@ -1,0 +1,1 @@
+window.location.href = "../views/menu.html"

@@ -23,7 +23,7 @@ function login (email, password) {
            UserStorageService.setUser(data);
            AuthStorageService.setToken(data.accessToken);
            console.log(UserStorageService.getUser());
-           //window.location.href = "../views/menu.html"
+           window.location.href = "../views/menu.html"
        }).fail(function(error) {
         console.log(error)
         if(error.status === 404) {
