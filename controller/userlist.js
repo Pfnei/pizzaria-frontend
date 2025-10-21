@@ -1,3 +1,19 @@
+import {api} from "../services/BaseApiService.js";
+
+let usersFromAPI
+
+function getUsers() {
+    api.get("/users")
+       .done(function (orders) {
+           usersFromAPI = orders;
+           console.log(usersFromAPI)
+       }).fail(api.handleError.bind(api));
+}
+getUsers();
+
+
+
+
 $(document).ready(function() {
     let users = [];
     let currentSort = { key: "", asc: true };
@@ -9,7 +25,7 @@ $(document).ready(function() {
     });
 
     async function fetchData(endpoint) {
-        // Platzhalter: In echter App AJAX fetch
+
         return [
             { username: "max", firstname: "Max", surname: "Mustermann", email: "max@test.com", zipcode: "1010", active: true, admin: false },
             { username: "anna", firstname: "Anna", surname: "Musterfrau", email: "anna@test.com", zipcode: "1020", active: false, admin: true },
