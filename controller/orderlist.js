@@ -1,20 +1,76 @@
-const orders = [
-    { datum: "01.03.2024", summe: 116.40, benutzername: "clarkzod", vorname: "Hannah", nachname: "Bukovec", email: "Hannah.Bukovec@muster.at", plz: "4020" },
-    { datum: "12.04.2024", summe: 46.80, benutzername: "brucefox", vorname: "Paul", nachname: "Pfischer", email: "Paul.Pfischer@muster.at", plz: "8010" },
-    { datum: "07.06.2024", summe: 104.40, benutzername: "diana91", vorname: "Sophie", nachname: "Schmid", email: "Sophie.Schmid@muster.at", plz: "5020" },
-    { datum: "19.07.2024", summe: 115.70, benutzername: "loganx", vorname: "Tobias", nachname: "Maier", email: "Tobias.Maier@muster.at", plz: "2700" },
-    { datum: "23.08.2024", summe: 54.30, benutzername: "", vorname: "Anna", nachname: "Alang", email: "", plz: "6850" },
-    { datum: "30.09.2024", summe: 30.20, benutzername: "parjord", vorname: "Nico", nachname: "Hofer", email: "Nico.Hofer@muster.at", plz: "4400" },
-    { datum: "10.11.2024", summe: 115.00, benutzername: "barryv", vorname: "Lisa", nachname: "Gruber", email: "Lisa.Gruber@muster.at", plz: "9500" },
-    { datum: "05.01.2025", summe: 68.90, benutzername: "reeddoc", vorname: "David", nachname: "Zuccatto", email: "David.Zuccatto@muster.at", plz: "3430" },
-    { datum: "22.01.2025", summe: 34.70, benutzername: "", vorname: "Katharina", nachname: "Baumhackl", email: "", plz: "3100" },
-    { datum: "14.02.2025", summe: 133.90, benutzername: "", vorname: "Raphael", nachname: "Müller", email: "", plz: "7000" },
-    { datum: "01.03.2025", summe: 82.40, benutzername: "", vorname: "Theresa", nachname: "Chang", email: "", plz: "1190" },
-    { datum: "28.03.2025", summe: 119.10, benutzername: "natroma", vorname: "Simon", nachname: "Schuster", email: "Simon.Schuster@muster.at", plz: "9560" },
-    { datum: "10.04.2025", summe: 46.60, benutzername: "bamwayne", vorname: "Nina", nachname: "Wiener", email: "Nina.Wiener@muster.at", plz: "2500" },
-];
+import {api} from "../services/BaseApiService.js";
 
-let currentSort = { key: "", asc: true };
+
+let ordersFromAPI
+
+function getOrders() {
+    api.get("/orders")
+       .done(function (orders) {
+           ordersFromAPI = orders;
+           console.log(ordersFromAPI)
+       }).fail(api.handleError.bind(api));
+}
+getOrders();
+
+const orders = [{
+    datum: "01.03.2024",
+    summe: 116.40,
+    benutzername: "clarkzod",
+    vorname: "Hannah",
+    nachname: "Bukovec",
+    email: "Hannah.Bukovec@muster.at",
+    plz: "4020"
+}, {datum: "12.04.2024", summe: 46.80, benutzername: "brucefox", vorname: "Paul", nachname: "Pfischer", email: "Paul.Pfischer@muster.at", plz: "8010"}, {
+    datum: "07.06.2024",
+    summe: 104.40,
+    benutzername: "diana91",
+    vorname: "Sophie",
+    nachname: "Schmid",
+    email: "Sophie.Schmid@muster.at",
+    plz: "5020"
+}, {datum: "19.07.2024", summe: 115.70, benutzername: "loganx", vorname: "Tobias", nachname: "Maier", email: "Tobias.Maier@muster.at", plz: "2700"}, {
+    datum: "23.08.2024",
+    summe: 54.30,
+    benutzername: "",
+    vorname: "Anna",
+    nachname: "Alang",
+    email: "",
+    plz: "6850"
+}, {datum: "30.09.2024", summe: 30.20, benutzername: "parjord", vorname: "Nico", nachname: "Hofer", email: "Nico.Hofer@muster.at", plz: "4400"}, {
+    datum: "10.11.2024",
+    summe: 115.00,
+    benutzername: "barryv",
+    vorname: "Lisa",
+    nachname: "Gruber",
+    email: "Lisa.Gruber@muster.at",
+    plz: "9500"
+}, {datum: "05.01.2025", summe: 68.90, benutzername: "reeddoc", vorname: "David", nachname: "Zuccatto", email: "David.Zuccatto@muster.at", plz: "3430"}, {
+    datum: "22.01.2025",
+    summe: 34.70,
+    benutzername: "",
+    vorname: "Katharina",
+    nachname: "Baumhackl",
+    email: "",
+    plz: "3100"
+}, {datum: "14.02.2025", summe: 133.90, benutzername: "", vorname: "Raphael", nachname: "Müller", email: "", plz: "7000"}, {
+    datum: "01.03.2025",
+    summe: 82.40,
+    benutzername: "",
+    vorname: "Theresa",
+    nachname: "Chang",
+    email: "",
+    plz: "1190"
+}, {datum: "28.03.2025", summe: 119.10, benutzername: "natroma", vorname: "Simon", nachname: "Schuster", email: "Simon.Schuster@muster.at", plz: "9560"}, {
+    datum: "10.04.2025",
+    summe: 46.60,
+    benutzername: "bamwayne",
+    vorname: "Nina",
+    nachname: "Wiener",
+    email: "Nina.Wiener@muster.at",
+    plz: "2500"
+},];
+
+let currentSort = {key: "", asc: true};
 
 function render(list) {
     const tbody = document.getElementById("table-body");
@@ -56,7 +112,8 @@ function sort(list, key, asc) {
     return [...list].sort((a, b) => {
         let va = a[key], vb = b[key];
         if (typeof va === "string") {
-            va = va.toLowerCase(); vb = vb.toLowerCase();
+            va = va.toLowerCase();
+            vb = vb.toLowerCase();
         }
         return (va > vb ? 1 : -1) * (asc ? 1 : -1);
     });
@@ -64,11 +121,7 @@ function sort(list, key, asc) {
 
 function applyFilterAndSort() {
     const filter = document.getElementById("filter-all").value.toLowerCase();
-    const filtered = orders.filter(o =>
-        Object.values(o).some(val =>
-            String(val).toLowerCase().includes(filter)
-        )
-    );
+    const filtered = orders.filter(o => Object.values(o).some(val => String(val).toLowerCase().includes(filter)));
     const sorted = currentSort.key ? sort(filtered, currentSort.key, currentSort.asc) : filtered;
     render(sorted);
 }
@@ -85,7 +138,7 @@ document.querySelectorAll("th.sortable").forEach(th => {
         if (currentSort.key === key) {
             currentSort.asc = !currentSort.asc;
         } else {
-            currentSort = { key: key, asc: true };
+            currentSort = {key: key, asc: true};
         }
         applyFilterAndSort();
     });

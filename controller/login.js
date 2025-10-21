@@ -1,36 +1,48 @@
-import { api } from "../services/BaseApiService.js";
+import {api} from "../services/BaseApiService.js";
 import {UserStorageService} from "../services/UserStorageService.js";
 import {AuthStorageService} from "../services/AuthStorageService.js";
 
 
+
 $(document).ready(function () {
-    $('#loginForm').on('submit', function(e) {
+    trySilentLogin();
+    registerEventsLogin();
+});
+
+function registerEventsLogin() {
+    $('#loginForm').on('submit', function (e) {
         e.preventDefault();
         const $email = $('#email').val().trim();
         const $password = $('#password').val().trim();
-        if($email && $password) {
-            login ($email, $password);
+        if ($email && $password) {
+            login($email, $password);
         } else {
             alert('Bitte alle Felder ausfüllen.');
         }
     });
-});
+    //  (Back/Forward) - necessary when page is accessed via (Back/Forward)
+    window.addEventListener('pageshow', function (e) {
+        trySilentLogin();
+    });
+}
 
 
-function login (email, password) {
-    api.post("/auth/login", {username: email, password: password })
+
+
+function login(email, password) {
+    api.post("/auth/login", {username: email, password: password})
        .done(function (data) {
-           UserStorageService.setUser(data);
+           UserStorageService.setUser(data.user);
            AuthStorageService.setToken(data.accessToken);
-           console.log(UserStorageService.getUser());
+           // console.log(UserStorageService.getUser());
            window.location.href = "../views/menu.html"
-       }).fail(function(error) {
+       }).fail(function (error) {
         console.log(error)
-        if(error.status === 404) {
+        if (error.status === 404) {
             alert("Resource nicht gefunden. Bitte melden Sie sich beim Adminsitrator: admin@technikum-wien.at");
             return;
         }
-        if(error.status === 403) {
+        if (error.status === 403) {
             alert("Email oder Passwort falsch.");
             return;
         }
@@ -45,13 +57,31 @@ function login (email, password) {
      .fail(api.handleError.bind(api));
     .fail((xhr, textStatus, error) => api.handleError(xhr, textStatus, error));
      */
-    }
+}
 
 
 
+function trySilentLogin() {
+    const token = AuthStorageService.getToken();
+    if (!token) return;
+    const userId = UserStorageService.getUserId();
+    if (!userId) return;
+    const path = "users/" + userId;
+    api.get(path)
+       .done(function (user) {
+           UserStorageService.setUser(user);
+           window.location.href = "../views/menu.html"
+       })
+       .fail(function () {
+           AuthStorageService.clearToken();
+           UserStorageService.clearUser()
+       });
+}
 
-$(function() {
-      $('#footer').load('../views/footer.html');
-    });
+
+
+$(function () {
+    $('#footer').load('../views/footer.html');
+});
 
 
