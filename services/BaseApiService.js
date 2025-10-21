@@ -1,4 +1,5 @@
 import { AuthStorageService } from "./AuthStorageService.js";
+import {UserStorageService} from "./UserStorageService.js";
 
 export class ApiClient {
     constructor(baseUrl) {
@@ -133,7 +134,7 @@ export class ApiClient {
         if (status === 401) {
             alert("Sitzung abgelaufen oder nicht angemeldet. Bitte melden Sie sich erneut an.");
             if (redirectOn401) {
-                try { AuthStorageService.clearToken(); } catch {}
+                try { AuthStorageService.clearToken(); UserStorageService.clearUser() } catch {}
                 // adjust target if your login page differs
                 window.location.href = "/login.html";
             }

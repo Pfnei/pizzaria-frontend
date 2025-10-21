@@ -1,16 +1,25 @@
+import {AuthStorageService} from "./AuthStorageService.js";
+
 const STORAGE_KEY = "user";
 
 export class UserStorageService {
-    static setUser(data) {
+    static setUser(user) {
+        if (!user) {
+            console.log ("User for Storage ist empty")
+            this.clearUser();
+            AuthStorageService.clearToken();
+            return;
+        }
+
         const prev = this.getUser() || {};
         const storedUser = {
-            id: data?.user?.userId,
-            email: data?.user?.email,
-            username: data?.user?.username,
-            firstname: data?.user?.firstname,
-            lastname: data?.user?.lastname,
-            isActive: data?.user?.active,
-            isAdmin: data?.user?.admin,
+            id: user.userId,
+            email: user.email,
+            username: user.username,
+            firstname: user.firstname,
+            lastname: user.lastname,
+            isActive: user.active,
+            isAdmin: user.admin,
             avatarDataUrl: prev.avatarDataUrl ?? ""
         };
         localStorage.setItem(STORAGE_KEY, JSON.stringify(storedUser));

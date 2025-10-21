@@ -3,6 +3,7 @@ import {getMainEndpoint, getMainEndpointFromUrl, someEndpoint} from "../utils/ch
 import {AuthStorageService} from "../services/AuthStorageService.js";
 
 $(function () {
+    logoutOnRegisterPage();
     renderNavbar();
 });
 
@@ -15,14 +16,20 @@ function renderNavbar() {
 }
 
 
+// no automatic Logout on Login Page because, silent Login is tried
+function logoutOnRegisterPage(){
+    if (someEndpoint(["register"])) {
+        UserStorageService.clearUser();
+        AuthStorageService.clearToken();
+    }
+}
+
 function navBarVisibility() {
 
     //no Support Menu on Register, Login
     if (someEndpoint(["register", "login"])) {
-        UserStorageService.clearUser();
         $('#navTogglerSupportContent').hide();
     }
-
 
     //Login Button,
     if (someEndpoint(["register", "login"]) || UserStorageService.isLoggedIn()) {
@@ -94,8 +101,9 @@ function registerEvents() {
         e.preventDefault();
         history.back();
     });
-    //  (Back/Forward)
+    //  (Back/Forward) - necessary when page is accessed via (Back/Forward)
     window.addEventListener('pageshow', function (e) {
+        logoutOnRegisterPage();
         renderNavbar();
     });
 }
