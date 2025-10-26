@@ -26,7 +26,16 @@ export function getOrders(onlyOwnOrders = true) {
     }
 }
 
-getOrders();
+document.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    const onlyOwnParam = params.get('onlyOwn');
+
+    // Default: true (wenn kein Parameter gesetzt)
+    const onlyOwn = onlyOwnParam === null ? true : (onlyOwnParam === 'true');
+
+    // Aufruf mit dem Boolean
+    getOrders(onlyOwn);
+});
 
 const orders = [{
     datum: "01.03.2024", summe: 116.40, benutzername: "clarkzod", vorname: "Hannah", nachname: "Bukovec", email: "Hannah.Bukovec@muster.at", plz: "4020"
