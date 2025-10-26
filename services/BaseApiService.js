@@ -67,23 +67,27 @@ export class ApiClient {
         return this.request("DELETE", path, options);
     }
 
-    // ------- Convenience with ID -------
-    // Example: getById("users", "123") -> GET {base}/users/123
+// ------- Convenience with ID -------
+// Example: getById("/users", "123") -> GET {base}/users/123
     getById(resourceOrBasePath, id, options) {
         const encodedId = encodeURIComponent(String(id));
-        return this.get(this.joinUrl(resourceOrBasePath, encodedId), options);
+        // NICHT this.joinUrl(...) verwenden, sonst wird die baseUrl zweimal angehängt
+        const rel = String(resourceOrBasePath || "").replace(/\/+$/,'') + "/" + encodedId;
+        return this.get(rel, options);
     }
 
-    // Example: patchById("users", "123", { isActive: true })
+// Example: patchById("/users", "123", { isActive: true })
     patchById(resourceOrBasePath, id, body, options) {
         const encodedId = encodeURIComponent(String(id));
-        return this.patch(this.joinUrl(resourceOrBasePath, encodedId), body, options);
+        const rel = String(resourceOrBasePath || "").replace(/\/+$/,'') + "/" + encodedId;
+        return this.patch(rel, body, options);
     }
 
-    // Example: deleteById("users", "123")
+// Example: deleteById("/users", "123")
     deleteById(resourceOrBasePath, id, options) {
         const encodedId = encodeURIComponent(String(id));
-        return this.delete(this.joinUrl(resourceOrBasePath, encodedId), undefined, options);
+        const rel = String(resourceOrBasePath || "").replace(/\/+$/,'') + "/" + encodedId;
+        return this.delete(rel, undefined, options);
     }
 
 
