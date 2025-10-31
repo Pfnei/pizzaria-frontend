@@ -33,7 +33,7 @@
 ]; */
 
 $.ajax({
-    url: "http://localhost:8080/products",
+    url: "http://localhost:8081/products",
     method: "GET",
     success: function(data) {
         products = data;

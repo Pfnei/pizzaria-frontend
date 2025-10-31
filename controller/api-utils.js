@@ -1,6 +1,6 @@
 export async function fetchData(resource) {
     try {
-        const response = await fetch(`http://localhost:8080/${resource}`, {
+        const response = await fetch(`http://localhost:8081/${resource}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
