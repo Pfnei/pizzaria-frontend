@@ -24,16 +24,14 @@ export function getOrders(onlyOwnOrders = true) {
             window.location.href = "../views/menu.html"
         }
     }
-}
+ }
 
 document.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
     const onlyOwnParam = params.get('onlyOwn');
 
-    // Default: true (wenn kein Parameter gesetzt)
+    // Default: true (if no parameter is set)
     const onlyOwn = onlyOwnParam === null ? true : (onlyOwnParam === 'true');
-
-    // Aufruf mit dem Boolean
     getOrders(onlyOwn);
 });
 
