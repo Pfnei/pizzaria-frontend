@@ -5,9 +5,8 @@
 }
 
 footer {
-    
-    display: flex;
     bottom: 0;
+    display: flex;
     height: 100px;
     width: 100vw;
     background-color: rgba(112, 112, 112, 0.5); 

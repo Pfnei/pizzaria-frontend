@@ -1,15 +1,21 @@
-body, html {
+/* Grundlayout */
+html, body {
     height: 100%;
-    background-color: #f0f2f5;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
 }
 
+/* Login Wrapper */
 .login-wrapper {
-    height: 100%;
+    flex: 1; /* nimmt gesamten Platz zwischen Navigation und Footer ein */
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: center; /* zentriert vertikal und horizontal */
+    padding: 60px 20px;
 }
 
+/* Login Box */
 .login-box {
     background-color: #ffffff;
     padding: 40px;
@@ -24,6 +30,7 @@ body, html {
     transform: translateY(-5px);
 }
 
+/* Titel */
 .login-title {
     text-align: center;
     font-weight: 600;
@@ -31,6 +38,7 @@ body, html {
     margin-bottom: 30px;
 }
 
+/* Formularelemente */
 ::placeholder {
     color: #6c757d;
     opacity: 1;
@@ -55,3 +63,12 @@ body, html {
 .mt-3 a:hover {
     text-decoration: underline;
 }
+
+/* Footer */
+#footer {
+    text-align: center;
+    color: #fff;
+    background: transparent; /* bleibt durchsichtig – Hintergrundbild vom Body scheint durch */
+    margin-top: auto; /* schieb*
+
+
