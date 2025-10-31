@@ -3,7 +3,6 @@ import {UserStorageService} from "../services/UserStorageService.js";
 import {AuthStorageService} from "../services/AuthStorageService.js";
 
 
-
 $(document).ready(function () {
     trySilentLogin();
     registerEventsLogin();
@@ -25,9 +24,6 @@ function registerEventsLogin() {
         trySilentLogin();
     });
 }
-
-
-
 
 function login(email, password) {
     api.post("/auth/login", {username: email, password: password})
@@ -59,8 +55,6 @@ function login(email, password) {
      */
 }
 
-
-
 function trySilentLogin() {
     const token = AuthStorageService.getToken();
     if (!token) return;
@@ -77,8 +71,6 @@ function trySilentLogin() {
            UserStorageService.clearUser()
        });
 }
-
-
 
 $(function () {
     $('#footer').load('../views/footer.html');
