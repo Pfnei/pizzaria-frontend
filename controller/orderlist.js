@@ -24,7 +24,7 @@ export function getOrders(onlyOwnOrders = true) {
             window.location.href = "../views/menu.html"
         }
     }
-}
+ }
 
 document.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
