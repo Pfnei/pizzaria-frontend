@@ -32,17 +32,27 @@
     { name: "Moretti Bier 0,33l", kategorie: "Getränk", unterkategorie: "Bier", preis: 3.90, status: true }
 ]; */
 
-$.ajax({
-    url: "http://localhost:8081/products",
-    method: "GET",
-    success: function(data) {
-        products = data;
-        applyFilterAndSort();
-    },
-    error: function(err) {
-        console.error("Fehler beim Laden der Produkte:", err);        
-    }
-});
+
+import {api} from "../services/BaseApiService.js";
+import {UserStorageService} from "../services/UserStorageService.js";
+
+let productsFromAPI
+
+
+export function getProducts() {
+        if (UserStorageService.isAdmin()) {
+            api.get("/products")
+               .done(function (products) {
+                   productsFromAPI = products;
+                   console.log("Alle Produkte: ", productsFromAPI)
+               }).fail(api.handleError.bind(api));
+        } else {
+            window.location.href = "../views/menu.html"
+        }
+ }
+
+
+ getProducts();
 
 let currentSort = { key: "", asc: true };
 
@@ -94,7 +104,7 @@ function sortProducts(list, key, asc) {
 
 function applyFilterAndSort() {
     const filter = document.getElementById("filter-all").value.toLowerCase();
-    const filtered = products.filter(p =>
+    const filtered = productsFromAPI.filter(p =>
         Object.values(p).some(val => String(val).toLowerCase().includes(filter))
     );
     const sorted = currentSort.key
@@ -125,7 +135,7 @@ document.querySelectorAll("th.sortable").forEach(th => {
 document.addEventListener("click", function(e) {
     if (e.target.classList.contains("toggle-status")) {
         const name = e.target.dataset.name;
-        const product = products.find(p => p.productName === name);
+        const product = productsFromAPI.find(p => p.productName === name);
         if (product) product.isActive = !product.isActive;
         applyFilterAndSort();
     }
