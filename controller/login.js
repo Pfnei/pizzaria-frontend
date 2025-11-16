@@ -12,7 +12,7 @@ function registerEventsLogin() {
     $('#loginForm').on('submit', function (e) {
         e.preventDefault();
         const $email = $('#email').val().trim();
-        const $password = $('#password').val().trim();
+        const $password = $('#password').val();
         if ($email && $password) {
             login($email, $password);
         } else {
@@ -26,7 +26,7 @@ function registerEventsLogin() {
 }
 
 function login(email, password) {
-    api.post("/auth/login", {username: email, password: password})
+    api.post("/auth/login", {email: email, password: password})
        .done(function (data) {
            UserStorageService.setUser(data.user);
            AuthStorageService.setToken(data.accessToken);

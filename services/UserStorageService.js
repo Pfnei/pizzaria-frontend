@@ -1,18 +1,23 @@
-import {AuthStorageService} from "./AuthStorageService.js";
+// UserStorageService.js
+import { AuthStorageService } from "./AuthStorageService.js";
 
 const STORAGE_KEY = "user";
 
 export class UserStorageService {
+
     static setUser(user) {
         if (!user) {
-            console.log ("User for Storage ist empty")
             this.clearUser();
             AuthStorageService.clearToken();
             return;
         }
 
-        const prev = this.getUser() || {};
-        const storedUser = {
+        var previous = this.getUser();
+        if (!previous) {
+            previous = {};
+        }
+
+        var storedUser = {
             id: user.userId,
             email: user.email,
             username: user.username,
@@ -20,93 +25,141 @@ export class UserStorageService {
             lastname: user.lastname,
             isActive: user.active,
             isAdmin: user.admin,
-            avatarDataUrl: prev.avatarDataUrl ?? ""
+            avatarDataUrl: previous.avatarDataUrl ? previous.avatarDataUrl : ""
         };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(storedUser));
+
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(storedUser));
+        } catch (e) {
+            console.error("Failed to save user:", e);
+        }
     }
 
     static getUser() {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return null;
         try {
+            var raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) return null;
+
             return JSON.parse(raw);
         } catch (err) {
-            console.error("Failed to parse user", err);
+            console.error("Failed to parse user:", err);
             return null;
         }
     }
 
     static save(user) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+        } catch (e) {
+            console.error("Failed to save user:", e);
+        }
     }
 
-    // --- Avatar helpers ---
-    /** Overwrite or set the cached avatar data URL for the logged-in user. */
+    // ---------------- Avatar ----------------
+
     static setAvatarDataUrl(dataUrl) {
-        const user = this.getUser();
+        var user = this.getUser();
         if (!user) return;
+
         user.avatarDataUrl = dataUrl;
         this.save(user);
     }
 
     static getAvatarDataUrl() {
-        return this.getUser()?.avatarDataUrl;
+        var user = this.getUser();
+        if (user && user.avatarDataUrl) {
+            return user.avatarDataUrl;
+        }
+        return null;
     }
 
-    /** Clear the cached avatar. */
     static clearAvatarDataUrl() {
-        const u = this.getUser();
-        if (!u) return;
-        u.avatarDataUrl = "";
-        this.save(u);
+        var user = this.getUser();
+        if (!user) return;
+
+        user.avatarDataUrl = "";
+        this.save(user);
     }
 
-    /**
-     * Load the current user's avatar from the "attachments" service and cache it.
-     * -------------------TODO write Method---------------
-     */
     static async refreshAvatarFromServer() {
+        // TODO: wenn du ein Avatar-Endpoint hast
     }
+
+    // ---------------- Basics ----------------
 
     static getUserId() {
-        return this.getUser()?.id;
+        var user = this.getUser();
+        if (user && user.id) {
+            return user.id;
+        }
+        return null;
     }
 
     static getUserInitials() {
-        const user = this.getUser();
+        var user = this.getUser();
         if (!user) return "No User";
-        const map = { Ä: "A", Ö: "O", Ü: "U", ä: "A", ö: "O", ü: "U", ß: "S" };
-        const first = (user.firstname?.charAt(0) || "");
-        const last = (user.lastname?.charAt(0) || "");
-        const fi = (map[first] ?? f.toUpperCase());
-        const li = (map[last] ?? l.toUpperCase());
-        const res = `${fi}${li}`;
-        return res || "D";  // D for Dummy
+
+        var map = { "Ä": "A", "Ö": "O", "Ü": "U", "ä": "A", "ö": "O", "ü": "U", "ß": "S" };
+
+        var first = "";
+        var last = "";
+
+        if (user.firstname && user.firstname.length > 0) {
+            first = user.firstname.charAt(0);
+        }
+
+        if (user.lastname && user.lastname.length > 0) {
+            last = user.lastname.charAt(0);
+        }
+
+        var fi = first ? (map[first] ? map[first] : first.toUpperCase()) : "";
+        var li = last ? (map[last] ? map[last] : last.toUpperCase()) : "";
+
+        var result = fi + li;
+
+        return result !== "" ? result : "D";
     }
 
     static clearUser() {
-        localStorage.removeItem(STORAGE_KEY);
+        try {
+            localStorage.removeItem(STORAGE_KEY);
+        } catch (e) {
+            console.error("Failed to clear user:", e);
+        }
     }
 
     static isLoggedIn() {
-        return !!this.getUser();
-    }
+        var user = this.getUser();
+        var token = AuthStorageService.getToken();
 
-
-    static isItemCreatedByUser(entityUserId) {
-        return entityUserId === this.getUserId();
-    }
-
-    static isAdmin()     {
-        if (this.isLoggedIn()){
-        return this.getUser().isAdmin; }
+        if (user && token) return true;
         return false;
     }
 
+    static isItemCreatedByUser(entityUserId) {
+        var ownId = this.getUserId();
+        if (ownId && entityUserId === ownId) return true;
+        return false;
+    }
 
-        static getFullName() {
-        const u = this.getUser();
-        if (!u) return null;
-        return `${u.firstname ?? ""} ${u.lastname ?? ""}`.trim();
+    static isAdmin() {
+        if (!this.isLoggedIn()) return false;
+
+        var user = this.getUser();
+        if (user && user.isAdmin === true) {
+            return true;
+        }
+        return false;
+    }
+
+    static getFullName() {
+        var user = this.getUser();
+        if (!user) return null;
+
+        var fname = user.firstname ? user.firstname : "";
+        var lname = user.lastname ? user.lastname : "";
+
+        var full = fname + " " + lname;
+        return full.trim();
     }
 }
