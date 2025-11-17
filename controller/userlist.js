@@ -1,18 +1,36 @@
 import {api} from "../services/BaseApiService.js";
+import { UserStorageService } from "../services/UserStorageService.js";
 
 let usersFromAPI
 
 function getUsers() {
-    api.get("/users")
-       .done(function (orders) {
-           usersFromAPI = orders;
-           console.log(usersFromAPI)
-       }).fail(api.handleError.bind(api));
+    return new Promise((resolve,reject)=>{
+        api.get("/users")
+        .done((data) =>{
+            usersFromAPI = data;
+            resolve(data);
+        })
+        .fail((xhr,status,error)=>
+        {
+            api.handleError(xhr,status,error);
+            reject(error);
+
+            
+        })
+    });
 }
+
+redirectToMenuIfNoAdmin();
 getUsers();
 
 
-
+function redirectToMenuIfNoAdmin(){
+    if(!UserStorageService.isAdmin()){
+        console.log("kein admin und daher redirect zu menu view")
+        window.location.href = "../views/menu.html"
+    }
+    return;
+}
 
 $(document).ready(function() {
     let users = [];
@@ -26,11 +44,7 @@ $(document).ready(function() {
 
     async function fetchData(endpoint) {
 
-        return [
-            { username: "max", firstname: "Max", surname: "Mustermann", email: "max@test.com", zipcode: "1010", active: true, admin: false },
-            { username: "anna", firstname: "Anna", surname: "Musterfrau", email: "anna@test.com", zipcode: "1020", active: false, admin: true },
-            { username: "tom", firstname: "Tom", surname: "Tester", email: "tom@test.com", zipcode: "1030", active: true, admin: false }
-        ];
+        return getUsers();
     }
 
     function renderUsers(list) {
@@ -123,7 +137,11 @@ $(document).ready(function() {
 
     // Initialisierung
     (async function init() {
-        users = await fetchData("users");
-        applyFilterAndSort();
+        try{
+            users = await fetchData("users");
+            applyFilterAndSort();
+        }catch (e){
+            console.error("Failed loading users",e)
+        }
     })();
 });

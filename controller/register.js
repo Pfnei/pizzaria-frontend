@@ -1,5 +1,7 @@
 'use strict';
 
+import { ApiClient } from "../services/BaseApiService";
+
 document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("registrationForm");
     if (form) {
@@ -60,7 +62,7 @@ async function handleSubmit(event) {
     }
 
     try {
-        var response = await fetch("http://localhost:8081/auth/register", {
+        var response = await fetch(ApiClient, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(dto)

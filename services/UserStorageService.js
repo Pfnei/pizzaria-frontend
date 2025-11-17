@@ -23,8 +23,8 @@ export class UserStorageService {
             username: user.username,
             firstname: user.firstname,
             lastname: user.lastname,
-            isActive: user.active,
-            isAdmin: user.admin,
+            active: user.active,
+            admin: user.admin,
             avatarDataUrl: previous.avatarDataUrl ? previous.avatarDataUrl : ""
         };
 
@@ -146,7 +146,7 @@ export class UserStorageService {
         if (!this.isLoggedIn()) return false;
 
         var user = this.getUser();
-        if (user && user.isAdmin === true) {
+        if (user && user.admin === true) {
             return true;
         }
         return false;

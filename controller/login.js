@@ -60,7 +60,7 @@ function trySilentLogin() {
     if (!token) return;
     const userId = UserStorageService.getUserId();
     if (!userId) return;
-    const path = "users/" + userId;
+    const path = "/auth/login/" + userId;
     api.get(path)
        .done(function (user) {
            UserStorageService.setUser(user);
