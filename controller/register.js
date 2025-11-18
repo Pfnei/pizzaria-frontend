@@ -1,6 +1,7 @@
 'use strict';
 
-import { ApiClient } from "../services/BaseApiService";
+import { api } from "../services/BaseApiService.js";
+const apiUrl = "/auth/register";
 
 document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("registrationForm");
@@ -62,25 +63,12 @@ async function handleSubmit(event) {
     }
 
     try {
-        var response = await fetch(ApiClient, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(dto)
-        });
-
-        if (!response.ok) {
-            var text = await response.text();
-            if (errorDiv) errorDiv.textContent = "Registrierung fehlgeschlagen: " + text;
-            return;
-        }
-
-        if (successDiv) {
-            successDiv.style.display = "block";
-        }
+        
+        const result =  await api.post(apiUrl, dto, { dataType: "text" });
 
         setTimeout(function () {
-            window.location.href = "login.html";
-        }, 1500);
+            window.location.href = "../views/login.html";
+        }, 500);
 
     } catch (err) {
         if (errorDiv) errorDiv.textContent = "Netzwerkfehler oder Server nicht erreichbar.";
