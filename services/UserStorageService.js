@@ -142,15 +142,29 @@ export class UserStorageService {
         return false;
     }
 
-    static isAdmin() {
-        if (!this.isLoggedIn()) return false;
+  static isAdmin() {
+    if (!this.isLoggedIn()) return false;
 
-        var user = this.getUser();
-        if (user && user.admin === true) {
-            return true;
-        }
+    const token = AuthStorageService.getToken();
+    if (!token) return false;
+
+    const parts = token.split(".");
+    if (parts.length !== 3) return false;
+
+    try {
+        // Base64URL → Base64
+        const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+        const jsonPayload = atob(base64);
+        const payload = JSON.parse(jsonPayload);
+
+        // hier kommt dein Claim aus dem Backend:
+        return payload.isAdmin === true;
+    } catch (e) {
+        console.error("Failed to parse token payload:", e);
         return false;
     }
+}
+
 
     static getFullName() {
         var user = this.getUser();
