@@ -148,21 +148,10 @@ export class UserStorageService {
     const token = AuthStorageService.getToken();
     if (!token) return false;
 
-    const parts = token.split(".");
-    if (parts.length !== 3) return false;
+    payload = this.extractPayloadFromAccessToken(token);
+    if (!paylod)return false;
+    return !!payload.admin;  //so wirds in boolean gecastet
 
-    try {
-        // Base64URL → Base64
-        const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
-        const jsonPayload = atob(base64);
-        const payload = JSON.parse(jsonPayload);
-
-        // hier kommt dein Claim aus dem Backend:
-        return payload.isAdmin === true;
-    } catch (e) {
-        console.error("Failed to parse token payload:", e);
-        return false;
-    }
 }
 
 
@@ -176,4 +165,30 @@ export class UserStorageService {
         var full = fname + " " + lname;
         return full.trim();
     }
+
+    static extractPayloadFromAccessToken(token) {
+    if (!token) return null;
+
+    const parts = token.split(".");
+    if (parts.length !== 3) return null;
+
+    try {
+        let base64 = parts[1]
+            .replace(/-/g, "+")
+            .replace(/_/g, "/");
+
+        // Padding ergänzen, falls nötig
+        while (base64.length % 4 !== 0) {
+            base64 += "=";
+        }
+
+        const jsonPayload = atob(base64);
+        const payload = JSON.parse(jsonPayload);
+        return payload;
+    } catch (error) {
+        console.error("Failed to parse token payload:", error);
+        return null;
+    }
+}
+
 }
