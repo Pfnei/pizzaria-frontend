@@ -148,10 +148,10 @@ export class UserStorageService {
     const token = AuthStorageService.getToken();
     if (!token) return false;
 
-    payload = this.extractPayloadFromAccessToken(token);
-    if (!paylod)return false;
-    return !!payload.admin;  //so wirds in boolean gecastet
+    const payload = this.extractPayloadFromAccessToken(token);
+    if (!payload) return false;
 
+    return !!payload.admin; // boolean cast
 }
 
 
