@@ -12,7 +12,8 @@ function getUsers() {
         api.get("/users")
            .done(function (orders) {
                usersFromAPI = orders;
-               console.log(usersFromAPI)
+               console.log(usersFromAPI);
+               renderUsers(usersFromAPI);
            }).fail(api.handleError.bind(api));
     } else {
         window.location.href = "../views/menu.html"
@@ -25,7 +26,7 @@ getUsers();
 
 
 
-$(document).ready(function() {
+
     let users = [];
     let currentSort = { key: "", asc: true };
 
@@ -59,7 +60,7 @@ $(document).ready(function() {
                 <tr>
                     <td>${user.username}</td>
                     <td>${user.firstname}</td>
-                    <td>${user.surname}</td>
+                    <td>${user.lastname}</td>
                     <td>${user.email}</td>
                     <td class="text-center">${user.zipcode}</td>
                     <td class="text-center">${statusBadge}</td>
@@ -132,9 +133,6 @@ $(document).ready(function() {
         applyFilterAndSort();
     });
 
-    // Initialisierung
-    (async function init() {
-        users = await fetchData("users");
-        applyFilterAndSort();
-    })();
-});
+
+
+
