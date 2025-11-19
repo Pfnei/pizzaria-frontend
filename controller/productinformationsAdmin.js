@@ -1,7 +1,3 @@
-$(function () {
-    $('#footer').load('../views/footer.html');
-});
-
 'use strict';
 
 
