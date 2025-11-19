@@ -1,14 +1,25 @@
 import {api} from "../services/BaseApiService.js";
+import {UserStorageService} from "../services/UserStorageService.js";
+
+// maybe faster rerouting
+if (!UserStorageService.isAdmin()) {window.location.href = "../views/menu.html"}
+
 
 let usersFromAPI
 
 function getUsers() {
-    api.get("/users")
-       .done(function (orders) {
-           usersFromAPI = orders;
-           console.log(usersFromAPI)
-       }).fail(api.handleError.bind(api));
+    if (UserStorageService.isAdmin()) {
+        api.get("/users")
+           .done(function (orders) {
+               usersFromAPI = orders;
+               console.log(usersFromAPI)
+           }).fail(api.handleError.bind(api));
+    } else {
+        window.location.href = "../views/menu.html"
+    }
 }
+
+
 getUsers();
 
 

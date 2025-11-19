@@ -78,6 +78,7 @@ function navBarVisibility() {
     // oder wenn der aktulle gleich dem vorigen ist
     if (getMainEndpointFromUrl(document.referrer) === "index" ||
         getMainEndpointFromUrl(document.referrer) === "login" ||
+
         getMainEndpointFromUrl(document.referrer) === getMainEndpoint()
     ) {
         $('#navBack').hide();
