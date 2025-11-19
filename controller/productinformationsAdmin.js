@@ -28,7 +28,7 @@ function handleFormSubmit(event) {
     if (!hasSubmittedForm) {
         hasSubmittedForm = true;
         bindLiveValidation(); // live validation with every input
-        //setSelectsValid(["anrede", "diversDetailsGroup", "land"]); // selects are always true
+
     }
 
     if (isValid) showSuccessAndRedirect();
@@ -92,15 +92,5 @@ function bindLiveValidation() {
 
 
 function showSuccessAndRedirect() {
-    const btn = document.querySelector('#userForm button[type="submit"]');
-    if (btn) btn.disabled = true;
 
-    const msg = document.getElementById('successMessage');
-    if (msg) {
-        msg.style.display = 'block';
-    }
-
-    /*/setTimeout(() => {
-          window.location.href = 'login.html';
-      }, 1000);*/
 }

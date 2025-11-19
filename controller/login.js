@@ -72,8 +72,6 @@ function trySilentLogin() {
        });
 }
 
-$(function () {
-    $('#footer').load('../views/footer.html');
-});
+
 
 

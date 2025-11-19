@@ -20,30 +20,8 @@ function getUsers() {
     }
 }
 
-
 getUsers();
 
-
-
-
-
-    let users = [];
-    let currentSort = { key: "", asc: true };
-
-    // Beispiel-Navigation laden
-    $("#navigation").load("../views/navigation.html");
-    $(function() {
-      $('#footer').load('../views/footer.html');
-    });
-
-    async function fetchData(endpoint) {
-
-        return [
-            { username: "max", firstname: "Max", surname: "Mustermann", email: "max@test.com", zipcode: "1010", active: true, admin: false },
-            { username: "anna", firstname: "Anna", surname: "Musterfrau", email: "anna@test.com", zipcode: "1020", active: false, admin: true },
-            { username: "tom", firstname: "Tom", surname: "Tester", email: "tom@test.com", zipcode: "1030", active: true, admin: false }
-        ];
-    }
 
     function renderUsers(list) {
         const tbody = $("#table-body");
@@ -84,55 +62,8 @@ getUsers();
             `);
         });
 
-        // Badge Events
-        $(".toggle-status").off("click").on("click", function() {
-            const uname = $(this).data("username");
-            const user = users.find(u => u.username === uname);
-            if (user) user.active = !user.active;
-            applyFilterAndSort();
-        });
-        $(".toggle-admin").off("click").on("click", function() {
-            const uname = $(this).data("username");
-            const user = users.find(u => u.username === uname);
-            if (user) user.admin = !user.admin;
-            applyFilterAndSort();
-        });
+
     }
-
-    function sortUsers(list, key, asc) {
-        return [...list].sort((a, b) => {
-            let va = a[key], vb = b[key];
-            if (typeof va === "boolean") { va = va ? 1 : 0; vb = vb ? 1 : 0; }
-            if (typeof va === "string") { va = va.toLowerCase(); vb = vb.toLowerCase(); }
-            return (va > vb ? 1 : -1) * (asc ? 1 : -1);
-        });
-    }
-
-    function applyFilterAndSort() {
-        const filter = $("#filter-all").val().toLowerCase();
-        const filtered = users.filter(u =>
-            Object.values(u).some(val => String(val).toLowerCase().includes(filter))
-        );
-        const sorted = currentSort.key
-            ? sortUsers(filtered, currentSort.key, currentSort.asc)
-            : filtered;
-        renderUsers(sorted);
-    }
-
-    $("#filter-all").on("input", applyFilterAndSort);
-    $("#sort-dropdown").on("change", function() {
-        currentSort.key = $(this).val();
-        currentSort.asc = true;
-        applyFilterAndSort();
-    });
-
-    $(document).on("click", "th.sortable", function() {
-        const key = $(this).data("key");
-        if (currentSort.key === key) currentSort.asc = !currentSort.asc;
-        else currentSort = { key: key, asc: true };
-        applyFilterAndSort();
-    });
-
 
 
 

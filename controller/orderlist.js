@@ -11,6 +11,7 @@ export function getOrders(onlyOwnOrders = true) {
            .done(function (orders) {
                ordersFromAPI = orders;
                console.log("Meine Bestellungen: ", ordersFromAPI)
+               //render (ordersFromAPI);
            }).fail(api.handleError.bind(api));
     }
     if (!onlyOwnOrders) {
@@ -19,12 +20,15 @@ export function getOrders(onlyOwnOrders = true) {
                .done(function (orders) {
                    ordersFromAPI = orders;
                    console.log("Alle Bestellungen: ", ordersFromAPI)
+                  // render (ordersFromAPI);
                }).fail(api.handleError.bind(api));
         } else {
             window.location.href = "../views/menu.html"
         }
     }
  }
+
+
 
 document.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
@@ -51,14 +55,13 @@ const orders = [{
     datum: "10.04.2025", summe: 46.60, benutzername: "bamwayne", vorname: "Nina", nachname: "Wiener", email: "Nina.Wiener@muster.at", plz: "2500"
 },];
 
-let currentSort = {key: "", asc: true};
 
 function render(list) {
     const tbody = document.getElementById("table-body");
     const cards = document.getElementById("card-container");
     tbody.innerHTML = "";
     cards.innerHTML = "";
-
+    //console.log(list);
     list.forEach(o => {
         const row = document.createElement("tr");
         row.innerHTML = `
@@ -89,39 +92,5 @@ function render(list) {
     });
 }
 
-function sort(list, key, asc) {
-    return [...list].sort((a, b) => {
-        let va = a[key], vb = b[key];
-        if (typeof va === "string") {
-            va = va.toLowerCase();
-            vb = vb.toLowerCase();
-        }
-        return (va > vb ? 1 : -1) * (asc ? 1 : -1);
-    });
-}
+render(orders);
 
-function applyFilterAndSort() {
-    const filter = document.getElementById("filter-all").value.toLowerCase();
-    const filtered = orders.filter(o => Object.values(o).some(val => String(val).toLowerCase().includes(filter)));
-    const sorted = currentSort.key ? sort(filtered, currentSort.key, currentSort.asc) : filtered;
-    render(sorted);
-}
-
-document.getElementById("filter-all").addEventListener("input", applyFilterAndSort);
-document.getElementById("sort-dropdown").addEventListener("change", e => {
-    currentSort.key = e.target.value;
-    currentSort.asc = true;
-    applyFilterAndSort();
-});
-document.querySelectorAll("th.sortable").forEach(th => {
-    th.addEventListener("click", () => {
-        const key = th.dataset.key;
-        if (currentSort.key === key) {
-            currentSort.asc = !currentSort.asc;
-        } else {
-            currentSort = {key: key, asc: true};
-        }
-        applyFilterAndSort();
-    });
-});
-applyFilterAndSort();

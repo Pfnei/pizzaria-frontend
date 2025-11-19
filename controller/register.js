@@ -155,17 +155,6 @@ function bindLiveValidation() {
 
 
 function showSuccessAndRedirect() {
-    const btn = document.querySelector('#registrationForm button[type="submit"]');
-    if (btn) btn.disabled = true;
-
-    const msg = document.getElementById('successMessage');
-    if (msg) {
-        msg.style.display = 'block';
-    }
-
-    setTimeout(() => {
-        window.location.href = 'login.html';
-    }, 1000);
 }
 
 

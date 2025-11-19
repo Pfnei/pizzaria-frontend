@@ -57,7 +57,6 @@ export function getProducts() {
 
 getProducts();
 
-let currentSort = { key: "", asc: true };
 
 function renderProducts(list) {
     const tbody = document.getElementById("table-body");
@@ -95,54 +94,3 @@ function renderProducts(list) {
         cards.appendChild(col);
     });
 }
-
-function sortProducts(list, key, asc) {
-    return [...list].sort((a, b) => {
-        let va = a[key], vb = b[key];
-        if (typeof va === "boolean") { va = va ? 1 : 0; vb = vb ? 1 : 0; }
-        if (typeof va === "string") { va = va.toLowerCase(); vb = vb.toLowerCase(); }
-        return (va > vb ? 1 : -1) * (asc ? 1 : -1);
-    });
-}
-
-function applyFilterAndSort() {
-    const filter = document.getElementById("filter-all").value.toLowerCase();
-    const filtered = productsFromAPI.filter(p =>
-        Object.values(p).some(val => String(val).toLowerCase().includes(filter))
-    );
-    const sorted = currentSort.key
-        ? sortProducts(filtered, currentSort.key, currentSort.asc)
-        : filtered;
-    renderProducts(sorted);
-}
-
-document.getElementById("filter-all").addEventListener("input", applyFilterAndSort);
-document.getElementById("sort-dropdown").addEventListener("change", e => {
-    currentSort.key = e.target.value;
-    currentSort.asc = true;
-    applyFilterAndSort();
-});
-document.querySelectorAll("th.sortable").forEach(th => {
-    th.addEventListener("click", () => {
-        const key = th.dataset.key;
-        if (currentSort.key === key) {
-            currentSort.asc = !currentSort.asc;
-        } else {
-            currentSort = { key: key, asc: true };
-        }
-        applyFilterAndSort();
-    });
-});
-
-// Toggle Status
-document.addEventListener("click", function(e) {
-    if (e.target.classList.contains("toggle-status")) {
-        const name = e.target.dataset.name;
-        const product = productsFromAPI.find(p => p.productName === name);
-        if (product) product.isActive = !product.isActive;
-        applyFilterAndSort();
-    }
-});
-
-
-
