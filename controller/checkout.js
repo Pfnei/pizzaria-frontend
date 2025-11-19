@@ -34,7 +34,7 @@ function handleFormSubmit(event) {
         
     }
 
-    if (isValid) showSuccessAndRedirect();
+    if (isValid) {window.location.href = "../views/menu.html"};
 
 }
 
