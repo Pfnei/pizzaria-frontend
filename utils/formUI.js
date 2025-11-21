@@ -5,8 +5,10 @@ function changeEnterToTab(form) {
     focusables.forEach((el, idx) => {
         el.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
-                // Enter in Select soll Option wählen, nicht springen
+                if (el.tagName === 'TEXTAREA') return;
+                // Enter in Select shall choose an option, not jump to next
                 if (el.tagName === 'SELECT') return;
+                // Default would submit form
                 e.preventDefault();
                 let next = idx + 1;
                 while (next < focusables.length) {

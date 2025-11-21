@@ -167,6 +167,7 @@ function validateSelect(fieldId, isRequired = true) {
 
 function clearValidation(field) {
     field.classList.remove('is-valid', 'is-invalid');
+    field.classList.add('is-valid');
     const feedback = field.parentElement.querySelector('.validation-feedback-ok, .validation-feedback-nok');
     if (feedback) {
         feedback.textContent = '';

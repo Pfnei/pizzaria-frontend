@@ -19,7 +19,8 @@ function initPage() {
 }
 
 function handleFormSubmit(event) {
-    event.preventDefault(); // no standard HTML Checks are done
+    // verhindert automatische Abschicken des Formulars (weil ja der HTML check auf  novalidate steht
+    event.preventDefault();
     const form = event.target; // gets the current form
     const isValid = validateForm();
 
