@@ -74,10 +74,11 @@ function navBarVisibility() {
         $('#navOrderList').hide();
     }
 
-  //navback document.referrer = history.back()
+    //navback document.referrer = history.back()
     // oder wenn der aktulle gleich dem vorigen ist
     if (getMainEndpointFromUrl(document.referrer) === "index" ||
         getMainEndpointFromUrl(document.referrer) === "login" ||
+
         getMainEndpointFromUrl(document.referrer) === getMainEndpoint()
     ) {
         $('#navBack').hide();

@@ -71,9 +71,3 @@ function trySilentLogin() {
            UserStorageService.clearUser()
        });
 }
-
-$(function () {
-    $('#footer').load('../views/footer.html');
-});
-
-

@@ -11,6 +11,7 @@ export function getOrders(onlyOwnOrders = true) {
            .done(function (orders) {
                ordersFromAPI = orders;
                console.log("Meine Bestellungen: ", ordersFromAPI)
+               //render (ordersFromAPI);
            }).fail(api.handleError.bind(api));
     }
     if (!onlyOwnOrders) {
@@ -19,6 +20,7 @@ export function getOrders(onlyOwnOrders = true) {
                .done(function (orders) {
                    ordersFromAPI = orders;
                    console.log("Alle Bestellungen: ", ordersFromAPI)
+                   //render (ordersFromAPI);
                }).fail(api.handleError.bind(api));
         } else {
             window.location.href = "../views/menu.html"
@@ -124,4 +126,4 @@ document.querySelectorAll("th.sortable").forEach(th => {
         applyFilterAndSort();
     });
 });
-applyFilterAndSort();
+render(orders);
