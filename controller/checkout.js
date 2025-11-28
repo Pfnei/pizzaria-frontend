@@ -1,6 +1,3 @@
-$(function() {
-      $('#footer').load('../views/footer.html');
-    });
 
 'use strict';
 
@@ -80,11 +77,12 @@ function bindLiveValidation() {
 }
 
 
-function showSuccessAndDisable() {
-    const btn = document.querySelector('#checkoutSubmitForm button[type="submit"]');
+function showSuccessAndRedirect() {
+    window.location.href = "../views/menu.html";
+    /*const btn = document.querySelector('#checkoutSubmitForm button[type="submit"]');
     if (btn) btn.disabled = true;
     const msg = document.getElementById('successMessage');
-    if (msg) msg.style.display = 'block';
+    if (msg) msg.style.display = 'block';*/
     /*/setTimeout(() => {
         window.location.href = 'login.html';
     }, 1000);*/

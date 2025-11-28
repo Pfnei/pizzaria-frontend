@@ -36,20 +36,24 @@
 import {api} from "../services/BaseApiService.js";
 import {UserStorageService} from "../services/UserStorageService.js";
 
+// maybe faster rerouting
+if (!UserStorageService.isAdmin()) {window.location.href = "../views/menu.html"}
+
 let productsFromAPI
 
 
 export function getProducts() {
-        if (UserStorageService.isAdmin()) {
-            api.get("/products")
-               .done(function (products) {
-                   productsFromAPI = products;
-                   console.log("Alle Produkte: ", productsFromAPI)
-               }).fail(api.handleError.bind(api));
-        } else {
-            window.location.href = "../views/menu.html"
-        }
- }
+    if (UserStorageService.isAdmin()) {
+        api.get("/products")
+           .done(function (products) {
+               productsFromAPI = products;
+               console.log("Alle Produkte: ", productsFromAPI)
+               renderProducts(productsFromAPI);
+           }).fail(api.handleError.bind(api));
+    } else {
+        window.location.href = "../views/menu.html"
+    }
+}
 
 
  getProducts();

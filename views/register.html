@@ -22,7 +22,7 @@
         <div id="successMessage" class="alert alert-success text-center" role="alert" style="display:none;">
             Registrierung erfolgreich! Weiterleitung zum Login...
         </div>
-        <form id="registrationForm" class="needs-validation" novalidate>
+        <form id="registrationForm"  novalidate>
             <div class="mb-3">
                 <select class="form-select" id="anrede">
                     <option value="" disabled selected>Anrede wählen</option>
@@ -54,7 +54,7 @@
 
             <div class="mb-3">
                 <input type="text" class="form-control" id="username" placeholder="Benutzername*" pattern=".*\S.*"
-                       minlength="5" maxlength="30">
+                       minlength="5" maxlength="30" required>
                 <div class="validation-feedback-ok mt-1">
                 </div>
             </div>

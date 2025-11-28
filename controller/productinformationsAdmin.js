@@ -1,7 +1,3 @@
-$(function () {
-    $('#footer').load('../views/footer.html');
-});
-
 'use strict';
 
 
@@ -96,7 +92,9 @@ function bindLiveValidation() {
 
 
 function showSuccessAndRedirect() {
-    const btn = document.querySelector('#userForm button[type="submit"]');
+
+    window.location.href = "../views/menu.html";
+    /*const btn = document.querySelector('#userForm button[type="submit"]');
     if (btn) btn.disabled = true;
 
     const msg = document.getElementById('successMessage');
@@ -104,7 +102,7 @@ function showSuccessAndRedirect() {
         msg.style.display = 'block';
     }
 
-    /*/setTimeout(() => {
+    setTimeout(() => {
           window.location.href = 'login.html';
       }, 1000);*/
 }
