@@ -1,6 +1,7 @@
 import {api} from "../services/BaseApiService.js";
 import {UserStorageService} from "../services/UserStorageService.js";
 
+console.log(UserStorageService.isAdmin());
 
 let ordersFromAPI
 

@@ -1,6 +1,8 @@
 import {api} from "../services/BaseApiService.js";
 import {UserStorageService} from "../services/UserStorageService.js";
 
+console.log(UserStorageService.isAdmin());
+console.log(UserStorageService.getUser());
 // maybe faster rerouting
 if (!UserStorageService.isAdmin()) {window.location.href = "../views/menu.html"}
 
