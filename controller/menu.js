@@ -1,14 +1,12 @@
 // menu.js
-import { UserStorageService } from "../services/UserStorageService.js";
-
+import { authManager } from "../services/authManager.js";
 
 document.addEventListener("DOMContentLoaded", function () {
-    var adminspace = document.getElementById('adminspace');
-    if (!adminspace) {
-        return;
-    }
+    const adminspace = document.getElementById('adminspace');
+    if (!adminspace) return;
 
-    if (UserStorageService.isAdmin()) {
+    // authManager hat bereits eine Funktion dafür
+    if (authManager.isAdmin()) {
         adminspace.style.display = "block";
     } else {
         adminspace.style.display = "none";
