@@ -4,13 +4,13 @@ import { authManager } from "../services/authManager.js";
 let users = [];
 let currentSort = { key: "", asc: true };
 
-// Entry-Point: wenn DOM fertig ist
+// Entry-Point, wenn DOM fertig ist
 $(async function () {
   console.log("isAdmin:", authManager.isAdmin());
   console.log("currentUser:", authManager.getUser());
 
-  //  nur Admins dürfen hier sein
-  if (!authManager.isAdmin()) {
+  // nur admins jo
+  if (!authManager.isLoggedIn() || !authManager.isAdmin()) {
     window.location.href = "../views/menu.html";
     return;
   }
@@ -21,7 +21,6 @@ $(async function () {
 
 async function loadUsers() {
   try {
-    
     const data = await userService.getAll();
 
     if (!data || !Array.isArray(data)) {
@@ -46,20 +45,18 @@ function renderUsers(list) {
 
   list.forEach(user => {
     const statusBadge = `
-      <span class="badge ${user.active ? "bg-success" : "bg-secondary"} toggle-status" 
-            data-username="${user.username}">
+      <span class="badge ${user.active ? "bg-success" : "bg-secondary"}">
         ${user.active ? "Aktiv" : "Inaktiv"}
       </span>`.trim();
 
     const adminBadge = `
-      <span class="badge ${user.admin ? "bg-success" : "bg-secondary"} toggle-admin" 
-            data-username="${user.username}">
-        ${user.admin ? "Ja" : "Nein"}
+      <span class="badge ${user.admin ? "bg-primary" : "bg-secondary"}">
+        ${user.admin ? "Admin" : "Benutzer"}
       </span>`.trim();
 
-    // Tabelle
+    // Tabelle (Zeile klickbar)
     tbody.append(`
-      <tr>
+      <tr class="user-row" data-user-id="${user.userId}">
         <td>${user.username}</td>
         <td>${user.firstname}</td>
         <td>${user.lastname}</td>
@@ -70,40 +67,31 @@ function renderUsers(list) {
       </tr>
     `);
 
-    // Cards
+    // Cards (Card klickbar)
     cards.append(`
       <div class="col-12 col-sm-6 col-md-4">
-        <div class="card h-100">
+        <div class="card h-100 user-card" data-user-id="${user.userId}">
           <div class="card-body p-2">
-            <p class="mb-1">${user.username}</p>
+            <p class="mb-1 fw-semibold">${user.username}</p>
             <p class="mb-1">${user.firstname} ${user.lastname}</p>
             <p class="mb-1">${user.email}</p>
             <p class="mb-1">PLZ: ${user.zipcode}</p>
-            <p class="mb-0">${statusBadge} ${adminBadge}</p>
+            <p class="mb-0 d-flex gap-2">${statusBadge} ${adminBadge}</p>
           </div>
         </div>
       </div>
     `);
   });
 
-  // Badge Events
-  $(".toggle-status").off("click").on("click", function() {
-    const uname = $(this).data("username");
-    const user = users.find(u => u.username === uname);
-    if (user) {
-      user.active = !user.active;
-      applyFilterAndSort();
-    }
-  });
-
-  $(".toggle-admin").off("click").on("click", function() {
-    const uname = $(this).data("username");
-    const user = users.find(u => u.username === uname);
-    if (user) {
-      user.admin = !user.admin;
-      applyFilterAndSort();
-    }
-  });
+  // Klick auf Row oder Card → Userdetails (Bearbeiten)
+  $(document)
+    .off("click.userNav")
+    .on("click.userNav", ".user-row, .user-card", function () {
+      const id = $(this).data("userId"); 
+      if (!id) return;
+      const url = `../views/userdetails.html?id=${encodeURIComponent(id)}`;
+      window.location.href = url;
+    });
 }
 
 function sortUsers(list, key, asc) {
@@ -133,14 +121,17 @@ function applyFilterAndSort() {
 }
 
 function registerUiEvents() {
+  // Filter
   $("#filter-all").on("input", applyFilterAndSort);
 
+  // Dropdown-Sortierung
   $("#sort-dropdown").on("change", function() {
     currentSort.key = $(this).val();
     currentSort.asc = true;
     applyFilterAndSort();
   });
 
+  // Klick auf Tabellen-Header
   $(document).on("click", "th.sortable", function() {
     const key = $(this).data("key");
     if (currentSort.key === key) {

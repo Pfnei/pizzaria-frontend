@@ -2,7 +2,7 @@
 
 import { api } from "../services/BaseApiService.js";
 import { registerService } from "../services/registerService.js";
-const apiUrl = "/auth/register";
+
 
 document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("registrationForm");
