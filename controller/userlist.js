@@ -21,7 +21,7 @@ $(async function () {
 
 async function loadUsers() {
   try {
-    // ⬇️ HIER war vorher getAllUsers()
+    
     const data = await userService.getAll();
 
     if (!data || !Array.isArray(data)) {
