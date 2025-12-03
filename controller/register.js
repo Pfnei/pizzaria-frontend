@@ -1,6 +1,7 @@
 'use strict';
 
 import { api } from "../services/BaseApiService.js";
+import { registerService } from "../services/registerService.js";
 const apiUrl = "/auth/register";
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -54,17 +55,17 @@ async function handleSubmit(event) {
     if (errorDiv) errorDiv.textContent = "";
     if (successDiv) successDiv.style.display = "none";
 
-    var dto = collectFormData();
+    var payload = collectFormData();
 
-    var validationError = validate(dto);
+    var validationError = validate(payload);
     if (validationError) {
         if (errorDiv) errorDiv.textContent = validationError;
         return;
     }
-
+    
     try {
         
-        const result =  await api.post(apiUrl, dto, { dataType: "text" });
+        const data =  await registerService.register(payload);
 
         setTimeout(function () {
             window.location.href = "../views/login.html";
