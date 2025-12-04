@@ -1,6 +1,6 @@
 'use strict';
 
-import { api } from "../services/BaseApiService.js";
+
 import { registerService } from "../services/registerService.js";
 
 
