@@ -1,6 +1,5 @@
-import {UserStorageService} from "../services/UserStorageService.js";
-import {getMainEndpoint, getMainEndpointFromUrl, someEndpoint} from "../utils/checkEndpoints.js";
-import {AuthStorageService} from "../services/AuthStorageService.js";
+import { authManager } from "../services/authManager.js";
+import { getMainEndpoint, getMainEndpointFromUrl, someEndpoint } from "../utils/checkEndpoints.js";
 
 $(function () {
     logoutOnRegisterPage();
@@ -11,34 +10,36 @@ function renderNavbar() {
     $('#navigation').load('../views/navigation.html', function () {
         navBarVisibility();
         registerEvents();
-        //console.log(document.referrer || "Kein Referrer verfügbar");
+        // console.log(document.referrer || "Kein Referrer verfügbar");
     });
 }
 
-
-// no automatic Logout on Login Page because, silent Login is tried
-function logoutOnRegisterPage(){
+// no automatic Logout on Login Page because silent Login is tried
+function logoutOnRegisterPage() {
     if (someEndpoint(["register"])) {
-        UserStorageService.clearUser();
-        AuthStorageService.clearToken();
+        authManager.clearAuth();
     }
 }
 
 function navBarVisibility() {
 
-    //no Support Menu on Register, Login
+    // no Support Menu on Register, Login
     if (someEndpoint(["register", "login"])) {
         $('#navTogglerSupportContent').hide();
     }
 
-    //Login Button,
-    if (someEndpoint(["register", "login"]) || UserStorageService.isLoggedIn()) {
+    const isLoggedIn = authManager.isLoggedIn();
+    const isAdmin = authManager.isAdmin();
+
+    // Login Button
+    if (someEndpoint(["register", "login"]) || isLoggedIn) {
         $('#navLogin').hide();
     } else {
         $('#navLogin').show();
     }
-    //UserMenu , Orders
-    if (UserStorageService.isLoggedIn()) {
+
+    // UserMenu , Orders
+    if (isLoggedIn) {
         $('#navUserMenu').show();
         $('#navOrderList').show();
         const nbr = $('#navbar-right');
@@ -51,7 +52,8 @@ function navBarVisibility() {
         nbr.removeClass("mt-1");
         nbr.addClass("mt-3");
     }
-    //Finetuning Shoppingcart
+
+    // Finetuning Shoppingcart
     if (someEndpoint(["register", "login"])) {
         const sc = $('#navShoppingCart');
         sc.addClass("me-4");
@@ -60,11 +62,8 @@ function navBarVisibility() {
         sc.removeClass("me-4");
     }
 
-
-
-
-    //AdminTools
-    if (UserStorageService.isLoggedIn() && UserStorageService.isAdmin()) {
+    // AdminTools
+    if (isLoggedIn && isAdmin) {
         $('#navUserList').show();
         $('#navProductList').show();
         $('#navOrderList').show();
@@ -74,18 +73,16 @@ function navBarVisibility() {
         $('#navOrderList').hide();
     }
 
-    //navback document.referrer = history.back()
-    // oder wenn der aktulle gleich dem vorigen ist
-    if (getMainEndpointFromUrl(document.referrer) === "index" ||
+    // navBack document.referrer = history.back()
+    if (
+        getMainEndpointFromUrl(document.referrer) === "index" ||
         getMainEndpointFromUrl(document.referrer) === "login" ||
-
         getMainEndpointFromUrl(document.referrer) === getMainEndpoint()
     ) {
         $('#navBack').hide();
     } else {
-        $('#navBack').show();;
+        $('#navBack').show();
     }
-
 }
 
 // Logout
@@ -93,17 +90,18 @@ function registerEvents() {
     $("#logoutLink").on("click", function (e) {
         e.preventDefault();
         try {
-            AuthStorageService.clearToken();
-            UserStorageService.clearUser();
+            authManager.clearAuth();
         } catch {}
         window.location.href = this.href;
     });
+
     $("#navBack").on("click", function (e) {
         e.preventDefault();
         history.back();
     });
-    //  (Back/Forward) - necessary when page is accessed via (Back/Forward)
-    window.addEventListener('pageshow', function (e) {
+
+    // (Back/Forward) - necessary when page is accessed via (Back/Forward)
+    window.addEventListener('pageshow', function () {
         logoutOnRegisterPage();
         renderNavbar();
     });
