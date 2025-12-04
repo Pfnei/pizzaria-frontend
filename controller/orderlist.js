@@ -1,130 +1,139 @@
-import {api} from "../services/BaseApiService.js";
-import {UserStorageService} from "../services/UserStorageService.js";
+// controller/orderlist.js
+"use strict";
 
-console.log(UserStorageService.isAdmin());
+import { orderService } from "../services/orderService.js";
+import { authManager } from "../services/authManager.js";
 
-let ordersFromAPI
+let orders = [];
 
+$(async function () {
+  // Nur Admins dürfen die Bestellliste sehen
+  if (!authManager.isLoggedIn() || !authManager.isAdmin()) {
+    window.location.href = "../views/menu.html";
+    return;
+  }
 
-export function getOrders(onlyOwnOrders = true) {
-    if (onlyOwnOrders) {
-        api.get("/orders", {data: {createdBy: UserStorageService.getUserId()}})
-           .done(function (orders) {
-               ordersFromAPI = orders;
-               console.log("Meine Bestellungen: ", ordersFromAPI)
-               //render (ordersFromAPI);
-           }).fail(api.handleError.bind(api));
-    }
-    if (!onlyOwnOrders) {
-        if (UserStorageService.isAdmin()) {
-            api.get("/orders")
-               .done(function (orders) {
-                   ordersFromAPI = orders;
-                   console.log("Alle Bestellungen: ", ordersFromAPI)
-                   //render (ordersFromAPI);
-               }).fail(api.handleError.bind(api));
-        } else {
-            window.location.href = "../views/menu.html"
-        }
-    }
- }
-
-document.addEventListener('DOMContentLoaded', () => {
-    const params = new URLSearchParams(window.location.search);
-    const onlyOwnParam = params.get('onlyOwn');
-
-    // Default: true (if no parameter is set)
-    const onlyOwn = onlyOwnParam === null ? true : (onlyOwnParam === 'true');
-    getOrders(onlyOwn);
+  await loadOrders();
+  registerFilter();
 });
 
-const orders = [{
-    datum: "01.03.2024", summe: 116.40, benutzername: "clarkzod", vorname: "Hannah", nachname: "Bukovec", email: "Hannah.Bukovec@muster.at", plz: "4020"
-}, {datum: "12.04.2024", summe: 46.80, benutzername: "brucefox", vorname: "Paul", nachname: "Pfischer", email: "Paul.Pfischer@muster.at", plz: "8010"}, {
-    datum: "07.06.2024", summe: 104.40, benutzername: "diana91", vorname: "Sophie", nachname: "Schmid", email: "Sophie.Schmid@muster.at", plz: "5020"
-}, {datum: "19.07.2024", summe: 115.70, benutzername: "loganx", vorname: "Tobias", nachname: "Maier", email: "Tobias.Maier@muster.at", plz: "2700"}, {
-    datum: "23.08.2024", summe: 54.30, benutzername: "", vorname: "Anna", nachname: "Alang", email: "", plz: "6850"
-}, {datum: "30.09.2024", summe: 30.20, benutzername: "parjord", vorname: "Nico", nachname: "Hofer", email: "Nico.Hofer@muster.at", plz: "4400"}, {
-    datum: "10.11.2024", summe: 115.00, benutzername: "barryv", vorname: "Lisa", nachname: "Gruber", email: "Lisa.Gruber@muster.at", plz: "9500"
-}, {datum: "05.01.2025", summe: 68.90, benutzername: "reeddoc", vorname: "David", nachname: "Zuccatto", email: "David.Zuccatto@muster.at", plz: "3430"}, {
-    datum: "22.01.2025", summe: 34.70, benutzername: "", vorname: "Katharina", nachname: "Baumhackl", email: "", plz: "3100"
-}, {datum: "14.02.2025", summe: 133.90, benutzername: "", vorname: "Raphael", nachname: "Müller", email: "", plz: "7000"}, {
-    datum: "01.03.2025", summe: 82.40, benutzername: "", vorname: "Theresa", nachname: "Chang", email: "", plz: "1190"
-}, {datum: "28.03.2025", summe: 119.10, benutzername: "natroma", vorname: "Simon", nachname: "Schuster", email: "Simon.Schuster@muster.at", plz: "9560"}, {
-    datum: "10.04.2025", summe: 46.60, benutzername: "bamwayne", vorname: "Nina", nachname: "Wiener", email: "Nina.Wiener@muster.at", plz: "2500"
-},];
+async function loadOrders() {
+  try {
+    const data = await orderService.getAll(); // Erwartet: List<OrderResponseDTO> oder LightDTO
 
-let currentSort = {key: "", asc: true};
+    if (!data || !Array.isArray(data)) {
+      throw new Error("Unerwartete Serverantwort (keine Orderliste)");
+    }
+
+    console.log("Orders vom Server:", data);
+    orders = data;
+    render(orders);
+  } catch (err) {
+    console.error("Fehler beim Laden der Bestellungen:", err);
+    alert("Fehler beim Laden der Bestellungen: " + (err.message || err));
+    window.location.href = "../views/menu.html";
+  }
+}
+
+// Instant (createdAt / deliveredAt) → hübsches Datum
+function formatDate(instantString) {
+  if (!instantString) return "";
+  const d = new Date(instantString);
+  if (Number.isNaN(d.getTime())) return "";
+  return d.toLocaleDateString("de-AT"); // z.B. 01.03.2025
+}
 
 function render(list) {
-    const tbody = document.getElementById("table-body");
-    const cards = document.getElementById("card-container");
-    tbody.innerHTML = "";
-    cards.innerHTML = "";
+  const tbody = $("#table-body");
+  const cards = $("#card-container");
+  tbody.empty();
+  cards.empty();
 
-    list.forEach(o => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-            <td>${o.datum}</td>
-            <td>€ ${o.summe.toFixed(2)}</td>
-            <td>${o.benutzername}</td>
-            <td>${o.vorname}</td>
-            <td>${o.nachname}</td>
-            <td>${o.email}</td>
-            <td>${o.plz}</td>
-        `;
-        tbody.appendChild(row);
+  list.forEach((o) => {
+    // OrderResponseDTO-Felder
+    const deliveredOrCreated = o.deliveredAt || o.createdAt;
+    const date = formatDate(deliveredOrCreated);
+    const total = o.total ?? 0;
 
-        const card = document.createElement("div");
-        card.className = "col-12 col-sm-6 col-md-4";
-        card.innerHTML = `
-            <div class="card h-100">
-                <div class="card-body p-2">
-                    <p class="mb-1">${o.datum}</p>
-                    <p class="mb-1">€ ${o.summe.toFixed(2)}</p>
-                    <p class="mb-1">${o.vorname} ${o.nachname}</p>
-                    <p class="mb-1">${o.email}</p>
-                    <p class="mb-1">PLZ: ${o.plz}</p>
-                </div>
-            </div>
-        `;
-        cards.appendChild(card);
-    });
+    const firstname = o.firstname || "";
+    const lastname = o.lastname || "";
+    const zipcode = o.zipcode || "";
+    const city = o.city || "";
+
+    const createdBy = o.createdBy || {};
+    const username = createdBy.username || "";
+    const email = createdBy.email || "";
+
+    // Tabellenzeile
+    tbody.append(`
+      <tr class="order-row">
+        <td>${date}</td>
+        <td>€ ${Number(total).toFixed(2)}</td>
+        <td>${username}</td>
+        <td>${firstname}</td>
+        <td>${lastname}</td>
+        <td>${email}</td>
+        <td>${zipcode}</td>
+      </tr>
+    `);
+
+    // Card-Ansicht (mobil)
+    cards.append(`
+      <div class="col-12 col-sm-6 col-md-4">
+        <div class="card h-100 order-card">
+          <div class="card-body p-2">
+            <p class="mb-1">${date}</p>
+            <p class="mb-1">€ ${Number(total).toFixed(2)}</p>
+            <p class="mb-1">${firstname} ${lastname}</p>
+            <p class="mb-1">${email}</p>
+            <p class="mb-1">PLZ: ${zipcode}${city ? " - " + city : ""}</p>
+          </div>
+        </div>
+      </div>
+    `);
+  });
 }
 
-function sort(list, key, asc) {
-    return [...list].sort((a, b) => {
-        let va = a[key], vb = b[key];
-        if (typeof va === "string") {
-            va = va.toLowerCase();
-            vb = vb.toLowerCase();
-        }
-        return (va > vb ? 1 : -1) * (asc ? 1 : -1);
-    });
-}
+function registerFilter() {
+  $("#filter-all").on("input", () => {
+    const q = ($("#filter-all").val() || "").toLowerCase();
+    if (!q) {
+      render(orders);
+      return;
+    }
 
-function applyFilterAndSort() {
-    const filter = document.getElementById("filter-all").value.toLowerCase();
-    const filtered = orders.filter(o => Object.values(o).some(val => String(val).toLowerCase().includes(filter)));
-    const sorted = currentSort.key ? sort(filtered, currentSort.key, currentSort.asc) : filtered;
-    render(sorted);
-}
+    const filtered = orders.filter((o) => {
+      const createdBy = o.createdBy || {};
 
-document.getElementById("filter-all").addEventListener("input", applyFilterAndSort);
-document.getElementById("sort-dropdown").addEventListener("change", e => {
-    currentSort.key = e.target.value;
-    currentSort.asc = true;
-    applyFilterAndSort();
-});
-document.querySelectorAll("th.sortable").forEach(th => {
-    th.addEventListener("click", () => {
-        const key = th.dataset.key;
-        if (currentSort.key === key) {
-            currentSort.asc = !currentSort.asc;
-        } else {
-            currentSort = {key: key, asc: true};
-        }
-        applyFilterAndSort();
+      const values = [
+        o.orderId,
+        o.firstname,
+        o.lastname,
+        o.phoneNumber,
+        o.address,
+        o.zipcode,
+        o.city,
+        o.deliveryNote,
+        o.total,
+        formatDate(o.createdAt),
+        formatDate(o.deliveredAt),
+        createdBy.username,
+        createdBy.firstname,
+        createdBy.lastname,
+        createdBy.email,
+        createdBy.zipcode,
+      ];
+
+      return values
+        .filter((v) => v != null)
+        .some((v) => String(v).toLowerCase().includes(q));
     });
-});
-render(orders);
+
+    render(filtered);
+  });
+
+  // Sort-Dropdown & Header sind im HTML noch da, machen aber nix:
+  // falls du magst, kannst du sie hier auch deaktivieren:
+  $("#sort-dropdown").prop("disabled", true);
+  $("th.sortable").addClass("text-muted");
+}
