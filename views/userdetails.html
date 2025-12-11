@@ -21,7 +21,14 @@
     </div>
 
     <div class="profile-pic mb-3">
-        <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="Benutzer-Logo">
+        <img 
+    id="profileImage"
+    src="https://cdn-icons-png.flaticon.com/512/847/847969.png" 
+    alt="Benutzer-Logo"
+    style="width:120px; height:120px; border-radius:50%; cursor:pointer;"
+>
+        <input type="file" id="profileUploadInput" accept="image/*" style="display:none;">
+
     </div>
 
     <form id="userForm"  novalidate>

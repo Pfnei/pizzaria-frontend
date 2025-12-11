@@ -31,8 +31,8 @@ export class CHttpClient {
   }
 
   _buildHeaders(extraHeaders = {}) {
+    // kein Content-Type Standard mehr!
     return authManager.buildAuthHeaders({
-      "Content-Type": "application/json",
       ...extraHeaders
     });
   }
@@ -47,12 +47,18 @@ export class CHttpClient {
       ...fetchOptionsRest
     };
 
-    if (body !== undefined) {
-      fetchOptions.body = JSON.stringify(body); // hier body = Objekt
+    //  FormData muss unverändert bleiben
+    if (body instanceof FormData) {
+      delete fetchOptions.headers["Content-Type"];
+      fetchOptions.body = body;
+    } else if (body !== undefined) {
+      fetchOptions.headers["Content-Type"] = "application/json";
+      fetchOptions.body = JSON.stringify(body);
     }
 
     const response = await fetch(url, fetchOptions);
 
+    // Fehlerbehandlung
     if (!response.ok) {
       const text = await response.text().catch(() => "");
       let message = `HTTP ${response.status}`;
@@ -67,7 +73,13 @@ export class CHttpClient {
       return null;
     }
 
-    return await response.json(); // gibt direkt JSON zurück
+    // JSON parsen
+    const ct = response.headers.get("Content-Type") || "";
+    if (ct.includes("application/json")) {
+      return await response.json();
+    }
+
+    return await response.blob();
   }
 
   get(path, options) {

@@ -2,16 +2,46 @@
 
 import { userService } from "../services/userService.js";
 import { authManager } from "../services/authManager.js";
+import { fileService } from "../services/fileService.js";
 
 let hasSubmittedForm = false;
 let liveCheckFields = false;
 let currentUserId = null;
 
+const BACKEND = "http://localhost:8081";
+
 initPage();
 
 function initPage() {
   document.addEventListener('DOMContentLoaded', async () => {
- 
+
+    const profileImage = document.getElementById('profileImage');
+    const profileUploadInput = document.getElementById('profileUploadInput');
+
+    profileImage.addEventListener('click', () => {
+      if (profileUploadInput) profileUploadInput.click();
+    });
+
+   /* ----------- PROFILBILD-UPLOAD ----------- */profileUploadInput.addEventListener('change', async (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  try {
+    const response = await fileService.uploadProfilePicture(file);
+    const savedFilename = await response.text();
+
+    console.log("Upload Filename:", savedFilename);
+
+    // Bild NEU laden -> jetzt über GET (mit Token!)
+    const blob = await fileService.downloadProfilePicture(savedFilename);
+
+    profileImage.src = URL.createObjectURL(blob);
+
+  } catch (err) {
+    console.error("Fehler beim Hochladen des Profilbilds:", err);
+    alert("Fehler beim Hochladen des Profilbilds.");
+  }
+});
     if (!authManager.isLoggedIn() || !authManager.isAdmin()) {
       window.location.href = "../views/menu.html";
       return;
@@ -23,19 +53,17 @@ function initPage() {
       return;
     }
 
-    // Helper aus Utils (global eingebunden)
     if (typeof changeEnterToTab === "function") {
       changeEnterToTab(form);
     }
 
-    setupDiversDetails(); // MX → extra-Details
+    setupDiversDetails();
 
-    // ID aus URL lesen: ?id=123
     const params = new URLSearchParams(window.location.search);
     const idFromUrl = params.get("id");
 
     if (!idFromUrl) {
-      console.warn("Keine id in der URL, leite zurück.");
+      console.warn("Keine id in der URL");
       window.location.href = "../views/menu.html";
       return;
     }
@@ -51,17 +79,26 @@ function initPage() {
 async function loadUser(userId) {
   try {
     const user = await userService.getById(userId);
-    console.log("User für Details geladen:", user);
 
     if (!user) {
-      alert("Benutzer wurde nicht gefunden.");
+      alert("Benutzer nicht gefunden.");
       window.location.href = "../views/menu.html";
       return;
     }
 
- 
+    const profileImg = document.getElementById("profileImage");
 
-    // MR / MS / MX
+    if (user.profilePicture) {
+      try {
+        const blob = await fileService.downloadProfilePicture(user.profilePicture);
+        profileImg.src = URL.createObjectURL(blob);
+      } catch (e) {
+        console.error("Profilbild konnte nicht geladen werden:", e);
+        profileImg.src = "../assets/default-profile.png";
+      }
+    } else {
+      profileImg.src = "../assets/default-profile.png";
+    }
     setValue("anrede", user.salutation || "");
     setValue("diversDetails", user.salutationDetail || "");
 
@@ -75,7 +112,6 @@ async function loadUser(userId) {
     setValue("plz", user.zipcode || "");
     setValue("ort", user.city || "");
 
-    // AT / DE / CH / ...
     setValue("land", user.country || "");
 
     const activeEl = document.getElementById("active");
@@ -84,7 +120,6 @@ async function loadUser(userId) {
     const adminEl = document.getElementById("admin");
     if (adminEl) adminEl.checked = !!user.admin;
 
-    // Divers-Details sichtbar machen, falls MX gesetzt ist
     const anrede = document.getElementById('anrede');
     if (anrede && anrede.value === "MX") {
       const grp = document.getElementById('diversDetailsGroup');
@@ -92,9 +127,8 @@ async function loadUser(userId) {
     }
 
   } catch (err) {
-    console.error("Fehler beim Laden des Benutzers:", err);
-
-   window.location.href = "../views/menu.html";
+    console.error("Fehler beim Laden:", err);
+    window.location.href = "../views/menu.html";
   }
 }
 
@@ -120,9 +154,7 @@ function handleFormSubmit(event) {
     bindLiveValidation();
   }
 
-  if (isValid) {
-    saveUser();
-  }
+  if (isValid) saveUser();
 }
 
 async function saveUser() {
@@ -131,17 +163,16 @@ async function saveUser() {
     return;
   }
 
-  const isAdmin = authManager.isAdmin(); // zur Sicherheit, auch wenn Seite admin-only ist
+  const isAdmin = authManager.isAdmin();
 
   const activeEl = document.getElementById("active");
-  const adminEl  = document.getElementById("admin");
+  const adminEl = document.getElementById("admin");
 
   const payload = {
     username: getVal("username"),
     firstname: getVal("vorname"),
     lastname: getVal("nachname"),
 
-    // Nur Admin darf im Backend wirklich ändern, aber schicken ist ok
     admin: isAdmin && adminEl ? adminEl.checked : null,
     active: isAdmin && activeEl ? activeEl.checked : null,
 
@@ -151,26 +182,24 @@ async function saveUser() {
     city: getVal("ort"),
     zipcode: getVal("plz"),
 
-    salutation: getVal("anrede") || null,          // MR / MS / MX
+    salutation: getVal("anrede") || null,
     salutationDetail: getVal("diversDetails") || null,
 
-    country: getVal("land") || null,               // AT / DE / ...
+    country: getVal("land") || null,
 
-    password: null                                 // kein Passwort hier
+    password: null
   };
-
-  console.log("Update-Payload:", payload);
 
   try {
     await userService.update(currentUserId, payload);
     showSuccessAndRedirect();
   } catch (err) {
-    console.error("Fehler beim Speichern des Benutzers:", err);
-    alert("Fehler beim Speichern der Benutzerdaten: " + (err.message || err));
+    console.error("Fehler beim Speichern:", err);
+    alert("Fehler beim Speichern: " + (err.message || err));
   }
 }
 
-/* ----- Divers-Logik, Validierung, Live-Check ----- */
+/* ----- Divers-Details ----- */
 
 function setupDiversDetails() {
   const anrede = document.getElementById('anrede');
@@ -180,7 +209,6 @@ function setupDiversDetails() {
   if (!anrede || !detailsGroup) return;
 
   const toggle = () => {
-    // Enum: MR / MS / MX
     if (anrede.value === 'MX') {
       detailsGroup.style.display = 'block';
     } else {
@@ -201,10 +229,7 @@ function setupDiversDetails() {
 function validateForm() {
   let isFormValid = true;
 
-  if (typeof validateStringInput !== "function") {
-    // falls Validation-Script nicht geladen ist: nicht crashen
-    return true;
-  }
+  if (typeof validateStringInput !== "function") return true;
 
   isFormValid = validateStringInput('vorname', false, 3, 30) && isFormValid;
   isFormValid = validateStringInput('nachname', false, 2, 100) && isFormValid;
@@ -272,9 +297,7 @@ function bindLiveValidation() {
 
 function showSuccessAndRedirect() {
   const msg = document.getElementById('successMessage');
-  if (msg) {
-    msg.style.display = 'block';
-  }
+  if (msg) msg.style.display = 'block';
 
   const btn = document.querySelector('#userForm button[type="submit"]');
   if (btn) btn.disabled = true;
