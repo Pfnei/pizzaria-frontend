@@ -3,7 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Crust_me – Bestellungen</title>
+    <title>Bestellungen | CRUST ME</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="../pictures/pizza_icon_131067.png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../styles/global.css">
@@ -11,8 +12,9 @@
     <link rel="stylesheet" href="../styles/footer.css">
 </head>
 <body class="pt-5">
-<div id="navigation"></div>
-
+<header>
+    <div id="navigation"></div>
+</header>
 <main class="container mt-5">
     <h1 class="mb-4">Bestellungen</h1>
     <div class="table-responsive">
@@ -31,28 +33,22 @@
             </tbody>
         </table>
     </div>
-</main>
-
-<section>
-    <div class="container pt-5 mt-5 mb-5">
-        <div class="row justify-content-center">
-            <div class="col-lg-6 col-md-8">
-
-                <h3 class="text-center my-4">Bestellübersicht</h3>
-
-                <div class="col-12 border rounded-3 p-3 mb-3">
-
-                    <div class="text border-bottom mb-2 pb-2 px-0">
-                        <span>Geliefert: 03.06.2025</span>
-                    </div>
-
-                    <div class="card border-0 mb-3">
-                        <div class="d-flex border-bottom mb-2 py-2 px-0 justify-content-between align-items-center flex-wrap">
-                            <div class="fw-bold fs-6 me-auto">
-                                Pizza Cardinale <i class="bi bi-leaf-fill" style="color: rgb(0, 170, 0);"></i>
-                                <a href="#"><i class="bi bi-info-circle-fill"></i></a>
-                            </div>
-                            <div class="d-flex align-items-center ms-auto rounded-pill gap-1" style="background-color: #f7f5f3;">
+    <section>
+        <div class="container pt-5 mt-5 mb-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-6 col-md-8">
+                    <h3 class="text-center my-4">Bestellübersicht</h3>
+                    <div class="col-12 border rounded-3 p-3 mb-3">
+                        <div class="text border-bottom mb-2 pb-2 px-0">
+                            <span>Geliefert: 03.06.2025</span>
+                        </div>
+                        <div class="card border-0 mb-3">
+                            <div class="d-flex border-bottom mb-2 py-2 px-0 justify-content-between align-items-center flex-wrap">
+                                <div class="fw-bold fs-6 me-auto">
+                                    Pizza Cardinale <i class="bi bi-leaf-fill" style="color: rgb(0, 170, 0);"></i>
+                                    <a href="#"><i class="bi bi-info-circle-fill"></i></a>
+                                </div>
+                                <div class="d-flex align-items-center ms-auto rounded-pill gap-1" style="background-color: #f7f5f3;">
                                 <span class="fw-light fs-6">Menge: 5
                                     <button class="badge rounded-circle border-0 bg-primary position-absolute top-0 start-80 translate-middle-y mt-1 me-1"
                                             onclick="handleCartClick()" aria-label="Zum Warenkorb">
@@ -65,17 +61,16 @@
                                         </svg>
                                     </button>
                                 </span>
-                                <div class="fw-bold fs-6 text-end item-price ms-2" data-price="11,90">€ 11,90</div>
+                                    <div class="fw-bold fs-6 text-end item-price ms-2" data-price="11,90">€ 11,90</div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="card border-0 mb-3">
-                        <div class="d-flex border-bottom mb-2 py-2 px-0 justify-content-between align-items-center flex-wrap">
-                            <div class="fw-bold fs-6 me-auto">
-                                Coca-Cola 0,33l <a href="#"><i class="bi bi-info-circle-fill"></i></a>
-                            </div>
-                            <div class="d-flex align-items-center ms-auto rounded-pill gap-1" style="background-color: #f7f5f3;">
+                        <div class="card border-0 mb-3">
+                            <div class="d-flex border-bottom mb-2 py-2 px-0 justify-content-between align-items-center flex-wrap">
+                                <div class="fw-bold fs-6 me-auto">
+                                    Coca-Cola 0,33l <a href="#"><i class="bi bi-info-circle-fill"></i></a>
+                                </div>
+                                <div class="d-flex align-items-center ms-auto rounded-pill gap-1" style="background-color: #f7f5f3;">
                                 <span class="fw-light fs-6">Menge: 3
                                     <button class="badge rounded-circle border-0 bg-primary position-absolute top-0 start-80 translate-middle-y mt-1 me-1"
                                             onclick="handleCartClick()" aria-label="Zum Warenkorb">
@@ -88,29 +83,24 @@
                                         </svg>
                                     </button>
                                 </span>
-                                <div class="fw-bold fs-6 text-end item-price ms-2" data-price="12,60">€ 12,60</div>
+                                    <div class="fw-bold fs-6 text-end item-price ms-2" data-price="12,60">€ 12,60</div>
+                                </div>
                             </div>
                         </div>
+                        <div class="d-flex justify-content-between align-items-center mt-2 mb-3">
+                            <div class="fw-bold">Gesamtsumme</div>
+                            <div id="totalPrice" class="fw-bold text-end">€ 24,50</div>
+                        </div>
+                        <div class="text-center mb-1 d-flex justify-content-end">
+                            <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#checkOutModal">Noch einmal bestellen!</button>
+                        </div>
                     </div>
-
-                    <div class="d-flex justify-content-between align-items-center mt-2 mb-3">
-                        <div class="fw-bold">Gesamtsumme</div>
-                        <div id="totalPrice" class="fw-bold text-end">€ 24,50</div>
-                    </div>
-
-                    <div class="text-center mb-1 d-flex justify-content-end">
-                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#checkOutModal">Noch einmal bestellen!</button>
-                    </div>
-
                 </div>
-
             </div>
         </div>
-    </div>
-</section>
-
-<div id="footer"></div>
-
+    </section>
+</main>
+<footer id="footer"></footer>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script type="module" src="../controller/navigation.js"></script>
 <script type="module" src="../controller/orders.js"></script>

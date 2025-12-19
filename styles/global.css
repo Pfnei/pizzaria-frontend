@@ -2,8 +2,22 @@ body {
     background-image: url("../pictures/body-background.png");
     background-repeat: repeat-y;
     min-height: 100vh;
+    position: relative;
 }
+
+main {
+    margin-top: 100px;
+    padding-bottom: 100px;
+}
+
 #element {
     background-color: rgba(112, 112, 112, 0.5);
     color: whitesmoke;
+}
+
+.custom-card {
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid black;
+    background-color: rgba(112, 112, 112, 0.5);
 }

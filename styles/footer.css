@@ -9,11 +9,13 @@ footer {
     display: flex;
     height: 100px;
     width: 100vw;
-    background-color: rgba(112, 112, 112, 0.5); 
+    background-color: rgba(112, 112, 112, 0.5);
+    position: absolute;
+    bottom: 0;
 }
 
 
-#foo {
+#footer-text {
     color: whitesmoke;
     margin: 0 auto;
     align-self: center;

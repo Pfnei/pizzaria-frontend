@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Registrierung</title>
+    <title>Registrierung | CRUST ME</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="../pictures/pizza_icon_131067.png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../styles/global.css">
@@ -12,158 +13,146 @@
     <link rel="stylesheet" href="../utils/validation.css">
 </head>
 <body class="pt-5">
-
-<div id="navigation"></div>
-
-<section>
-<div class="register-wrapper container pt-5 mt-5 mb-5">
-    <div class="register-box">
-        <div class="register-title">Registrierung</div>
-        <div id="successMessage" class="alert alert-success text-center" role="alert" style="display:none;">
-            Registrierung erfolgreich! Weiterleitung zum Login...
+<header>
+    <div id="navigation"></div>
+</header>
+<main>
+    <section>
+        <div class="register-wrapper container pt-5 mt-5 mb-5">
+            <div class="register-box">
+                <div class="register-title">Registrierung</div>
+                <div id="successMessage" class="alert alert-success text-center" role="alert" style="display:none;">
+                    Registrierung erfolgreich! Weiterleitung zum Login...
+                </div>
+                <form id="registrationForm"  novalidate>
+                    <div class="mb-3">
+                        <select class="form-select" id="anrede">
+                            <option value="" disabled selected>Anrede wählen</option>
+                            <option value="MR">Herr</option>
+                            <option value="MS">Frau</option>
+                            <option value="MX">Divers</option>
+                        </select>
+                    </div>
+                    <div class="mb-3" id="diversDetailsGroup" style="display:none;">
+                        <input type="text" class="form-control" id="diversDetails" placeholder="Details zu Divers (optional)"
+                               pattern=".*\S.*"  minlength="4" maxlength="30">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <input type="text" class="form-control" id="vorname" placeholder="Vorname" pattern=".*\S.*"
+                                   minlength="3" maxlength="30">
+                            <div class="validation-feedback-ok mt-1">
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <input type="text" class="form-control" id="nachname" placeholder="Nachname" pattern=".*\S.*"
+                                   minlength="2" maxlength="100">
+                            <div class="validation-feedback-ok mt-1">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <input type="text" class="form-control" id="username" placeholder="Benutzername*" pattern=".*\S.*"
+                               minlength="5" maxlength="30" required>
+                        <div class="validation-feedback-ok mt-1">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <input type="email" class="form-control" id="email" placeholder="E-Mail-Adresse*" required
+                               minlength="5" maxlength="100">
+                        <div class="validation-feedback-ok mt-1">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <input type="tel" class="form-control" id="telefon" placeholder="Telefon" pattern=".*\S.*"
+                               minlength="7" maxlength="30">
+                        <div class="validation-feedback-ok mt-1">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <input type="password" class="form-control" id="passwort" placeholder="Passwort*" required>
+                            <div class="validation-feedback-ok mt-1">
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <input type="password" class="form-control" id="passwortWdh" placeholder="Passwort wiederholen*"
+                                   required>
+                            <div class="validation-feedback-ok mt-1">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <select class="form-select" id="land">
+                            <option value="" disabled selected>Land wählen</option>
+                            <option value="AT">Österreich</option>
+                            <option value="DE">Deutschland</option>
+                            <option value="CH">Schweiz</option>
+                            <option value="BE">Belgien</option>
+                            <option value="BG">Bulgarien</option>
+                            <option value="DK">Dänemark</option>
+                            <option value="EE">Estland</option>
+                            <option value="FI">Finnland</option>
+                            <option value="FR">Frankreich</option>
+                            <option value="GR">Griechenland</option>
+                            <option value="IE">Irland</option>
+                            <option value="IT">Italien</option>
+                            <option value="HR">Kroatien</option>
+                            <option value="LV">Lettland</option>
+                            <option value="LT">Litauen</option>
+                            <option value="LU">Luxemburg</option>
+                            <option value="MT">Malta</option>
+                            <option value="NL">Niederlande</option>
+                            <option value="PL">Polen</option>
+                            <option value="PT">Portugal</option>
+                            <option value="RO">Rumänien</option>
+                            <option value="SE">Schweden</option>
+                            <option value="SK">Slowakei</option>
+                            <option value="SI">Slowenien</option>
+                            <option value="ES">Spanien</option>
+                            <option value="CZ">Tschechien</option>
+                            <option value="HU">Ungarn</option>
+                            <option value="CY">Zypern</option>
+                            <!-- Zusätzliche Länder aus deinem Enum -->
+                            <option value="AD">Andorra</option>
+                            <option value="AL">Albanien</option>
+                            <option value="AM">Armenien</option>
+                            <option value="AZ">Aserbaidschan</option>
+                            <option value="BA">Bosnien und Herzegowina</option>
+                            <option value="BY">Belarus</option>
+                            <option value="GE">Georgien</option>
+                            <option value="IS">Island</option>
+                            <option value="LI">Liechtenstein</option>
+                            <option value="MC">Monaco</option>
+                            <option value="MD">Moldawien</option>
+                            <option value="ME">Montenegro</option>
+                            <option value="MK">Nordmazedonien</option>
+                            <option value="NO">Norwegen</option>
+                            <option value="RS">Serbien</option>
+                            <option value="RU">Russland</option>
+                            <option value="SM">San Marino</option>
+                            <option value="TR">Türkei</option>
+                            <option value="UA">Ukraine</option>
+                            <option value="VA">Vatikanstadt</option>
+                            <option value="XK">Kosovo</option>
+                            <!-- UK-Splitted Codes -->
+                            <option value="GB_EN">England</option>
+                            <option value="GB_NI">Nordirland</option>
+                            <option value="GB_SCT">Schottland</option>
+                            <option value="GB_WLS">Wales</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Registrieren</button>
+                    <div class="mt-3 text-center">
+                        <a href="login.html">Bereits registriert? Jetzt einloggen</a>
+                    </div>
+                </form>
+            </div>
         </div>
-        <form id="registrationForm"  novalidate>
-            <div class="mb-3">
-                <select class="form-select" id="anrede">
-                    <option value="" disabled selected>Anrede wählen</option>
-                    <option value="MR">Herr</option>
-                    <option value="MS">Frau</option>
-                    <option value="MX">Divers</option>
-                </select>
-            </div>
-
-            <div class="mb-3" id="diversDetailsGroup" style="display:none;">
-                <input type="text" class="form-control" id="diversDetails" placeholder="Details zu Divers (optional)"
-                       pattern=".*\S.*"  minlength="4" maxlength="30">
-            </div>
-
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <input type="text" class="form-control" id="vorname" placeholder="Vorname" pattern=".*\S.*"
-                           minlength="3" maxlength="30">
-                    <div class="validation-feedback-ok mt-1">
-                    </div>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <input type="text" class="form-control" id="nachname" placeholder="Nachname" pattern=".*\S.*"
-                           minlength="2" maxlength="100">
-                    <div class="validation-feedback-ok mt-1">
-                    </div>
-                </div>
-            </div>
-
-            <div class="mb-3">
-                <input type="text" class="form-control" id="username" placeholder="Benutzername*" pattern=".*\S.*"
-                       minlength="5" maxlength="30" required>
-                <div class="validation-feedback-ok mt-1">
-                </div>
-            </div>
-
-            <div class="mb-3">
-                <input type="email" class="form-control" id="email" placeholder="E-Mail-Adresse*" required
-                       minlength="5" maxlength="100">
-                <div class="validation-feedback-ok mt-1">
-                </div>
-            </div>
-
-
-            <div class="mb-3">
-                <input type="tel" class="form-control" id="telefon" placeholder="Telefon" pattern=".*\S.*"
-                       minlength="7" maxlength="30">
-                <div class="validation-feedback-ok mt-1">
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <input type="password" class="form-control" id="passwort" placeholder="Passwort*" required>
-                    <div class="validation-feedback-ok mt-1">
-                    </div>
-                </div>
-
-
-                <div class="col-md-6 mb-3">
-                    <input type="password" class="form-control" id="passwortWdh" placeholder="Passwort wiederholen*"
-                           required>
-                    <div class="validation-feedback-ok mt-1">
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="mb-3">
-                <select class="form-select" id="land">
-                    <option value="" disabled selected>Land wählen</option>
-
-    <option value="AT">Österreich</option>
-    <option value="DE">Deutschland</option>
-    <option value="CH">Schweiz</option>
-
-    <option value="BE">Belgien</option>
-    <option value="BG">Bulgarien</option>
-    <option value="DK">Dänemark</option>
-    <option value="EE">Estland</option>
-    <option value="FI">Finnland</option>
-    <option value="FR">Frankreich</option>
-    <option value="GR">Griechenland</option>
-    <option value="IE">Irland</option>
-    <option value="IT">Italien</option>
-    <option value="HR">Kroatien</option>
-    <option value="LV">Lettland</option>
-    <option value="LT">Litauen</option>
-    <option value="LU">Luxemburg</option>
-    <option value="MT">Malta</option>
-    <option value="NL">Niederlande</option>
-    <option value="PL">Polen</option>
-    <option value="PT">Portugal</option>
-    <option value="RO">Rumänien</option>
-    <option value="SE">Schweden</option>
-    <option value="SK">Slowakei</option>
-    <option value="SI">Slowenien</option>
-    <option value="ES">Spanien</option>
-    <option value="CZ">Tschechien</option>
-    <option value="HU">Ungarn</option>
-    <option value="CY">Zypern</option>
-
-    <!-- Zusätzliche Länder aus deinem Enum -->
-    <option value="AD">Andorra</option>
-    <option value="AL">Albanien</option>
-    <option value="AM">Armenien</option>
-    <option value="AZ">Aserbaidschan</option>
-    <option value="BA">Bosnien und Herzegowina</option>
-    <option value="BY">Belarus</option>
-    <option value="GE">Georgien</option>
-    <option value="IS">Island</option>
-    <option value="LI">Liechtenstein</option>
-    <option value="MC">Monaco</option>
-    <option value="MD">Moldawien</option>
-    <option value="ME">Montenegro</option>
-    <option value="MK">Nordmazedonien</option>
-    <option value="NO">Norwegen</option>
-    <option value="RS">Serbien</option>
-    <option value="RU">Russland</option>
-    <option value="SM">San Marino</option>
-    <option value="TR">Türkei</option>
-    <option value="UA">Ukraine</option>
-    <option value="VA">Vatikanstadt</option>
-    <option value="XK">Kosovo</option>
-
-    <!-- UK-Splitted Codes -->
-    <option value="GB_EN">England</option>
-    <option value="GB_NI">Nordirland</option>
-    <option value="GB_SCT">Schottland</option>
-    <option value="GB_WLS">Wales</option>
-                </select>
-            </div>
-
-            <button type="submit" class="btn btn-primary w-100">Registrieren</button>
-            <div class="mt-3 text-center">
-                <a href="login.html">Bereits registriert? Jetzt einloggen</a>
-            </div>
-        </form>
-    </div>
-</div>
-</section>
+    </section>
+</main>
 <footer id="footer"></footer>
+
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 <script type="module" src="../controller/navigation.js"></script>
@@ -171,7 +160,5 @@
 <script src="../utils/formUI.js"></script>
 <script type="module" src="../controller/register.js"></script>
 <script src="../controller/footer.js"></script>
-
-
 </body>
 </html>
