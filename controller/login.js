@@ -5,9 +5,6 @@
 import { authManager } from "../services/authManager.js";
 import { loginService } from "../services/loginService.js";
 
-
-
-
 $(document).ready(function () {
     trySilentLogin();
     registerEventsLogin();

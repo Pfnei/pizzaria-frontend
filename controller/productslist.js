@@ -6,6 +6,9 @@ import { authManager } from "../services/authManager.js";
 
 let products = [];
 
+
+
+
 $(async function () {
   console.log("isAdmin:", authManager.isAdmin());
   console.log("currentUser:", authManager.getUser());
@@ -16,8 +19,12 @@ $(async function () {
     return;
   }
 
+  enableAddingProductsUi();
+
   await loadProducts();
   disableFilterAndSortUi(); // optional: Bedienelemente visuell deaktivieren
+
+  switchToProductsListView();
 });
 
 async function loadProducts() {
@@ -95,4 +102,25 @@ function disableFilterAndSortUi() {
   $("#filter-all").prop("disabled", true);
   $("#sort-dropdown").prop("disabled", true);
   $("th.sortable").addClass("text-muted");
+}
+
+function enableAddingProductsUi() {
+  if(!$("#addingProductAdmin")) return;
+  const addButton = $("#addingProductAdmin");
+  if(authManager.isLoggedIn() && authManager.isAdmin()) {
+    addButton.show();
+  } else {
+    addButton.hide();
+  }
+  $("#addingProductAdmin").prop("disabled", false);
+}
+
+function switchToProductsListView() {
+  if(!authManager.isLoggedIn() || !authManager.isAdmin()) return;
+  if(!$("#addingProductAdmin")) return;
+  const addButton = $("#addingProductAdminbtn");
+  addButton.on("click", function() {
+    window.location.href = "../views/addingproduct.html";
+  });
+  
 }

@@ -8,9 +8,13 @@ class CProductService extends CBaseCrudService {
     async getAllProducts() {
     return this.getAll();
   }
-    // async updateProductStatus(productId, isActive) {
-    // return this.update(productId, { isActive });
-    // }
+
+  async addProduct(productData) {
+    return this.create(productData);
+  }
+  async updateProduct(productId, productData) {
+    return this.update(productId, productData);
+  }
 }
 
 export const productService = new CProductService();
