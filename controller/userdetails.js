@@ -15,6 +15,15 @@ initPage();
 function initPage() {
   document.addEventListener('DOMContentLoaded', async () => {
 
+    const params = new URLSearchParams(window.location.search);
+    currentUserId = params.get("id");
+
+    if (!currentUserId) {
+      console.warn("Keine id in der URL");
+      window.location.href = "../views/menu.html";
+      return;
+    }
+
     const profileImage = document.getElementById('profileImage');
     const profileUploadInput = document.getElementById('profileUploadInput');
 
@@ -28,7 +37,8 @@ function initPage() {
 
   try {
     // 1. Upload zum Server
-    await fileService.uploadProfilePicture(file); 
+    await fileService.uploadProfilePicture(currentUserId,file); 
+    
     
     // 2. Alten Speicher (Blob-URL) im Browser freigeben
     if (profileImage.src.startsWith('blob:')) {
@@ -39,6 +49,7 @@ function initPage() {
     const localUrl = URL.createObjectURL(file);
     profileImage.src = localUrl;
 
+    
     console.log("Upload erfolgreich!");
 
   } catch (err) {
@@ -64,16 +75,7 @@ function initPage() {
 
     setupDiversDetails();
 
-    const params = new URLSearchParams(window.location.search);
-    const idFromUrl = params.get("id");
-
-    if (!idFromUrl) {
-      console.warn("Keine id in der URL");
-      window.location.href = "../views/menu.html";
-      return;
-    }
-
-    currentUserId = idFromUrl;
+   
 
     await loadUser(currentUserId);
 
@@ -95,7 +97,7 @@ async function loadUser(userId) {
 
    if (user.profilePicture) {
   try {
-    const blob = await fileService.downloadProfilePicture(user.profilePicture);
+    const blob = await fileService.downloadProfilePicture(userId);
     const url = URL.createObjectURL(blob);
     profileImg.src = url;
   } catch (e) {

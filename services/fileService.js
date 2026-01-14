@@ -6,20 +6,20 @@ class CFileService extends CBaseCrudService {
     super("/files", http);
   }
 
-  async uploadProfilePicture(file) {
+  async uploadProfilePicture(userId,file) {
     const formData = new FormData();
     formData.append("file", file);
 
     const response =  await this.http.post(
-      `${this.basePath}/profilepicture`,
+      `${this.basePath}/profilepicture/${userId}`,
       formData
     );
 
     return response.data || null;
   }
 
- async downloadProfilePicture() {
-  const response = await this.http.get(`${this.basePath}/profile`);
+ async downloadProfilePicture(userId) {
+  const response = await this.http.get(`${this.basePath}/profile/${userId}`);
 
   return response;
 }
