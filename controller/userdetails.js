@@ -22,19 +22,27 @@ function initPage() {
       if (profileUploadInput) profileUploadInput.click();
     });
 
-   /* ----------- PROFILBILD-UPLOAD ----------- */profileUploadInput.addEventListener('change', async (event) => {
+  profileUploadInput.addEventListener('change', async (event) => {
   const file = event.target.files[0];
   if (!file) return;
 
   try {
-    const response = await fileService.uploadProfilePicture(file);
+    // 1. Upload zum Server
+    await fileService.uploadProfilePicture(file); 
     
+    // 2. Alten Speicher (Blob-URL) im Browser freigeben
+    if (profileImage.src.startsWith('blob:')) {
+      URL.revokeObjectURL(profileImage.src);
+    }
 
-    // Bild NEU laden -> jetzt über GET (mit Token!)
-const localUrl = URL.createObjectURL(file);
+    // 3. Neue lokale Vorschau erstellen
+    const localUrl = URL.createObjectURL(file);
     profileImage.src = localUrl;
 
+    console.log("Upload erfolgreich!");
+
   } catch (err) {
+    // Hier wird der Fehler gefangen, falls der Upload fehlschlägt
     console.error("Fehler beim Hochladen des Profilbilds:", err);
     alert("Fehler beim Hochladen des Profilbilds.");
   }
