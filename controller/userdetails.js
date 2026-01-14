@@ -28,14 +28,11 @@ function initPage() {
 
   try {
     const response = await fileService.uploadProfilePicture(file);
-    const savedFilename = await response.text();
-
-    console.log("Upload Filename:", savedFilename);
+    
 
     // Bild NEU laden -> jetzt über GET (mit Token!)
-    const blob = await fileService.downloadProfilePicture(savedFilename);
-
-    profileImage.src = URL.createObjectURL(blob);
+const localUrl = URL.createObjectURL(file);
+    profileImage.src = localUrl;
 
   } catch (err) {
     console.error("Fehler beim Hochladen des Profilbilds:", err);
@@ -88,15 +85,18 @@ async function loadUser(userId) {
 
     const profileImg = document.getElementById("profileImage");
 
-    if (user.profilePicture) {
-      try {
-        const blob = await fileService.downloadProfilePicture(user.profilePicture);
-        profileImg.src = URL.createObjectURL(blob);
-      } catch (e) {
-        console.error("Profilbild konnte nicht geladen werden:", e);
-        profileImg.src = "../assets/default-profile.png";
-      }
-    } else {
+   if (user.profilePicture) {
+  try {
+    const blob = await fileService.downloadProfilePicture(user.profilePicture);
+    const url = URL.createObjectURL(blob);
+    profileImg.src = url;
+  } catch (e) {
+    console.error("Profilbild konnte nicht geladen werden:", e);
+    profileImg.src = "../assets/default-profile.png";
+  }
+
+
+} else {
       profileImg.src = "../assets/default-profile.png";
     }
     setValue("anrede", user.salutation || "");
