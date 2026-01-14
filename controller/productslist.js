@@ -4,7 +4,12 @@
 import { productService } from "../services/productService.js";
 import { authManager } from "../services/authManager.js";
 
+
+
 let products = [];
+
+
+
 
 $(async function () {
   console.log("isAdmin:", authManager.isAdmin());
@@ -16,8 +21,12 @@ $(async function () {
     return;
   }
 
+  enableAddingProductsUi();
+
   await loadProducts();
   disableFilterAndSortUi(); // optional: Bedienelemente visuell deaktivieren
+
+  switchToProductsListView();
 });
 
 async function loadProducts() {
@@ -27,6 +36,7 @@ async function loadProducts() {
     if (!data || !Array.isArray(data)) {
       throw new Error("Unerwartete Serverantwort (keine Produktliste)");
     }
+  //  const productArray = data.content ? data.content : data; // Falls paginierte Antwort
 
     console.log("Produkte vom Server:", data);
     products = data;
@@ -44,7 +54,17 @@ function renderProducts(list) {
   tbody.empty();
   cards.empty();
 
-  list.forEach(p => {
+  if(!list || list.length === 0) {
+    console.warn("Keine Produkte zum Anzeigen vorhanden.");
+    return;
+  }
+
+const sortedList = Enumerable.from(list)
+    .orderBy(p => p.mainCategory) // Erst nach Kategorie
+    .thenBy(p => p.productName)   // Dann nach Name
+    .toArray();
+
+  sortedList.forEach(p => {
     // DTO-Felder gemäß ProductResponseDTO
     const name = p.productName || "";
     const mainCategory = p.mainCategory || "";
@@ -95,4 +115,25 @@ function disableFilterAndSortUi() {
   $("#filter-all").prop("disabled", true);
   $("#sort-dropdown").prop("disabled", true);
   $("th.sortable").addClass("text-muted");
+}
+
+function enableAddingProductsUi() {
+  if(!$("#addingProductAdmin")) return;
+  const addButton = $("#addingProductAdmin");
+  if(authManager.isLoggedIn() && authManager.isAdmin()) {
+    addButton.show();
+  } else {
+    addButton.hide();
+  }
+  $("#addingProductAdmin").prop("disabled", false);
+}
+
+function switchToProductsListView() {
+  if(!authManager.isLoggedIn() || !authManager.isAdmin()) return;
+  if(!$("#addingProductAdmin")) return;
+  const addButton = $("#addingProductAdminbtn");
+  addButton.on("click", function() {
+    window.location.href = "../views/addingproduct.html";
+  });
+  
 }

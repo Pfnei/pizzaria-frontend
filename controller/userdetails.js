@@ -15,6 +15,15 @@ initPage();
 function initPage() {
   document.addEventListener('DOMContentLoaded', async () => {
 
+    const params = new URLSearchParams(window.location.search);
+    currentUserId = params.get("id");
+
+    if (!currentUserId) {
+      console.warn("Keine id in der URL");
+      window.location.href = "../views/menu.html";
+      return;
+    }
+
     const profileImage = document.getElementById('profileImage');
     const profileUploadInput = document.getElementById('profileUploadInput');
 
@@ -22,22 +31,29 @@ function initPage() {
       if (profileUploadInput) profileUploadInput.click();
     });
 
-   /* ----------- PROFILBILD-UPLOAD ----------- */profileUploadInput.addEventListener('change', async (event) => {
+  profileUploadInput.addEventListener('change', async (event) => {
   const file = event.target.files[0];
   if (!file) return;
 
   try {
-    const response = await fileService.uploadProfilePicture(file);
-    const savedFilename = await response.text();
+    // 1. Upload zum Server
+    await fileService.uploadProfilePicture(currentUserId,file); 
+    
+    
+    // 2. Alten Speicher (Blob-URL) im Browser freigeben
+    if (profileImage.src.startsWith('blob:')) {
+      URL.revokeObjectURL(profileImage.src);
+    }
 
-    console.log("Upload Filename:", savedFilename);
+    // 3. Neue lokale Vorschau erstellen
+    const localUrl = URL.createObjectURL(file);
+    profileImage.src = localUrl;
 
-    // Bild NEU laden -> jetzt über GET (mit Token!)
-    const blob = await fileService.downloadProfilePicture(savedFilename);
-
-    profileImage.src = URL.createObjectURL(blob);
+    
+    console.log("Upload erfolgreich!");
 
   } catch (err) {
+    // Hier wird der Fehler gefangen, falls der Upload fehlschlägt
     console.error("Fehler beim Hochladen des Profilbilds:", err);
     alert("Fehler beim Hochladen des Profilbilds.");
   }
@@ -59,16 +75,7 @@ function initPage() {
 
     setupDiversDetails();
 
-    const params = new URLSearchParams(window.location.search);
-    const idFromUrl = params.get("id");
-
-    if (!idFromUrl) {
-      console.warn("Keine id in der URL");
-      window.location.href = "../views/menu.html";
-      return;
-    }
-
-    currentUserId = idFromUrl;
+   
 
     await loadUser(currentUserId);
 
@@ -88,15 +95,18 @@ async function loadUser(userId) {
 
     const profileImg = document.getElementById("profileImage");
 
-    if (user.profilePicture) {
-      try {
-        const blob = await fileService.downloadProfilePicture(user.profilePicture);
-        profileImg.src = URL.createObjectURL(blob);
-      } catch (e) {
-        console.error("Profilbild konnte nicht geladen werden:", e);
-        profileImg.src = "../assets/default-profile.png";
-      }
-    } else {
+   if (user.profilePicture) {
+  try {
+    const blob = await fileService.downloadProfilePicture(userId);
+    const url = URL.createObjectURL(blob);
+    profileImg.src = url;
+  } catch (e) {
+    console.error("Profilbild konnte nicht geladen werden:", e);
+    profileImg.src = "../assets/default-profile.png";
+  }
+
+
+} else {
       profileImg.src = "../assets/default-profile.png";
     }
     setValue("anrede", user.salutation || "");
