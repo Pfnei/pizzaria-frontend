@@ -95,14 +95,14 @@ async function loadUser(userId) {
 
     const profileImg = document.getElementById("profileImage");
 
-
+ 
   try {
     const blob = await fileService.downloadProfilePicture(userId);
     const url = URL.createObjectURL(blob);
     profileImg.src = url;
   } catch (e) {
+    console.error("Profilbild konnte nicht geladen werden:", e);
     
-    // src = BACKEND + "/files/default-profile.png"; man kriegt vom backend ein bild als response zurück
   }
 
 
