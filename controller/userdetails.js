@@ -95,20 +95,18 @@ async function loadUser(userId) {
 
     const profileImg = document.getElementById("profileImage");
 
-   if (user.profilePicture) {
+
   try {
     const blob = await fileService.downloadProfilePicture(userId);
     const url = URL.createObjectURL(blob);
     profileImg.src = url;
   } catch (e) {
-    console.error("Profilbild konnte nicht geladen werden:", e);
-    profileImg.src = "../assets/default-profile.png";
+    
+    // src = BACKEND + "/files/default-profile.png"; man kriegt vom backend ein bild als response zurück
   }
 
 
-} else {
-      profileImg.src = "../assets/default-profile.png";
-    }
+
     setValue("anrede", user.salutation || "");
     setValue("diversDetails", user.salutationDetail || "");
 
