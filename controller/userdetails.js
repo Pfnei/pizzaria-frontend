@@ -55,7 +55,7 @@ function initPage() {
   } catch (err) {
     // Hier wird der Fehler gefangen, falls der Upload fehlschlägt
     console.error("Fehler beim Hochladen des Profilbilds:", err);
-    alert("Fehler beim Hochladen des Profilbilds.");
+    console.log("Fehler beim Hochladen des Profilbilds.");
   }
 });
     if (!authManager.isLoggedIn() || !authManager.isAdmin()) {
@@ -88,7 +88,7 @@ async function loadUser(userId) {
     const user = await userService.getById(userId);
 
     if (!user) {
-      alert("Benutzer nicht gefunden.");
+      console.log("Benutzer nicht gefunden.");
       window.location.href = "../views/menu.html";
       return;
     }
@@ -167,7 +167,7 @@ function handleFormSubmit(event) {
 
 async function saveUser() {
   if (!currentUserId) {
-    alert("Keine Benutzer-ID vorhanden.");
+    console.log("Keine Benutzer-ID vorhanden.");
     return;
   }
 
@@ -203,7 +203,7 @@ async function saveUser() {
     showSuccessAndRedirect();
   } catch (err) {
     console.error("Fehler beim Speichern:", err);
-    alert("Fehler beim Speichern: " + (err.message || err));
+    console.log("Fehler beim Speichern: " + (err.message || err));
   }
 }
 

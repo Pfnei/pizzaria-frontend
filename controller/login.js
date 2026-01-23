@@ -33,7 +33,7 @@ async function login(email, password) {
     console.log("Login-Response data:", data);
 
     if (!data) {
-      alert("Login fehlgeschlagen.");
+      console.log("Login fehlgeschlagen.");
       return;
     }
 
@@ -49,7 +49,7 @@ async function login(email, password) {
     window.location.href = "../views/menu.html";
   } catch (err) {
     console.error("Login error:", err);
-    alert("Login fehlgeschlagen.");
+    console.log("Login fehlgeschlagen.");
   }
 }
 
