@@ -132,7 +132,7 @@ async function saveUser() {
     phoneNumber: getVal("telefon"),
     address: getVal("adresse"),
     city: getVal("ort"),
-    zipcode: getVal("plz"),
+    zipcode: getVal("plz") || null,
 
     salutation: getVal("anrede") || null,
     salutationDetail: getVal("diversDetails") || null,
