@@ -139,7 +139,7 @@ async function saveUser() {
 
     country: getVal("land") || null,
 
-    password: getVal("password") || null,
+    password: getVal("passwort") || null,
   };
 
   try {
