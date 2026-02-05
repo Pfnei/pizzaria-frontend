@@ -6,24 +6,23 @@ class CFileService extends CBaseCrudService {
     super("/files", http);
   }
 
-  async uploadProfilePicture(file) {
+  async uploadProfilePicture(userId,file) {
     const formData = new FormData();
     formData.append("file", file);
 
-    return await this.http.post(
-      `${this.basePath}/profilepicture`,
+    const response =  await this.http.post(
+      `${this.basePath}/profilepicture/${userId}`,
       formData
     );
+
+    return response.data || null;
   }
 
-  async downloadProfilePicture(filename) {
-    const encoded = encodeURIComponent(filename);
+ async downloadProfilePicture(userId) {
+  const response = await this.http.get(`${this.basePath}/profile/${userId}`);
 
-    // httpClient erkennt Blob automatisch, wenn Content-Type kein JSON ist
-    return await this.http.get(
-      `${this.basePath}/profile/${encoded}`
-    );
-  }
+  return response;
+}
 }
 
 export const fileService = new CFileService();
