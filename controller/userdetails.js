@@ -311,6 +311,6 @@ function showSuccessAndRedirect() {
   if (btn) btn.disabled = true;
 
   setTimeout(() => {
-    window.location.href = "../views/menu.html";
+    window.location.href = "../views/userlist.html";
   }, 1000);
 }
