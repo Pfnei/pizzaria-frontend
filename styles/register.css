@@ -1,6 +1,6 @@
+
+
 body, html {
-    height: 100%;
-    background-color: #f0f2f5;
     font-family: Arial, sans-serif;
 }
 .register-wrapper {
@@ -33,4 +33,9 @@ body, html {
 ::placeholder {
     color: #6c757d;
     opacity: 1;
+}
+#footer {
+    position: absolute;
+    bottom: 0;
+    width:100%;
 }
