@@ -28,7 +28,7 @@
                             <input type="checkbox">
                             <span class="slider round"></span>
                         </label>
-                        <p id="vegbtn" class="m-auto ms-2 "><i class="bi bi-leaf-fill" style="color: rgb(0, 170, 0);"></i> vegetarisch</p>  
+                        <p id="vegbtn" tabindex="-1" aria-label="Vegetarisch-Switch" class="m-auto ms-2 "><i class="bi bi-leaf-fill" style="color: rgb(0, 170, 0);"></i> vegetarisch</p>
                     </div>
                     <div class="offcanvas offcanvas-start" style="width: 300px;" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
                         <div class="offcanvas-header">
@@ -58,16 +58,16 @@
                         </div>
                     </div> 
                   <div>
-                     <input class="form-control me-2" type="text" placeholder="Suche:">
+                     <input id="productsearch" class="form-control me-2" aria-label="Produktsuche" type="text" placeholder="Produktsuche:">
                   </div>             
                 </div>               
             </div>
         </div>       
 </header>
 <main>
-    <div class="container">
+    <div id="products-container" class="container">
         <div data-bs-spy="scroll" data-bs-target="#navbar-example3" data-bs-smooth-scroll="true" class="scrollspy-example-2" tabindex="0">
-            <div id="item-1" class="divheight">
+            <div id="item-1" class="product-div">
                 <h4>Vorspeisen</h4>
                 <div class="card cardstyle mb-3">
                     <div class="card-body">

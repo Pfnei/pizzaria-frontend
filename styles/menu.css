@@ -4,10 +4,16 @@
     box-sizing: border-box;
     position: relative;
 }
+main {
+    z-index: -3 !important;
+}
+
+
 
 .space {
     position: fixed;
     top: 55px;
+    width: 100%;
 }
 
 .icon-dark {
@@ -100,9 +106,8 @@ input:checked + .slider:before {
   }
 }
 
-.divheight {
+.product-div {
   height: 300px;
-
 }
 
 .cardstyle {
@@ -110,3 +115,6 @@ input:checked + .slider:before {
   border: 7px double black;
 }
 
+#products-container {
+  margin-top: 150px; !important;
+}
