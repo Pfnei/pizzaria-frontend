@@ -30,15 +30,15 @@ class CFileService extends CBaseCrudService {
         formData.append("file", file);
 
         const response =  await this.http.post(
-            `${this.basePath}/productpicture/${productIdId}`,
+            `${this.basePath}/productpicture/${productId}`,
             formData
         );
 
         return response.data || null;
     }
 
-    async downloadProductPicture(userId) {
-        const response = await this.http.get(`${this.basePath}/product/${productIdId}`);
+    async downloadProductPicture(productId) {
+        const response = await this.http.get(`${this.basePath}/product/${productId}`);
 
         return response;
     }

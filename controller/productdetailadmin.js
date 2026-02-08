@@ -3,6 +3,7 @@
 import {productService} from '../services/productService.js';
 import {authManager} from '../services/authManager.js';
 import {fileService} from "../services/fileService.js";
+import { formatDate, formatUserName } from '../utils/helpers.js';
 
 
 redirectToMenu();
@@ -112,10 +113,10 @@ async function loadProduct(productId) {
         setValue("mainCategory", product.mainCategory || "");
         setValue("subCategory", product.subCategory || "");
 
-        setValue("createdAt", product.createdAt || "");
-        setValue("createdBy", product.createdBy.firstname || "");
-        setValue("lastUpdatedAt", product.lastUpdatedAt || "");
-        setValue("lastUpdatedBy", product.lastUpdatedBy.firstname || "");
+        setText("createdAt", formatDate(product.createdAt));
+        setText("createdBy", formatUserName(product.createdBy));
+        setText("lastUpdatedAt", formatDate(product.lastUpdatedAt));
+        setText("lastUpdatedBy", formatUserName(product.lastUpdatedBy) );
 
 
         const activeEl = document.getElementById("isActive");
@@ -150,7 +151,10 @@ function setValue(id, value) {
 }
 
 
-
+function setText(id, value) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = value ?? "";
+}
 
 
 
@@ -216,20 +220,18 @@ async function handleSaveButtonClick(event) {
 
     try {
         const result = await productService.updateProduct(currentProductId,productDTO);
-        console.log('Produkt erfolgreich hinzugefügt!', result);
+        console.log('Produkt erfolgreich upgedated!', result);
 
-        // Formular resetten + Meldung
-        resetProductForm();
 
     } catch (error) {
-        console.error('Fehler beim Hinzufügen des Produkts:', error.response?.data || error);
+        console.error('Fehler beim Updaten des Produkts:', error.response?.data || error);
         const msgDiv = document.getElementById('productMessage');
         if (msgDiv) {
-            msgDiv.textContent = 'Fehler beim Anlegen des Produkts!';
+            msgDiv.textContent = 'Fehler beim Updatendes Produkts!';
             msgDiv.className = 'alert alert-danger mt-3';
             setTimeout(() => msgDiv.textContent = '', 5000);
         } else {
-            alert('Fehler beim Anlegen des Produkts!');
+            alert('Fehler beim AUpdaten des Produkts!');
         }
     }
 }
