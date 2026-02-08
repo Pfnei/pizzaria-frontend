@@ -133,7 +133,7 @@ function switchToProductsListView() {
   if(!$("#addingProductAdmin")) return;
   const addButton = $("#addingProductAdminbtn");
   addButton.on("click", function() {
-    window.location.href = "../views/addingproduct.html";
+    window.location.href = "../views/productdetailnew.html";
   });
   
 }
