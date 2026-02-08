@@ -1,15 +1,161 @@
-import { productService } from '../services/productService.js';
-import { authManager } from '../services/authManager.js';
-
 'use strict';
 
+import {productService} from '../services/productService.js';
+import {authManager} from '../services/authManager.js';
+import {fileService} from "../services/fileService.js";
 
 
 redirectToMenu();
 
+let hasSubmittedForm = false;
+let liveCheckFields = false;
+let currentProductId = null;
+
 const saveButton = document.getElementById('saveButton');
 const toProductListBtn = document.getElementById('toProductListBtn');
 const hreftoProductList = 'productlist.html';
+
+const BACKEND = "http://localhost:8081";
+
+initPage();
+
+function initPage() {
+    document.addEventListener('DOMContentLoaded', async () => {
+
+        const params = new URLSearchParams(window.location.search);
+        currentProductId = params.get("id");
+
+        if (! currentProductId) {
+            console.warn("Keine id in der URL");
+            window.location.href = "../views/menu.html";
+            return;
+        }
+
+        const productImage = document.getElementById('productImage');
+        const productUploadInput = document.getElementById('productUploadInput');
+
+        productImage.addEventListener('click', () => {
+            if (productUploadInput) productUploadInput.click();
+        });
+
+
+        productUploadInput.addEventListener('change', async (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            try {
+                // 1. Upload zum Server
+                await fileService.uploadProductPicture(currentProductId, file);
+
+
+                // 2. Alten Speicher (Blob-URL) im Browser freigeben
+                if (productImage.src.startsWith('blob:')) {
+                    URL.revokeObjectURL(productImage.src);
+                }
+
+                // 3. Neue lokale Vorschau erstellen
+                const localUrl = URL.createObjectURL(file);
+                productImage.src = localUrl;
+
+
+                console.log("Upload erfolgreich!");
+
+            } catch (err) {
+                // Hier wird der Fehler gefangen, falls der Upload fehlschlägt
+                console.error("Fehler beim Hochladen des Produktbilds:", err);
+                console.log("Fehler beim Hochladen des Produktbilds.");
+            }
+
+
+        });
+
+        await loadProduct(currentProductId);
+
+        // Form setup
+        const form = document.getElementById('productInformationForm');
+        changeEnterToTab(form);
+
+        form.addEventListener('submit', handleFormSubmit);
+
+    });
+}
+
+async function loadProduct(productId) {
+    try {
+        const product = await productService.getById(productId);
+
+
+        if (!product) {
+            console.log("Produkt nicht gefunden.");
+            window.location.href = "../views/menu.html";
+            return;
+        }
+
+        const productImg = document.getElementById("productImage");
+
+
+        try {
+            const blob = await fileService.downloadProductPicture(productId);
+            const url = URL.createObjectURL(blob);
+            productImg.src = url;
+        } catch (e) {
+            console.error("Produktbild konnte nicht geladen werden:", e);
+
+        }
+
+
+
+        setValue("productName", product.productName || "");
+        setValue("productDescription", product.productDescription || "");
+
+        setValue("price", product.price || "");
+        setValue("mainCategory", product.mainCategory || "");
+        setValue("subCategory", product.subCategory || "");
+
+        setValue("createdAt", product.createdAt || "");
+        setValue("createdBy", product.createdBy.firstname || "");
+        setValue("lastUpdatedAt", product.lastUpdatedAt || "");
+        setValue("lastUpdatedBy", product.lastUpdatedBy.firstname || "");
+
+
+        const activeEl = document.getElementById("isActive");
+        if (activeEl) activeEl.checked = !!product.active;
+
+        const vegetarianEl = document.getElementById("isVegetarian");
+        if (vegetarianEl) vegetarianEl.checked = !!product.vegetarian;
+
+        // Allergene zurücksetzen
+        document.querySelectorAll('#allergen-container input[type="checkbox"]').forEach(el => el.checked = false);
+
+
+        if (Array.isArray(product.allergens)) {
+            document
+                .querySelectorAll('#allergen-container input[type="checkbox"]')
+                .forEach(el => {
+                    if (product.allergens.includes(el.value)) {
+                        el.checked = true;
+                    }
+                });
+        }
+
+    } catch (err) {
+        console.error("Fehler beim Laden:", err);
+        window.location.href = "../views/menu.html";
+    }
+}
+
+function setValue(id, value) {
+    const el = document.getElementById(id);
+    if (el) el.value = value;
+}
+
+
+
+
+
+
+
+
 
 if (toProductListBtn) {
     directToProductList();
@@ -24,51 +170,30 @@ if (saveButton) {
 // Mapping MainCategory Dropdown -> Enum
 function mapMainCategoryToEnum(value) {
     const mapping = {
-        'MAIN_COURSE': 'MAIN_COURSE',
-        'STARTER': 'STARTER',
-        'DRINK': 'DRINK',
-        'DESSERT': 'DESSERT'
+        'MAIN_COURSE': 'MAIN_COURSE', 'STARTER': 'STARTER', 'DRINK': 'DRINK', 'DESSERT': 'DESSERT'
     };
     return mapping[value] || null;
 }
 
 // Mapping SubCategory Dropdown -> Enum
 function mapSubCategoryToEnum(value) {
-    const validSubCategories = ['PIZZA','PASTA','BOWL','ALCOHOL_FREE','BEER','WINE','COFFEE','SPIRIT'];
+    const validSubCategories = ['PIZZA', 'PASTA', 'BOWL', 'ALCOHOL_FREE', 'BEER', 'WINE', 'COFFEE', 'SPIRIT'];
     const val = value?.toUpperCase();
     return validSubCategories.includes(val) ? val : null;
 }
 
-// Reset-Funktion für alle Inputs
-function resetProductForm() {
-    document.getElementById('productName').value = '';
-    document.getElementById('productDescription').value = '';
-    document.getElementById('price').value = '';
-    document.getElementById('mainCategory').selectedIndex = 0;
-    document.getElementById('subCategory').selectedIndex = 0;
-    document.getElementById('isVegetarian').checked = false;
-    document.getElementById('isActive').checked = false;
 
-    // Allergene zurücksetzen
-    document.querySelectorAll('#allergen-container input[type="checkbox"]').forEach(el => el.checked = false);
-
-    // Formularvalidierung retour setzen
-    hasSubmittedForm = false;
-
-    // Erfolgsmeldung
-    const msgDiv = document.getElementById('productMessage');
-    if (msgDiv) {
-        msgDiv.textContent = 'Produkt erfolgreich angelegt!';
-        msgDiv.className = 'alert alert-success mt-3';
-        setTimeout(() => msgDiv.textContent = '', 3000);
-    }
-}
 
 
 // Save-Button Handler
 async function handleSaveButtonClick(event) {
     event.preventDefault();
     console.log("Save Button geklickt");
+
+    if (!currentProductId) {
+        console.log("Keine Product-ID vorhanden.");
+        return;
+    }
 
     if (!authManager.isLoggedIn() || !authManager.isAdmin()) {
         window.location.href = '../views/menu.html';
@@ -90,7 +215,7 @@ async function handleSaveButtonClick(event) {
     console.log('Produkt DTO:', productDTO);
 
     try {
-        const result = await productService.create(productDTO);
+        const result = await productService.updateProduct(currentProductId,productDTO);
         console.log('Produkt erfolgreich hinzugefügt!', result);
 
         // Formular resetten + Meldung
@@ -109,22 +234,6 @@ async function handleSaveButtonClick(event) {
     }
 }
 
-
-let hasSubmittedForm = false;
-let liveCheckFields = false;
-
-
-initPage();
-
-function initPage() {
-    document.addEventListener('DOMContentLoaded', () => {
-        const form = document.getElementById('productInformationForm');
-        changeEnterToTab(form);
-
-         form.addEventListener('submit', handleFormSubmit);
-
-    });
-}
 
 function handleFormSubmit(event) {
     event.preventDefault(); // no standard HTML Checks are done
@@ -145,12 +254,11 @@ function handleFormSubmit(event) {
 }
 
 
-
 function validateForm() {
     let isFormValid = true;
     isFormValid = validateNotEmpty('productName') && isFormValid;
     isFormValid = validateNumeric('price', false) && isFormValid;
-        return isFormValid;
+    return isFormValid;
 }
 
 
@@ -174,8 +282,7 @@ function bindLiveValidation() {
 
     // Map: field -> Validator-Funktion - for each field the correct validator function is called
     const validators = {
-        productName:   () => validateNotEmpty('productName'),
-        price:  () => validateNumeric('price', false)
+        productName: () => validateNotEmpty('productName'), price: () => validateNumeric('price', false)
     };
 
 
@@ -226,7 +333,7 @@ function redirectToMenu() {
 
 // Button zu ProductList
 function directToProductList() {
-    toProductListBtn.addEventListener('click', function() {
+    toProductListBtn.addEventListener('click', function () {
         window.location.href = hreftoProductList;
     });
 }
