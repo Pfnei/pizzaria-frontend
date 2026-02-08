@@ -96,10 +96,10 @@
                             <label class="form-label fw-bold">Hauptkategorie</label>
                             <select class="form-select" id="mainCategory">
                                 <option value="" selected disabled>Wählen...</option>
-                                <option value="STARTER">Starter</option>
-                                <option value="MAIN_COURSE">Hauptgericht</option>
+                                <option value="STARTER">Vorspeise</option>
+                                <option value="MAIN_COURSE">Hauptspeise</option>
                                 <option value="DRINK">Getränk</option>
-                                <option value="DESSERT">Dessert</option>
+                                <option value="DESSERT">Nachspeise</option>
                             </select>
                         </div>
 
@@ -123,14 +123,47 @@
                         <div class=" mb-5">
                             <label for="allergen-container" class="form-label fw-bold">Allergene</label>
                             <div id="allergen-container" class="d-flex flex-wrap gap-2 border p-2 rounded bg-white">
-                                <input type="checkbox" class="btn-check" id="all-a" value="GLU">
+                                <input type="checkbox" class="btn-check" id="all-a" value="A">
                                 <label class="btn btn-outline-secondary btn-sm" for="all-a">A (Gluten)</label>
 
-                                <input type="checkbox" class="btn-check" id="all-g" value="MILK">
+                                <input type="checkbox" class="btn-check" id="all-b" value="B">
+                                <label class="btn btn-outline-secondary btn-sm" for="all-b">B (Krebstiere)</label>
+
+                                <input type="checkbox" class="btn-check" id="all-c" value="C">
+                                <label class="btn btn-outline-secondary btn-sm" for="all-c">C (Eier)</label>
+
+                                <input type="checkbox" class="btn-check" id="all-d" value="D">
+                                <label class="btn btn-outline-secondary btn-sm" for="all-d">D (Fisch)</label>
+
+                                <input type="checkbox" class="btn-check" id="all-e" value="E">
+                                <label class="btn btn-outline-secondary btn-sm" for="all-e">E (Erdnüsse)</label>
+
+                                <input type="checkbox" class="btn-check" id="all-f" value="F">
+                                <label class="btn btn-outline-secondary btn-sm" for="all-f">F (Soja)</label>
+
+                                <input type="checkbox" class="btn-check" id="all-g" value="G">
                                 <label class="btn btn-outline-secondary btn-sm" for="all-g">G (Milch)</label>
 
-                                <input type="checkbox" class="btn-check" id="all-c" value="EGG">
-                                <label class="btn btn-outline-secondary btn-sm" for="all-c">C (Eier)</label>
+                                <input type="checkbox" class="btn-check" id="all-h" value="H">
+                                <label class="btn btn-outline-secondary btn-sm" for="all-h">H (Nüsse)</label>
+
+                                <input type="checkbox" class="btn-check" id="all-l" value="L">
+                                <label class="btn btn-outline-secondary btn-sm" for="all-l">L (Sellerie)</label>
+
+                                <input type="checkbox" class="btn-check" id="all-m" value="M">
+                                <label class="btn btn-outline-secondary btn-sm" for="all-m">M (Senf)</label>
+
+                                <input type="checkbox" class="btn-check" id="all-n" value="N">
+                                <label class="btn btn-outline-secondary btn-sm" for="all-n">N (Sesam)</label>
+
+                                <input type="checkbox" class="btn-check" id="all-o" value="O">
+                                <label class="btn btn-outline-secondary btn-sm" for="all-o">O (Sulfite)</label>
+
+                                <input type="checkbox" class="btn-check" id="all-p" value="P">
+                                <label class="btn btn-outline-secondary btn-sm" for="all-p">P (Lupinen)</label>
+
+                                <input type="checkbox" class="btn-check" id="all-r" value="R">
+                                <label class="btn btn-outline-secondary btn-sm" for="all-r">R (Weichtiere)</label>
                             </div>
                         </div>
 

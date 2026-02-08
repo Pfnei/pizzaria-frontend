@@ -9,7 +9,7 @@ redirectToMenu();
 
 const saveButton = document.getElementById('saveButton');
 const toProductListBtn = document.getElementById('toProductListBtn');
-const hreftoProductList = 'productlists.html';
+const hreftoProductList = 'productlist.html';
 
 if (toProductListBtn) {
     directToProductList();
