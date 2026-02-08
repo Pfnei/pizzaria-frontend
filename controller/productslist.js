@@ -83,9 +83,9 @@ const sortedList = Enumerable.from(list)
       ? `<span class="badge bg-success ms-1">vegi</span>`
       : "";
 
-    // Tabelle
+    // Tabelle (Zeile klickbar)
     tbody.append(`
-      <tr class="product-row">
+      <tr class="product-row" data-product-id="${p.productId}"">
         <td>${name}</td>
         <td>${mainCategory}</td>
         <td>${subCategory}</td>
@@ -94,9 +94,9 @@ const sortedList = Enumerable.from(list)
       </tr>
     `);
 
-    // Cards
+    // Cards (Card klickbar)
     cards.append(`
-      <div class="col-12 col-sm-6 col-md-4">
+      <div class="col-12 col-sm-6 col-md-4" data-product-id="${p.productId}"" >
         <div class="card h-100 product-card">
           <div class="card-body p-2">
             <p class="mb-1 fw-semibold">${name}</p>
@@ -108,7 +108,27 @@ const sortedList = Enumerable.from(list)
       </div>
     `);
   });
+
+  // Klick auf Row oder Card → Produtcdetails (Bearbeiten)
+  $(document)
+      .off("click.productNav")
+      .on("click.productNav", ".product-row, .product-card", function () {
+        const id = $(this).data("productId");
+        if (!id) return;
+        let url;
+        if (authManager.isAdmin()) {
+          url = `../views/productdetailadmin.html?id=${encodeURIComponent(id)}`;
+        }
+        else {
+          url = `../views/productdetail.html?id=${encodeURIComponent(id)}`;
+        }
+        window.location.href = url;
+      });
 }
+
+
+
+
 
 function disableFilterAndSortUi() {
   //filter vorerstal komplett still legen

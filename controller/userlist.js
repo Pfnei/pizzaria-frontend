@@ -43,6 +43,7 @@ function renderUsers(list) {
   tbody.empty();
   cards.empty();
 
+
   list.forEach(user => {
     const statusBadge = `
       <span class="badge ${user.active ? "bg-success" : "bg-secondary"}">
