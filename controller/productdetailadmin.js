@@ -109,7 +109,7 @@ async function loadProduct(productId) {
         setValue("productName", product.productName || "");
         setValue("productDescription", product.productDescription || "");
 
-        setValue("price", product.price || "");
+        setValue("price", product.price.toFixed(2) || "");
         setValue("mainCategory", product.mainCategory || "");
         setValue("subCategory", product.subCategory || "");
 
@@ -221,6 +221,18 @@ async function handleSaveButtonClick(event) {
     try {
         const result = await productService.updateProduct(currentProductId,productDTO);
         console.log('Produkt erfolgreich upgedated!', result);
+
+        const msgDiv = document.getElementById('productMessage');
+        if (msgDiv) {
+            msgDiv.textContent = 'Produkt erfolgreich upgedated!';
+            msgDiv.className = 'alert alert-success mt-3';
+        }
+
+        setTimeout(() => {
+            window.location.href = hreftoProductList;
+        }, 1000);
+
+
 
 
     } catch (error) {
