@@ -206,7 +206,7 @@ async function handleSaveButtonClick(event) {
 
     const productDTO = {
         productName: document.getElementById('productName')?.value || '',
-        description: document.getElementById('productDescription')?.value || '',
+        productDescription: document.getElementById('productDescription')?.value || '',
         price: parseFloat(document.getElementById('price')?.value || 0),
         vegetarian: document.getElementById('isVegetarian')?.checked || false,
         active: document.getElementById('isActive')?.checked || false,
