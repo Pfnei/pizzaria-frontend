@@ -6,16 +6,7 @@
 }
 
 body {
-    background-color: #f8f9fa; /* Optional: Leichter Hintergrund für besseren Kontrast */
-}
-
-/* WICHTIG: z-index -3 entfernt.
-   Negative Werte lassen Elemente hinter den Hintergrund verschwinden
-   und machen Buttons oft unklickbar.
-*/
-main {
-    position: relative;
-    z-index: 1;
+    background-color: #f8f9fa;
 }
 
 /* --- Navigation & Header --- */
@@ -23,54 +14,62 @@ main {
     position: fixed;
     top: 0;
     width: 100%;
-    z-index: 1000;
+    height: 70px; /* Definierte Höhe hilft bei Berechnungen */
+    z-index: 1100; /* Höchster Index, damit alles darunter durchläuft */
     background-color: white;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-.nav-pos {
-    position: sticky;
-    top: 0;
-    z-index: 1010;
+/* --- Layout Struktur (Sidebar Fix) --- */
+
+/* Falls du ein Element mit der Klasse .sidebar hast */
+.sidebar {
+    position: fixed;
+    top: 70px; /* Direkt unter dem Header */
+    left: 0;
+    width: 250px;
+    height: calc(100vh - 70px);
+    background-color: white;
+    border-right: 1px solid #ddd;
+    z-index: 1050; /* Über dem Main Content, unter dem Header */
+    overflow-y: auto;
+    padding: 20px;
 }
 
-.icon-dark {
-    color: black;
-}
-
-#dancing-script {
-    font-family: "Dancing Script", cursive;
-    font-optical-sizing: auto;
-    font-weight: 700; /* 1000 ist oft zu viel für Standard-Fonts */
-    font-style: normal;
+/* Der Hauptbereich muss Platz für Sidebar und Header machen */
+main {
+    position: relative;
+    z-index: 1;
+    margin-left: 250px; /* Breite der Sidebar */
+    padding-top: 80px;  /* Platz für den Header */
 }
 
 /* --- Produkt Container & Abstände --- */
 #products-container {
-    /* Genug Platz nach oben, damit der fixierte Header nichts verdeckt */
-    margin-top: 120px !important;
+    padding: 20px;
     padding-bottom: 50px;
 }
 
-/* FIX: "height: 300px" entfernt!
-   Das hat die Überlappungen der Kategorien verursacht.
-*/
+/* FIX: "height: 300px" entfernt, damit nichts überlappt */
 .product-div {
     margin-bottom: 3rem;
     clear: both;
+    display: block; /* Sicherstellen, dass es den Platz einnimmt */
 }
 
 .product-div h4 {
     border-bottom: 2px solid #eee;
     padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
 }
 
 /* --- Karten Styling --- */
 .cardstyle {
     border-radius: 20px;
-    border: 4px double black; /* Von 7px auf 4px reduziert für elegantere Optik */
+    border: 4px double black;
     transition: transform 0.2s ease-in-out;
     background-color: white;
+    margin-bottom: 20px;
 }
 
 .cardstyle:hover {
@@ -101,6 +100,7 @@ main {
     bottom: 0;
     background-color: #ccc;
     transition: .4s;
+    border-radius: 17px;
 }
 
 .slider:before {
@@ -112,41 +112,36 @@ main {
     bottom: 2px;
     background-color: white;
     transition: .4s;
+    border-radius: 50%;
 }
 
 input:checked + .slider {
-    background-color: #28a745; /* Ein schöneres Grün */
-}
-
-input:focus + .slider {
-    box-shadow: 0 0 1px #28a745;
+    background-color: #28a745;
 }
 
 input:checked + .slider:before {
     transform: translateX(13px);
 }
 
-.slider.round {
-    border-radius: 17px;
-}
-
-.slider.round:before {
-    border-radius: 50%;
-}
-
-/* --- Carousel & Mobile Anpassungen --- */
+/* --- Carousel & Sonstiges --- */
 #carouselButtons, #scrollsbycar {
     max-width: 100%;
     width: 400px;
     margin: 0 auto;
 }
 
+/* --- Mobile Anpassungen --- */
 @media screen and (max-width: 768px) {
-    #scrollsbycar {
-        display: none;
+    .sidebar {
+        display: none; /* Sidebar am Handy oft störend, außer als Overlay */
     }
 
-    #products-container {
-        margin-top: 100px !important;
+    main {
+        margin-left: 0; /* Sidebar-Platz auf Mobile entfernen */
+        padding-top: 100px;
+    }
+
+    #scrollsbycar {
+        display: none;
     }
 }
