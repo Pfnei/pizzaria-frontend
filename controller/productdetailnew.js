@@ -127,13 +127,7 @@ function resetProductForm() {
     if (msgDiv) {
         msgDiv.textContent = 'Produkt erfolgreich angelegt!';
         msgDiv.className = 'alert alert-success mt-3';
-        msgDiv.style.display = 'block';
-        setTimeout(() => {
-            msgDiv.textContent = '';
-            msgDiv.className = '';
-            msgDiv.style.display = 'none';
-        }, 2000);
-    }
+           }
 
     setTimeout(() => {
         window.location.href = 'productdetailnew.html';

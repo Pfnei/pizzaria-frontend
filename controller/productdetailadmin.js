@@ -15,6 +15,7 @@ let currentProductId = null;
 const saveButton = document.getElementById('saveButton');
 const toProductListBtn = document.getElementById('toProductListBtn');
 const hreftoProductList = 'productlist.html';
+const form = document.getElementById('productInformationForm');
 
 const BACKEND = "http://localhost:8081";
 
@@ -73,7 +74,7 @@ function initPage() {
         await loadProduct(currentProductId);
 
         // Form setup
-        const form = document.getElementById('productInformationForm');
+
         changeEnterToTab(form);
 
         form.addEventListener('submit', handleFormSubmit);
@@ -164,12 +165,7 @@ function setText(id, value) {
 if (toProductListBtn) {
     directToProductList();
 }
-if (saveButton) {
-    saveButton.addEventListener('click', handleSaveButtonClick);
-    console.log("Save-Button Listener erfolgreich registriert.");
-} else {
-    console.warn("Save-Button nicht gefunden!");
-}
+
 
 // Mapping MainCategory Dropdown -> Enum
 function mapMainCategoryToEnum(value) {
@@ -190,8 +186,7 @@ function mapSubCategoryToEnum(value) {
 
 
 // Save-Button Handler
-async function handleSaveButtonClick(event) {
-    event.preventDefault();
+async function saveFormData() {
     console.log("Save Button geklickt");
 
     if (!currentProductId) {
@@ -230,7 +225,7 @@ async function handleSaveButtonClick(event) {
 
         setTimeout(() => {
             window.location.href = hreftoProductList;
-        }, 1000);
+        }, 2000);
 
 
 
@@ -263,7 +258,7 @@ function handleFormSubmit(event) {
         //setSelectsValid(["anrede", "diversDetailsGroup", "land"]); // selects are always true
     }
 
-    if (isValid) showSuccessAndRedirect();
+    if (isValid) {saveFormData();}
 
 }
 
@@ -320,22 +315,6 @@ function bindLiveValidation() {
     });
 }
 
-
-function showSuccessAndRedirect() {
-
-    window.location.href = "../views/menu.html";
-    /*const btn = document.querySelector('#userForm button[type="submit"]');
-    if (btn) btn.disabled = true;
-
-    const msg = document.getElementById('successMessage');
-    if (msg) {
-        msg.style.display = 'block';
-    }
-
-    setTimeout(() => {
-          window.location.href = 'login.html';
-      }, 1000);*/
-}
 
 
 function redirectToMenu() {
