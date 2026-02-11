@@ -94,7 +94,7 @@ function productCardHtml(p) {
       <div class="card cardstyle mb-3">
         <div class="card-body">
           <div class="d-flex justify-content-between mb-1">
-            <h5 class="card-title mb-0">${escapeHtml(p.productName)}${vegetarianBadge}</h5>
+            <h5 class="card-title mb-0">${escapeHtml(p.productName)}${vegetarianBadge} <a href="../views/productdetail.html?id=${encodeURIComponent(p.productId)}"><i class="bi bi-info-circle-fill"></i></a> </h5>
             <span class="fw-bold text-primary">${formatEuro(p.price)}</span>
           </div>
           
