@@ -3,7 +3,7 @@
 import {productService} from '../services/productService.js';
 import {authManager} from '../services/authManager.js';
 import {fileService} from "../services/fileService.js";
-import { formatDate, formatUserName } from '../utils/helpers.js';
+import {formatDate, formatUserName} from '../utils/helpers.js';
 import {orderService} from "../services/orderService.js";
 
 
@@ -31,7 +31,7 @@ function initPage() {
         const params = new URLSearchParams(window.location.search);
         currentProductId = params.get("id");
 
-        if (! currentProductId) {
+        if (!currentProductId) {
             console.warn("Keine id in der URL");
             window.location.href = "../views/menu.html";
             return;
@@ -112,7 +112,6 @@ async function loadProduct(productId) {
         }
 
 
-
         setValue("productName", product.productName || "");
         setValue("productDescription", product.productDescription || "");
 
@@ -123,7 +122,7 @@ async function loadProduct(productId) {
         setText("createdAt", formatDate(product.createdAt));
         setText("createdBy", formatUserName(product.createdBy));
         setText("lastUpdatedAt", formatDate(product.lastUpdatedAt));
-        setText("lastUpdatedBy", formatUserName(product.lastUpdatedBy) );
+        setText("lastUpdatedBy", formatUserName(product.lastUpdatedBy));
 
 
         const activeEl = document.getElementById("isActive");
@@ -164,10 +163,6 @@ function setText(id, value) {
 }
 
 
-
-
-
-
 if (toProductListBtn) {
     directToProductList();
 }
@@ -187,8 +182,6 @@ function mapSubCategoryToEnum(value) {
     const val = value?.toUpperCase();
     return validSubCategories.includes(val) ? val : null;
 }
-
-
 
 
 // Save-Button Handler
@@ -220,7 +213,7 @@ async function saveFormData() {
     console.log('Produkt DTO:', productDTO);
 
     try {
-        const result = await productService.updateProduct(currentProductId,productDTO);
+        const result = await productService.updateProduct(currentProductId, productDTO);
         console.log('Produkt erfolgreich upgedated!', result);
 
         const msgDiv = document.getElementById('productMessage');
@@ -232,8 +225,6 @@ async function saveFormData() {
         setTimeout(() => {
             window.location.href = hreftoProductList;
         }, 2000);
-
-
 
 
     } catch (error) {
@@ -259,33 +250,52 @@ async function deleteProduct() {
     }
 
 
-
     if (!authManager.isLoggedIn() || !authManager.isAdmin()) {
         window.location.href = '../views/menu.html';
         return;
     }
 
 
-
     try {
         console.log("Hallo");
-        const orders = await orderService.getAll({ params: { productId: currentProductId } });
+        const orders = await orderService.getAll({params: {productId: currentProductId}});
         console.log('Orders !', orders);
 
-        const result = await productService.delete(currentProductId);
-        console.log('Produkt erfolgreich gelöscht!', result);
+        if (orders.length > 0) {
 
-        const msgDiv = document.getElementById('productMessage');
-        if (msgDiv) {
-            msgDiv.textContent = 'Produkt erfolgreich gelöscht!';
-            msgDiv.className = 'alert alert-success mt-3';
+            console.log('Produkt kann nicht gelöscht werden, da es in Bestellungen vorhanden ist', orders);
+
+            const result = await productService.updateProduct(currentProductId, {
+                active: false
+            });
+
+
+            const msgDiv = document.getElementById('productMessage');
+            if (msgDiv) {
+                msgDiv.textContent = 'Produkt ist in Bestellungen vorhanden - kann nicht gelöscht werden. Es wurde INAKTIV gesetzt!';
+                msgDiv.className = 'alert alert-warning mt-3';
+            }
+
+            setTimeout(() => {
+                window.location.href = hreftoProductList;
+            }, 5000);
+
+
+        } else {
+            const result = await productService.delete(currentProductId);
+            console.log('Produkt erfolgreich gelöscht!', result);
+
+            const msgDiv = document.getElementById('productMessage');
+            if (msgDiv) {
+                msgDiv.textContent = 'Produkt erfolgreich gelöscht!';
+                msgDiv.className = 'alert alert-success mt-3';
+            }
+
+            setTimeout(() => {
+                window.location.href = hreftoProductList;
+            }, 2000);
+
         }
-
-        setTimeout(() => {
-            window.location.href = hreftoProductList;
-        }, 2000);
-
-
 
 
     } catch (error) {
@@ -299,9 +309,6 @@ async function deleteProduct() {
         }
     }
 }
-
-
-
 
 
 function handleFormSubmit(event) {
@@ -374,7 +381,6 @@ function bindLiveValidation() {
         }
     });
 }
-
 
 
 function redirectToMenu() {
