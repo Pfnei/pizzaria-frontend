@@ -13,7 +13,10 @@ let liveCheckFields = false;
 let currentProductId = null;
 
 
+const deleteButton = document.getElementById('deleteButton');
 const toProductListBtn = document.getElementById('toProductListBtn');
+const productImage = document.getElementById('productImage');
+const productUploadInput = document.getElementById('productUploadInput');
 const hreftoProductList = 'productlist.html';
 const form = document.getElementById('productInformationForm');
 
@@ -33,8 +36,10 @@ function initPage() {
             return;
         }
 
-        const productImage = document.getElementById('productImage');
-        const productUploadInput = document.getElementById('productUploadInput');
+
+        deleteButton.addEventListener('click', () => {
+            deleteProduct();
+        });
 
         productImage.addEventListener('click', () => {
             if (productUploadInput) productUploadInput.click();
@@ -242,6 +247,58 @@ async function saveFormData() {
         }
     }
 }
+
+
+async function deleteProduct() {
+    console.log("Delete Button geklickt");
+
+    if (!currentProductId) {
+        console.log("Keine Product-ID vorhanden.");
+        return;
+    }
+
+
+
+
+    if (!authManager.isLoggedIn() || !authManager.isAdmin()) {
+        window.location.href = '../views/menu.html';
+        return;
+    }
+
+
+
+    try {
+        const result = await productService.delete(currentProductId);
+        console.log('Produkt erfolgreich gelöscht!', result);
+
+        const msgDiv = document.getElementById('productMessage');
+        if (msgDiv) {
+            msgDiv.textContent = 'Produkt erfolgreich gelöscht!';
+            msgDiv.className = 'alert alert-success mt-3';
+        }
+
+        setTimeout(() => {
+            window.location.href = hreftoProductList;
+        }, 2000);
+
+
+
+
+    } catch (error) {
+        console.error('Fehler beim Löschen des Produkts:', error.response?.data || error);
+        const msgDiv = document.getElementById('productMessage');
+        if (msgDiv) {
+            msgDiv.textContent = 'Fehler beim Löschen Produkts!';
+            msgDiv.className = 'alert alert-danger mt-3';
+            setTimeout(() => msgDiv.textContent = '', 5000);
+        } else {
+            alert('Fehler beim Löschen des Produkts!');
+        }
+    }
+}
+
+
+
 
 
 function handleFormSubmit(event) {
