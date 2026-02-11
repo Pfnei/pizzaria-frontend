@@ -10,11 +10,9 @@ function renderNavbar() {
     $('#navigation').load('../views/navigation.html', function () {
         navBarVisibility();
         registerEvents();
-        // console.log(document.referrer || "Kein Referrer verfügbar");
     });
 }
 
-// no automatic Logout on Login Page because silent Login is tried
 function logoutOnRegisterPage() {
     if (someEndpoint(["register"])) {
         authManager.clearAuth();
@@ -22,64 +20,52 @@ function logoutOnRegisterPage() {
 }
 
 function navBarVisibility() {
+    const isLoggedIn = authManager.isLoggedIn();
+    const isAdmin = authManager.isAdmin();
 
-    // no Support Menu on Register, Login
+    // Support-Inhalte ausblenden auf Login/Register
     if (someEndpoint(["register", "login"])) {
         $('#navTogglerSupportContent').hide();
     }
 
-    const isLoggedIn = authManager.isLoggedIn();
-    const isAdmin = authManager.isAdmin();
-
-    // Login Button
+    // Login Button Steuerung
     if (someEndpoint(["register", "login"]) || isLoggedIn) {
         $('#navLogin').hide();
     } else {
         $('#navLogin').show();
     }
 
-    // UserMenu , Orders
+    // User-Spezifische Menüs
     if (isLoggedIn) {
-        $('#navTogglerSupportContent').hide();
         $('#navUserMenu').show();
         $('#navOrderList').show();
+
+        // WICHTIG: Link zum eigenen Profil (ohne ID-Parameter für /me)
+        $('#navMyProfile').attr('href', '../views/userdetails.html');
+
         const nbr = $('#navbar-right');
-        nbr.removeClass("mt-3");
-        nbr.addClass("mt-1");
+        nbr.removeClass("mt-3").addClass("mt-1");
     } else {
         $('#navUserMenu').hide();
         $('#navOrderList').hide();
-        $('#navTogglerSupportContent').hide();
-
         const nbr = $('#navbar-right');
-        nbr.removeClass("mt-1");
-        nbr.addClass("mt-3");
+        nbr.removeClass("mt-1").addClass("mt-3");
     }
 
-    // Finetuning Shoppingcart
-    if (someEndpoint(["register", "login"])) {
-        const sc = $('#navShoppingCart');
-        sc.addClass("me-4");
-    } else {
-        const sc = $('#navShoppingCart');
-        sc.removeClass("me-4");
-    }
-
-    // AdminTools
+    // Admin-Spezifische Menüs
     if (isLoggedIn && isAdmin) {
+        $('#navUserList').show();
+        $('#navProductList').show();
+        // Falls auf Mobile: Toggler anzeigen
         if ($(window).width() < 768) {
             $('#navTogglerSupportContent').show();
         }
-        $('#navUserList').show();
-        $('#navProductList').show();
-        $('#navOrderList').show();
     } else {
         $('#navUserList').hide();
         $('#navProductList').hide();
-        $('#navOrderList').hide();
     }
 
-    // navBack document.referrer = history.back()
+    // Back-Button Steuerung
     if (
         getMainEndpointFromUrl(document.referrer) === "index" ||
         getMainEndpointFromUrl(document.referrer) === "login" ||
@@ -91,7 +77,6 @@ function navBarVisibility() {
     }
 }
 
-// Logout
 function registerEvents() {
     $("#logoutLink").on("click", function (e) {
         e.preventDefault();
@@ -106,7 +91,6 @@ function registerEvents() {
         history.back();
     });
 
-    // (Back/Forward) - necessary when page is accessed via (Back/Forward)
     window.addEventListener('pageshow', function () {
         logoutOnRegisterPage();
         renderNavbar();
