@@ -12,9 +12,13 @@ let hasSubmittedForm = false;
 let liveCheckFields = false;
 let currentProductId = null;
 
-const saveButton = document.getElementById('saveButton');
+
+const deleteButton = document.getElementById('deleteButton');
 const toProductListBtn = document.getElementById('toProductListBtn');
+const productImage = document.getElementById('productImage');
+const productUploadInput = document.getElementById('productUploadInput');
 const hreftoProductList = 'productlist.html';
+const form = document.getElementById('productInformationForm');
 
 const BACKEND = "http://localhost:8081";
 
@@ -32,8 +36,10 @@ function initPage() {
             return;
         }
 
-        const productImage = document.getElementById('productImage');
-        const productUploadInput = document.getElementById('productUploadInput');
+
+        deleteButton.addEventListener('click', () => {
+            deleteProduct();
+        });
 
         productImage.addEventListener('click', () => {
             if (productUploadInput) productUploadInput.click();
@@ -73,7 +79,7 @@ function initPage() {
         await loadProduct(currentProductId);
 
         // Form setup
-        const form = document.getElementById('productInformationForm');
+
         changeEnterToTab(form);
 
         form.addEventListener('submit', handleFormSubmit);
@@ -109,7 +115,7 @@ async function loadProduct(productId) {
         setValue("productName", product.productName || "");
         setValue("productDescription", product.productDescription || "");
 
-        setValue("price", product.price || "");
+        setValue("price", product.price.toFixed(2) || "");
         setValue("mainCategory", product.mainCategory || "");
         setValue("subCategory", product.subCategory || "");
 
@@ -164,12 +170,7 @@ function setText(id, value) {
 if (toProductListBtn) {
     directToProductList();
 }
-if (saveButton) {
-    saveButton.addEventListener('click', handleSaveButtonClick);
-    console.log("Save-Button Listener erfolgreich registriert.");
-} else {
-    console.warn("Save-Button nicht gefunden!");
-}
+
 
 // Mapping MainCategory Dropdown -> Enum
 function mapMainCategoryToEnum(value) {
@@ -190,8 +191,7 @@ function mapSubCategoryToEnum(value) {
 
 
 // Save-Button Handler
-async function handleSaveButtonClick(event) {
-    event.preventDefault();
+async function saveFormData() {
     console.log("Save Button geklickt");
 
     if (!currentProductId) {
@@ -222,6 +222,18 @@ async function handleSaveButtonClick(event) {
         const result = await productService.updateProduct(currentProductId,productDTO);
         console.log('Produkt erfolgreich upgedated!', result);
 
+        const msgDiv = document.getElementById('productMessage');
+        if (msgDiv) {
+            msgDiv.textContent = 'Produkt erfolgreich upgedated!';
+            msgDiv.className = 'alert alert-success mt-3';
+        }
+
+        setTimeout(() => {
+            window.location.href = hreftoProductList;
+        }, 2000);
+
+
+
 
     } catch (error) {
         console.error('Fehler beim Updaten des Produkts:', error.response?.data || error);
@@ -235,6 +247,58 @@ async function handleSaveButtonClick(event) {
         }
     }
 }
+
+
+async function deleteProduct() {
+    console.log("Delete Button geklickt");
+
+    if (!currentProductId) {
+        console.log("Keine Product-ID vorhanden.");
+        return;
+    }
+
+
+
+
+    if (!authManager.isLoggedIn() || !authManager.isAdmin()) {
+        window.location.href = '../views/menu.html';
+        return;
+    }
+
+
+
+    try {
+        const result = await productService.delete(currentProductId);
+        console.log('Produkt erfolgreich gelöscht!', result);
+
+        const msgDiv = document.getElementById('productMessage');
+        if (msgDiv) {
+            msgDiv.textContent = 'Produkt erfolgreich gelöscht!';
+            msgDiv.className = 'alert alert-success mt-3';
+        }
+
+        setTimeout(() => {
+            window.location.href = hreftoProductList;
+        }, 2000);
+
+
+
+
+    } catch (error) {
+        console.error('Fehler beim Löschen des Produkts:', error.response?.data || error);
+        const msgDiv = document.getElementById('productMessage');
+        if (msgDiv) {
+            msgDiv.textContent = 'Fehler beim Löschen Produkts!';
+            msgDiv.className = 'alert alert-danger mt-3';
+            setTimeout(() => msgDiv.textContent = '', 5000);
+        } else {
+            alert('Fehler beim Löschen des Produkts!');
+        }
+    }
+}
+
+
+
 
 
 function handleFormSubmit(event) {
@@ -251,7 +315,7 @@ function handleFormSubmit(event) {
         //setSelectsValid(["anrede", "diversDetailsGroup", "land"]); // selects are always true
     }
 
-    if (isValid) showSuccessAndRedirect();
+    if (isValid) {saveFormData();}
 
 }
 
@@ -308,22 +372,6 @@ function bindLiveValidation() {
     });
 }
 
-
-function showSuccessAndRedirect() {
-
-    window.location.href = "../views/menu.html";
-    /*const btn = document.querySelector('#userForm button[type="submit"]');
-    if (btn) btn.disabled = true;
-
-    const msg = document.getElementById('successMessage');
-    if (msg) {
-        msg.style.display = 'block';
-    }
-
-    setTimeout(() => {
-          window.location.href = 'login.html';
-      }, 1000);*/
-}
 
 
 function redirectToMenu() {

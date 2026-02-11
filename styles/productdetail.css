@@ -10,6 +10,13 @@ h3, h5, h6 {
     border-radius: 10px;
 }
 
+.img-fluid-initial {
+    width: 80%;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
 .product-wrapper {
     display: flex;
     justify-content: center;
@@ -24,3 +31,4 @@ h3, h5, h6 {
     width: 100%;
     max-width: 800px;
 }
+
