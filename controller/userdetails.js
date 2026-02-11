@@ -67,6 +67,17 @@ function initPage() {
 
         form?.addEventListener('submit', handleFormSubmit);
     });
+
+    const deleteBtn = document.getElementById('deleteUserBtn');
+    if (authManager.isAdmin()) {
+        deleteBtn.style.display = 'block'; // Oder 'inline-block'
+        deleteBtn.onclick = async () => {
+            if(confirm("Möchtest du diesen Benutzer wirklich löschen?")) {
+                await userService.delete(currentUserId);
+                window.location.href = "userlist.html";
+            }
+        };
+    }
 }
 
 async function loadUser(userId) {
