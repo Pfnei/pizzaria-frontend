@@ -1,10 +1,9 @@
-import { productService } from '../services/productService.js';
-import { authManager } from '../services/authManager.js';
-import {fileService} from "../services/fileService";
+import {productService} from '../services/productService.js';
+import {authManager} from '../services/authManager.js';
+import {fileService} from "../services/fileService.js";
 
 
 'use strict';
-
 
 
 redirectToMenu();
@@ -13,11 +12,15 @@ redirectToMenu();
 let hasSubmittedForm = false;
 let liveCheckFields = false;
 
-const saveButton = document.getElementById('saveButton');
 const toProductListBtn = document.getElementById('toProductListBtn');
 const hreftoProductList = 'productlist.html';
+const productImage = document.getElementById('productImage');
+const productUploadInput = document.getElementById('productUploadInput');
+const form = document.getElementById('productInformationForm');
 
 const BACKEND = "http://localhost:8081";
+
+let tempProductPicture;
 
 initPage();
 
@@ -25,46 +28,74 @@ function initPage() {
     document.addEventListener('DOMContentLoaded', async () => {
 
 
-        const form = document.getElementById('productInformationForm');
+        productImage.addEventListener('click', () => {
+            if (productUploadInput) productUploadInput.click();
+        });
+
         changeEnterToTab(form);
 
         form.addEventListener('submit', handleFormSubmit);
 
+        productUploadInput.addEventListener('change', async (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+            tempProductPicture = file;
+
+
+            try {
+
+                // 2. Alten Speicher (Blob-URL) im Browser freigeben
+                if (productImage.src.startsWith('blob:')) {
+                    URL.revokeObjectURL(productImage.src);
+                }
+
+                // 3. Neue lokale Vorschau erstellen
+                const localUrl = URL.createObjectURL(file);
+                productImage.src = localUrl;
+                productImage.setAttribute("class", "img-fluid");
+
+                console.log("Upload erfolgreich (aber noch nicht am Server gespeichert!");
+
+            } catch (err) {
+                // Hier wird der Fehler gefangen, falls der Upload fehlschlägt
+                console.error("Fehler beim Hochladen des Produktbilds:", err);
+                console.log("Fehler beim Hochladen des Produktbilds.");
+            }
+
+
+
+
+
+        });
     });
 }
 
-
-
-
-
-
-
-
-
 if (toProductListBtn) {
-    directToProductList();
-}
-if (saveButton) {
-    saveButton.addEventListener('click', handleSaveButtonClick);
-    console.log("Save-Button Listener erfolgreich registriert.");
+
+    toProductListBtn.addEventListener('click', redirectToProductList);
+    console.log("Back-To-ProductList-Button Listener erfolgreich registriert.");
+
 } else {
-    console.warn("Save-Button nicht gefunden!");
+    console.warn("Back-To-ProductList-Button nicht gefunden!");
 }
+
+function redirectToProductList() {
+    window.location.href = hreftoProductList;
+}
+
+
 
 // Mapping MainCategory Dropdown -> Enum
 function mapMainCategoryToEnum(value) {
     const mapping = {
-        'MAIN_COURSE': 'MAIN_COURSE',
-        'STARTER': 'STARTER',
-        'DRINK': 'DRINK',
-        'DESSERT': 'DESSERT'
+        'MAIN_COURSE': 'MAIN_COURSE', 'STARTER': 'STARTER', 'DRINK': 'DRINK', 'DESSERT': 'DESSERT'
     };
     return mapping[value] || null;
 }
 
 // Mapping SubCategory Dropdown -> Enum
 function mapSubCategoryToEnum(value) {
-    const validSubCategories = ['PIZZA','PASTA','BOWL','ALCOHOL_FREE','BEER','WINE','COFFEE','SPIRIT'];
+    const validSubCategories = ['PIZZA', 'PASTA', 'BOWL', 'ALCOHOL_FREE', 'BEER', 'WINE', 'COFFEE', 'SPIRIT'];
     const val = value?.toUpperCase();
     return validSubCategories.includes(val) ? val : null;
 }
@@ -78,27 +109,42 @@ function resetProductForm() {
     document.getElementById('subCategory').selectedIndex = 0;
     document.getElementById('isVegetarian').checked = false;
     document.getElementById('isActive').checked = false;
+    productImage.src = "../pictures/ProductAvatar.png";
+    productImage.setAttribute("class", "img-fluid-initial");
 
     // Allergene zurücksetzen
     document.querySelectorAll('#allergen-container input[type="checkbox"]').forEach(el => el.checked = false);
 
+
+
     // Formularvalidierung retour setzen
     hasSubmittedForm = false;
+    liveCheckFields = false;
+    form.classList.remove('was-validated');
 
     // Erfolgsmeldung
     const msgDiv = document.getElementById('productMessage');
     if (msgDiv) {
         msgDiv.textContent = 'Produkt erfolgreich angelegt!';
         msgDiv.className = 'alert alert-success mt-3';
-        setTimeout(() => msgDiv.textContent = '', 3000);
+        msgDiv.style.display = 'block';
+        setTimeout(() => {
+            msgDiv.textContent = '';
+            msgDiv.className = '';
+            msgDiv.style.display = 'none';
+        }, 2000);
     }
+
+    setTimeout(() => {
+        window.location.href = 'productdetailnew.html';
+    }, 2000);
+
+
 }
 
 
 // Save-Button Handler
-async function handleSaveButtonClick(event) {
-    event.preventDefault();
-    console.log("Save Button geklickt");
+async function saveFormData() {
 
     if (!authManager.isLoggedIn() || !authManager.isAdmin()) {
         window.location.href = '../views/menu.html';
@@ -122,6 +168,10 @@ async function handleSaveButtonClick(event) {
     try {
         const result = await productService.create(productDTO);
         console.log('Produkt erfolgreich hinzugefügt!', result);
+        if (tempProductPicture) {
+            await fileService.uploadProductPicture(result.productId, tempProductPicture);
+            console.log('ProduktBild erfolgreich gespeichert', result);
+        }
 
         // Formular resetten + Meldung
         resetProductForm();
@@ -132,7 +182,7 @@ async function handleSaveButtonClick(event) {
         if (msgDiv) {
             msgDiv.textContent = 'Fehler beim Anlegen des Produkts!';
             msgDiv.className = 'alert alert-danger mt-3';
-            setTimeout(() => msgDiv.textContent = '', 5000);
+            setTimeout(() => msgDiv.textContent = '', 2000);
         } else {
             alert('Fehler beim Anlegen des Produkts!');
         }
@@ -140,12 +190,7 @@ async function handleSaveButtonClick(event) {
 }
 
 
-
-
-
-
-
-function handleFormSubmit(event) {
+async function handleFormSubmit(event) {
     event.preventDefault(); // no standard HTML Checks are done
     const form = event.target; // gets the current form
     const isValid = validateForm();
@@ -159,17 +204,16 @@ function handleFormSubmit(event) {
         //setSelectsValid(["anrede", "diversDetailsGroup", "land"]); // selects are always true
     }
 
-    if (isValid) showSuccessAndRedirect();
+    if (isValid) saveFormData();
 
 }
-
 
 
 function validateForm() {
     let isFormValid = true;
     isFormValid = validateNotEmpty('productName') && isFormValid;
     isFormValid = validateNumeric('price', false) && isFormValid;
-        return isFormValid;
+    return isFormValid;
 }
 
 
@@ -193,8 +237,7 @@ function bindLiveValidation() {
 
     // Map: field -> Validator-Funktion - for each field the correct validator function is called
     const validators = {
-        productName:   () => validateNotEmpty('productName'),
-        price:  () => validateNumeric('price', false)
+        productName: () => validateNotEmpty('productName'), price: () => validateNumeric('price', false)
     };
 
 
@@ -219,21 +262,6 @@ function bindLiveValidation() {
 }
 
 
-function showSuccessAndRedirect() {
-
-    window.location.href = "../views/menu.html";
-    /*const btn = document.querySelector('#userForm button[type="submit"]');
-    if (btn) btn.disabled = true;
-
-    const msg = document.getElementById('successMessage');
-    if (msg) {
-        msg.style.display = 'block';
-    }
-
-    setTimeout(() => {
-          window.location.href = 'login.html';
-      }, 1000);*/
-}
 
 
 function redirectToMenu() {
@@ -243,9 +271,3 @@ function redirectToMenu() {
     }
 }
 
-// Button zu ProductList
-function directToProductList() {
-    toProductListBtn.addEventListener('click', function() {
-        window.location.href = hreftoProductList;
-    });
-}
