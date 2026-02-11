@@ -52,14 +52,10 @@ function renderProducts(container, products) {
 
     container.innerHTML = `
       <div class="container">
-        <div class="d-flex justify-content-end my-3">
-          <a class="btn btn-outline-primary" href="../views/shoppingcarts.html">
-            <i class="bi bi-cart4 me-2"></i> Warenkorb
-          </a>
-        </div>
         ${sections}
       </div>
     `;
+
 
     container.querySelectorAll("[data-add]").forEach((btn) => {
         btn.addEventListener("click", () => {
