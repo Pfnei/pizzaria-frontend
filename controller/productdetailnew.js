@@ -1,5 +1,7 @@
 import { productService } from '../services/productService.js';
 import { authManager } from '../services/authManager.js';
+import {fileService} from "../services/fileService";
+
 
 'use strict';
 
@@ -7,9 +9,37 @@ import { authManager } from '../services/authManager.js';
 
 redirectToMenu();
 
+
+let hasSubmittedForm = false;
+let liveCheckFields = false;
+
 const saveButton = document.getElementById('saveButton');
 const toProductListBtn = document.getElementById('toProductListBtn');
 const hreftoProductList = 'productlist.html';
+
+const BACKEND = "http://localhost:8081";
+
+initPage();
+
+function initPage() {
+    document.addEventListener('DOMContentLoaded', async () => {
+
+
+        const form = document.getElementById('productInformationForm');
+        changeEnterToTab(form);
+
+        form.addEventListener('submit', handleFormSubmit);
+
+    });
+}
+
+
+
+
+
+
+
+
 
 if (toProductListBtn) {
     directToProductList();
@@ -110,21 +140,10 @@ async function handleSaveButtonClick(event) {
 }
 
 
-let hasSubmittedForm = false;
-let liveCheckFields = false;
 
 
-initPage();
 
-function initPage() {
-    document.addEventListener('DOMContentLoaded', () => {
-        const form = document.getElementById('productInformationForm');
-        changeEnterToTab(form);
 
-         form.addEventListener('submit', handleFormSubmit);
-
-    });
-}
 
 function handleFormSubmit(event) {
     event.preventDefault(); // no standard HTML Checks are done
