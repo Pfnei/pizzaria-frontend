@@ -4,6 +4,7 @@ import {productService} from '../services/productService.js';
 import {authManager} from '../services/authManager.js';
 import {fileService} from "../services/fileService.js";
 import { formatDate, formatUserName } from '../utils/helpers.js';
+import {orderService} from "../services/orderService.js";
 
 
 redirectToMenu();
@@ -259,7 +260,6 @@ async function deleteProduct() {
 
 
 
-
     if (!authManager.isLoggedIn() || !authManager.isAdmin()) {
         window.location.href = '../views/menu.html';
         return;
@@ -268,6 +268,10 @@ async function deleteProduct() {
 
 
     try {
+        console.log("Hallo");
+        const orders = await orderService.getAll({ params: { productId: currentProductId } });
+        console.log('Orders !', orders);
+
         const result = await productService.delete(currentProductId);
         console.log('Produkt erfolgreich gelöscht!', result);
 
@@ -290,7 +294,6 @@ async function deleteProduct() {
         if (msgDiv) {
             msgDiv.textContent = 'Fehler beim Löschen Produkts!';
             msgDiv.className = 'alert alert-danger mt-3';
-            setTimeout(() => msgDiv.textContent = '', 5000);
         } else {
             alert('Fehler beim Löschen des Produkts!');
         }
