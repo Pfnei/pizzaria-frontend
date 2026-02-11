@@ -6,7 +6,9 @@ export class CBaseCrudService {
   }
 
   async getAll(options) {
-    const data = await this.http.get(this.basePath, options);
+    const params = options?.params || null;
+    const query = params ? `?${new URLSearchParams(params).toString()}` : "";
+    const data = await this.http.get(this.basePath + query, options);
     if (Array.isArray(data)) return data;
     if (Array.isArray(data?.data)) return data.data;
     return [];
