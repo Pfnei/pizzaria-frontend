@@ -16,6 +16,11 @@ class CUserService extends CBaseCrudService {
   //     { newPassword }
   //   );
   // }
+
+  async getMe() {
+    // Ruft GET /users/me auf
+    return await this.http.get(`${this.basePath}/me`);
+  }
 }
 
 export const userService = new CUserService();

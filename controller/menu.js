@@ -3,6 +3,7 @@ import { authManager } from "../services/authManager.js";
 import { productService } from "../services/productService.js";
 import { addToCart } from "../utils/cartStorage.js";
 
+
 document.addEventListener("DOMContentLoaded", async function () {
     const adminspace = document.getElementById("adminspace");
     if (adminspace) {
@@ -21,6 +22,19 @@ document.addEventListener("DOMContentLoaded", async function () {
         console.log(products);
 
         renderProducts(container, list);
+
+        const vegFlip = document.getElementById("veg-flip");
+
+        if (vegFlip) {
+            vegFlip.addEventListener("change", () => {
+                const filtered = vegFlip.checked
+                    ? list.filter(p => p.vegetarian === true)
+                    : list;
+
+                renderProducts(container, filtered);
+            });
+        }
+
     } catch (err) {
         console.error("Failed loading products:", err);
         container.innerHTML = `
@@ -57,6 +71,7 @@ function renderProducts(container, products) {
     `;
 
 
+
     container.querySelectorAll("[data-add]").forEach((btn) => {
         btn.addEventListener("click", () => {
             const productId = btn.getAttribute("data-product-id");
@@ -80,6 +95,7 @@ function renderProducts(container, products) {
     });
 }
 
+
 function productCardHtml(p) {
     const vegetarianBadge = p.vegetarian
         ? ` <i class="bi bi-leaf-fill text-success" title="Vegetarisch"></i>`
@@ -94,7 +110,11 @@ function productCardHtml(p) {
       <div class="card cardstyle mb-3">
         <div class="card-body">
           <div class="d-flex justify-content-between mb-1">
-            <h5 class="card-title mb-0">${escapeHtml(p.productName)}${vegetarianBadge}</h5>
+            <h5 class="card-title mb-0">${escapeHtml(p.productName)}${vegetarianBadge} 
+              <a href="../views/productdetail.html?id=${encodeURIComponent(p.productId)}">
+                <i class="bi bi-info-circle-fill"></i>
+              </a>
+            </h5>
             <span class="fw-bold text-primary">${formatEuro(p.price)}</span>
           </div>
           
@@ -158,3 +178,4 @@ function escapeHtml(str) {
 function escapeHtmlAttr(str) {
     return escapeHtml(str).replaceAll("\n", " ").replaceAll("\r", " ");
 }
+
