@@ -49,6 +49,7 @@ function navBarVisibility() {
     } else {
         $('#navUserMenu').hide();
         $('#navOrderList').hide();
+        $('#navTogglerSupportContent').hide();
 
         const nbr = $('#navbar-right');
         nbr.removeClass("mt-1");

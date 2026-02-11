@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-sm fixed-top border-bottom border-body" id="element"  aria-label="Navigation">
+<nav class="navbar navbar-expand-md fixed-top border-bottom border-body" id="element"  aria-label="Navigation">
     <div class="container-xxl">
         <button id="navBack" class="border-0 pb-1 me-2" aria-label="Zurück">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
@@ -46,19 +46,13 @@
                 <a id="navOrderList" class="nav-link" href="../views/orderlist.html?onlyOwn=false">Bestellungen</a>
             </div>
         </div>
-        <div class="position-fixed top-0 mt-1 end-0 d-flex align-items-center" id="navbar-right">
-            <button class="border-0 mb-1 bg-transparent" aria-label="Warenkorb">
-                <a id="navShoppingCart" class="border-0 mb-1 bg-transparent" href="../views/shoppingcarts.html">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none"
-                        stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="9" cy="21" r="1" />
-                        <circle cx="20" cy="21" r="1" />
-                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-                    </svg>
-                </a>
-            </button>
-            <a id ="navLogin" href="../views/login.html" class="btn btn-outline-primary btn-sm mx-2">Login</a>
+        <div class="position-fixed top-0 mt-1 end-0 d-flex align-items-center" id="navbar-right" aria-label="Warenkorb">
+            <a class="btn btn-outline-primary btn-sm" id="navShoppingCart" href="../views/shoppingcarts.html">
+                <i class="bi bi-cart4 me-2"></i>Warenkorb
+            </a>
+            <a id ="navLogin" href="../views/login.html" class="btn btn-outline-primary btn-sm mx-2">
+                <i class="bi bi-person"></i> Login
+            </a>
             <div id="navUserMenu" class="dropdown">
                 <button class="btn btn-link dropdown-toggle d-flex align-items-center" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="bi bi-person-circle" style="font-size: 1.5rem;"></i>
