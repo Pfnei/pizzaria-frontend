@@ -40,6 +40,7 @@ function navBarVisibility() {
 
     // UserMenu , Orders
     if (isLoggedIn) {
+        $('#navTogglerSupportContent').hide();
         $('#navUserMenu').show();
         $('#navOrderList').show();
         const nbr = $('#navbar-right');
@@ -48,6 +49,7 @@ function navBarVisibility() {
     } else {
         $('#navUserMenu').hide();
         $('#navOrderList').hide();
+
         const nbr = $('#navbar-right');
         nbr.removeClass("mt-1");
         nbr.addClass("mt-3");
@@ -64,6 +66,9 @@ function navBarVisibility() {
 
     // AdminTools
     if (isLoggedIn && isAdmin) {
+        if ($(window).width() < 768) {
+            $('#navTogglerSupportContent').show();
+        }
         $('#navUserList').show();
         $('#navProductList').show();
         $('#navOrderList').show();
