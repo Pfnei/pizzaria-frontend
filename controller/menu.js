@@ -18,6 +18,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     try {
         const products = await productService.getAllProducts(); // GET /products
         const list = Array.isArray(products) ? products.filter(p => p?.active !== false) : [];
+        console.log(products);
 
         renderProducts(container, list);
     } catch (err) {
