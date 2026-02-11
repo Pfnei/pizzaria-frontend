@@ -12,7 +12,7 @@ let hasSubmittedForm = false;
 let liveCheckFields = false;
 let currentProductId = null;
 
-const saveButton = document.getElementById('saveButton');
+
 const toProductListBtn = document.getElementById('toProductListBtn');
 const hreftoProductList = 'productlist.html';
 const form = document.getElementById('productInformationForm');
