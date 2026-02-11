@@ -18,6 +18,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     try {
         const products = await productService.getAllProducts(); // GET /products
         const list = Array.isArray(products) ? products.filter(p => p?.active !== false) : [];
+        console.log(products);
 
         renderProducts(container, list);
     } catch (err) {
@@ -84,23 +85,36 @@ function productCardHtml(p) {
         ? ` <i class="bi bi-leaf-fill text-success" title="Vegetarisch"></i>`
         : "";
 
+    // Allergene als kleine graue Badges
+    const allergenBadges = (p.allergens || [])
+        .map(a => `<span class="badge bg-light text-muted border me-1" style="font-size: 0.7rem;">${escapeHtml(a)}</span>`)
+        .join("");
+
     return `
       <div class="card cardstyle mb-3">
         <div class="card-body">
-          <div class="d-flex justify-content-between mb-2">
-            <h5 class="card-title">${escapeHtml(p.productName)}${vegetarianBadge}</h5>
-            <h5 class="card-title">Preis: ${formatEuro(p.price)}</h5>
+          <div class="d-flex justify-content-between mb-1">
+            <h5 class="card-title mb-0">${escapeHtml(p.productName)}${vegetarianBadge}</h5>
+            <span class="fw-bold text-primary">${formatEuro(p.price)}</span>
           </div>
+          
+          <p class="card-text text-muted small mb-2">
+            ${p.productDescription ? escapeHtml(p.productDescription) : "Keine Beschreibung verfügbar."}
+          </p>
 
-          <div class="d-flex justify-content-end">
-            <button class="btn btn-primary" type="button"
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="allergens-list">
+                ${allergenBadges}
+            </div>
+
+            <button class="btn btn-primary btn-sm" type="button"
               data-add="1"
               data-product-id="${escapeHtmlAttr(p.productId)}"
               data-product-name="${escapeHtmlAttr(p.productName)}"
               data-product-price="${String(Number(p.price) || 0)}"
               data-product-vegetarian="${String(Boolean(p.vegetarian))}"
             >
-              <i class="bi bi-cart4 me-2"></i> In den Warenkorb
+              <i class="bi bi-cart4 me-1"></i> In den Warenkorb
             </button>
           </div>
         </div>
@@ -111,8 +125,8 @@ function productCardHtml(p) {
 function categoryLabel(mainCategory) {
     switch (String(mainCategory)) {
         case "STARTER": return "Vorspeisen";
-        case "MAIN": return "Hauptspeisen";
-        case "DESSERT": return "Nachspeise";
+        case "MAIN_COURSE": return "Hauptspeisen"; // Korrigiert passend zum JSON
+        case "DESSERT": return "Nachspeisen";
         case "DRINK": return "Getränke";
         default: return String(mainCategory);
     }
