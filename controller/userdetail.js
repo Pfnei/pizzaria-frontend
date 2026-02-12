@@ -36,12 +36,8 @@ function initPage() {
         }
 
 
-
-
-
-
         setupDiversDetails();
-
+        console.log(currentUserId);
         // USER LADEN (ID oder /me)
         await loadUser(currentUserId);
 
@@ -67,21 +63,25 @@ function initPage() {
             }
         });
 
+        const deleteBtn = document.getElementById('deleteUserBtn');
+        const isOwnUser = (authManager.getUserId() == currentUserId);
+        if (authManager.isAdmin() && !isOwnUser) {
+            deleteBtn.style.display = 'block'; // Oder 'inline-block'
+            deleteBtn.onclick = async () => {
+                if (confirm("Möchtest du diesen Benutzer wirklich löschen?")) {
+                    await userService.delete(currentUserId);
+                    window.location.href = "userlist.html";
+                }
+            };
+        }
+
+
         changeEnterToTab(form);
 
         form.addEventListener('submit', handleFormSubmit);
     });
 
-    const deleteBtn = document.getElementById('deleteUserBtn');
-    if (authManager.isAdmin()) {
-        deleteBtn.style.display = 'block'; // Oder 'inline-block'
-        deleteBtn.onclick = async () => {
-            if(confirm("Möchtest du diesen Benutzer wirklich löschen?")) {
-                await userService.delete(currentUserId);
-                window.location.href = "userlist.html";
-            }
-        };
-    }
+
 }
 
 async function loadUser(userId) {
@@ -151,10 +151,8 @@ async function saveUser() {
         zipcode: getVal("plz") || null,
         salutation: getVal("anrede") || null,
         salutationDetail: getVal("diversDetails") || null,
-        country: getVal("land") || null,
-        // Passwort nur mitschicken, wenn Feld ausgefüllt
-        password: getVal("password") || null,
-        // Status nur für Admins erlauben
+        country: getVal("land") || null, // Passwort nur mitschicken, wenn Feld ausgefüllt
+        password: getVal("password") || null, // Status nur für Admins erlauben
         admin: isAdmin ? document.getElementById("admin")?.checked : null,
         active: isAdmin ? document.getElementById("active")?.checked : null
     };
@@ -168,22 +166,21 @@ async function saveUser() {
         }
 
 
-
-            setTimeout(() => {
-                // Admins zurück zur Liste, User zum Menü
-                window.location.href = authManager.isAdmin() ? "../views/userlist.html" : "../views/menu.html";
-            }, 2500);
-
+        setTimeout(() => {
+            // Admins zurück zur Liste, User zum Menü
+            window.location.href = authManager.isAdmin() ? "../views/userlist.html" : "../views/menu.html";
+        }, 2500);
 
 
     } catch (err) {
         console.error("Fehler beim Update:", err);
         const msgDiv = document.getElementById('successMessage');
         if (msgDiv) {
-            msgDiv.textContent = 'Fehler beim Updaten des Benutzers! ' ;
+            msgDiv.textContent = 'Fehler beim Updaten des Benutzers! ';
             msgDiv.className = 'alert alert-danger mt-3';
             msgDiv.style = 'block';
-            setTimeout(() => {msgDiv.textContent = ''
+            setTimeout(() => {
+                msgDiv.textContent = ''
                 msgDiv.className = '';
                 msgDiv.style = 'none';
             }, 2000);
@@ -235,7 +232,7 @@ function setupDiversDetails() {
 function validateForm() {
     let isFormValid = true;
 
-       isFormValid = validateStringInput('vorname', false, 3, 30) && isFormValid;
+    isFormValid = validateStringInput('vorname', false, 3, 30) && isFormValid;
     isFormValid = validateStringInput('nachname', false, 2, 100) && isFormValid;
     isFormValid = validateStringInput('username', true, 5, 30) && isFormValid;
     isFormValid = validateStringInput('email', true, 5, 100, false, false, false, true) && isFormValid;
@@ -263,20 +260,19 @@ function bindLiveValidation() {
     if (typeof validateStringInput !== "function") return;
 
     const validators = {
-        vorname:   () => validateStringInput('vorname', false, 3, 30),
-        nachname:  () => validateStringInput('nachname', false, 2, 100),
-        username:  () => validateStringInput('username', true, 5, 30),
-        email:     () => validateStringInput('email', true, 5, 100, false, false, false, true),
-        telefon:   () => validateStringInput('telefon', false, 7, 30),
-        plz:       () => validateStringInput('plz', false, 2, 10),
-        passwort:  () => {
+        vorname: () => validateStringInput('vorname', false, 3, 30),
+        nachname: () => validateStringInput('nachname', false, 2, 100),
+        username: () => validateStringInput('username', true, 5, 30),
+        email: () => validateStringInput('email', true, 5, 100, false, false, false, true),
+        telefon: () => validateStringInput('telefon', false, 7, 30),
+        plz: () => validateStringInput('plz', false, 2, 10),
+        passwort: () => {
             const a = validateStringInput('passwort', true, 8, 100, true, true, true, false);
             // beim Tippen im Passwort auch Gleichheit neu prüfen
             const b = checkPasswordEquality('passwort', 'passwortWdh');
             return a && b;
         },
-        passwortWdh: () => checkPasswordEquality('passwort', 'passwortWdh'),
-        // anrede:    () => validateSelectRequired('anrede'),
+        passwortWdh: () => checkPasswordEquality('passwort', 'passwortWdh'), // anrede:    () => validateSelectRequired('anrede'),
         // land:      () => validateSelectRequired('land'),
         diversDetails: () => {
             const grp = document.getElementById('diversDetailsGroup');

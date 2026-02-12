@@ -57,7 +57,7 @@ export class CAuthManager {
 
   getUserId() {
     const auth = this.getAuth();
-    return auth ? auth.user.getUserId() : null;
+    return auth ? auth.user.userId : null;
   }
 
 
