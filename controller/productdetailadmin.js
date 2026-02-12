@@ -233,9 +233,9 @@ async function saveFormData() {
         if (msgDiv) {
             msgDiv.textContent = 'Fehler beim Updatendes Produkts!';
             msgDiv.className = 'alert alert-danger mt-3';
-            setTimeout(() => msgDiv.textContent = '', 5000);
+
         } else {
-            alert('Fehler beim AUpdaten des Produkts!');
+            alert('Fehler beim Updaten des Produkts!');
         }
     }
 }

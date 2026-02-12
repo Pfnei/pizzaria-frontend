@@ -38,16 +38,15 @@ function navBarVisibility() {
     // User-Spezifische Menüs
     if (isLoggedIn) {
         $('#navUserMenu').show();
-        $('#navOrderList').show();
 
         // WICHTIG: Link zum eigenen Profil (ohne ID-Parameter für /me)
-        $('#navMyProfile').attr('href', '../views/userdetails.html');
+        $('#navMyProfile').attr('href', '../views/userdetail.html');
 
         const nbr = $('#navbar-right');
         nbr.removeClass("mt-3").addClass("mt-1");
     } else {
         $('#navUserMenu').hide();
-        $('#navOrderList').hide();
+
         const nbr = $('#navbar-right');
         nbr.removeClass("mt-1").addClass("mt-3");
     }
@@ -56,6 +55,7 @@ function navBarVisibility() {
     if (isLoggedIn && isAdmin) {
         $('#navUserList').show();
         $('#navProductList').show();
+        $('#navOrderList').show();
         // Falls auf Mobile: Toggler anzeigen
         if ($(window).width() < 768) {
             $('#navTogglerSupportContent').show();
@@ -63,6 +63,7 @@ function navBarVisibility() {
     } else {
         $('#navUserList').hide();
         $('#navProductList').hide();
+        $('#navOrderList').hide();
     }
 
     // Back-Button Steuerung

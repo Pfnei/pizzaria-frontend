@@ -143,37 +143,44 @@ async function saveUser() {
   };
 
   try {
-    await userService.create(payload);
-    showSuccessAndRedirect();
+    await userService.create(payload);const msgDiv = document.getElementById('successMessage');
+    if (msgDiv) {
+      msgDiv.textContent = 'Benutzer erfolgreich angelegt!';
+      msgDiv.className = 'alert alert-success mt-3';
+    }
+
+
+
+    setTimeout(() => {
+      // Admins zurück zur Liste, User zum Menü
+      window.location.href = authManager.isAdmin() ? "../views/userlist.html" : "../views/menu.html";
+    }, 2500);
   } catch (err) {
-    console.error("Fehler beim Speichern:", err);
-    console.log("Fehler beim Speichern: " + (err.message || err));
+    console.error("Fehler beim Anlegen:", err);
+    const msgDiv = document.getElementById('successMessage');
+    if (msgDiv) {
+      msgDiv.textContent = 'Fehler beim Anlegen des Benutzers! ' ;
+      msgDiv.className = 'alert alert-danger mt-3';
+      msgDiv.style = 'block';
+      setTimeout(() => {msgDiv.textContent = ''
+        msgDiv.className = '';
+        msgDiv.style = 'none';
+      }, 2000);
+
+    } else {
+      alert('Fehler beim Anlegen des Benutzers!', err);
+    }
   }
 }
-
-/* ----- Divers-Details ----- */
 
 function setupDiversDetails() {
   const anrede = document.getElementById('anrede');
   const detailsGroup = document.getElementById('diversDetailsGroup');
-  const detailsInput = document.getElementById('diversDetails');
-
   if (!anrede || !detailsGroup) return;
 
   const toggle = () => {
-    if (anrede.value === 'MX') {
-      detailsGroup.style.display = 'block';
-    } else {
-      detailsGroup.style.display = 'none';
-      if (detailsInput) {
-        detailsInput.value = '';
-        if (typeof clearValidation === "function") {
-          clearValidation(detailsInput);
-        }
-      }
-    }
+    detailsGroup.style.display = (anrede.value === 'MX') ? 'block' : 'none';
   };
-
   anrede.addEventListener('change', toggle);
   toggle();
 }
@@ -181,7 +188,7 @@ function setupDiversDetails() {
 function validateForm() {
   let isFormValid = true;
 
-  if (typeof validateStringInput !== "function") return true;
+
 
   isFormValid = validateStringInput('vorname', false, 3, 30) && isFormValid;
   isFormValid = validateStringInput('nachname', false, 2, 100) && isFormValid;
@@ -265,7 +272,6 @@ function showSuccessAndRedirect() {
   const btn = document.querySelector('#userForm button[type="submit"]');
   if (btn) btn.disabled = true;
 
- // setTimeout(() => {
-   //  window.location.href = "../views/menu.html";
- //  }, 1000);
+   setTimeout(() => { window.location.href = "../views/menu.html";
+  }, 1000);
 }

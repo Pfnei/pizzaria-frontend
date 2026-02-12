@@ -176,7 +176,11 @@ async function saveFormData() {
         if (msgDiv) {
             msgDiv.textContent = 'Fehler beim Anlegen des Produkts!';
             msgDiv.className = 'alert alert-danger mt-3';
-            setTimeout(() => msgDiv.textContent = '', 2000);
+            msgDiv.style = 'block';
+            setTimeout(() => {msgDiv.textContent = ''
+                msgDiv.className = '';
+                msgDiv.style = 'none';
+            }, 2000);
         } else {
             alert('Fehler beim Anlegen des Produkts!');
         }
