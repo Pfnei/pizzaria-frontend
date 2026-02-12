@@ -143,11 +143,33 @@ async function saveUser() {
   };
 
   try {
-    await userService.create(payload);
-    showSuccessAndRedirect();
+    await userService.create(payload);const msgDiv = document.getElementById('successMessage');
+    if (msgDiv) {
+      msgDiv.textContent = 'Benutzer erfolgreich angelegt!';
+      msgDiv.className = 'alert alert-success mt-3';
+    }
+
+
+
+    setTimeout(() => {
+      // Admins zurück zur Liste, User zum Menü
+      window.location.href = authManager.isAdmin() ? "../views/userlist.html" : "../views/menu.html";
+    }, 2500);
   } catch (err) {
-    console.error("Fehler beim Speichern:", err);
-    console.log("Fehler beim Speichern: " + (err.message || err));
+    console.error("Fehler beim Anlegen:", err);
+    const msgDiv = document.getElementById('successMessage');
+    if (msgDiv) {
+      msgDiv.textContent = 'Fehler beim Anlegen des Benutzers! ' ;
+      msgDiv.className = 'alert alert-danger mt-3';
+      msgDiv.style = 'block';
+      setTimeout(() => {msgDiv.textContent = ''
+        msgDiv.className = '';
+        msgDiv.style = 'none';
+      }, 2000);
+
+    } else {
+      alert('Fehler beim Anlegen des Benutzers!', err);
+    }
   }
 }
 

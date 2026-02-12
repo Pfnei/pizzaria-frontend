@@ -177,10 +177,10 @@ async function saveUser() {
 
 
     } catch (err) {
-        console.error("Fehler beim Speichern:", err);
+        console.error("Fehler beim Update:", err);
         const msgDiv = document.getElementById('successMessage');
         if (msgDiv) {
-            msgDiv.textContent = 'Fehler beim Updeten des Benutzers! ' ;
+            msgDiv.textContent = 'Fehler beim Updaten des Benutzers! ' ;
             msgDiv.className = 'alert alert-danger mt-3';
             msgDiv.style = 'block';
             setTimeout(() => {msgDiv.textContent = ''

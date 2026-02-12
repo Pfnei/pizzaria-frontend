@@ -40,7 +40,7 @@ function navBarVisibility() {
         $('#navUserMenu').show();
 
         // WICHTIG: Link zum eigenen Profil (ohne ID-Parameter für /me)
-        $('#navMyProfile').attr('href', '../views/userdetails.html');
+        $('#navMyProfile').attr('href', '../views/userdetail.html');
 
         const nbr = $('#navbar-right');
         nbr.removeClass("mt-3").addClass("mt-1");

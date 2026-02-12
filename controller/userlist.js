@@ -90,7 +90,7 @@ function renderUsers(list) {
     .on("click.userNav", ".user-row, .user-card", function () {
       const id = $(this).data("userId"); 
       if (!id) return;
-      const url = `../views/userdetails.html?id=${encodeURIComponent(id)}`;
+      const url = `../views/userdetail.html?id=${encodeURIComponent(id)}`;
       window.location.href = url;
     });
 }
