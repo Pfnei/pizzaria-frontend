@@ -55,6 +55,12 @@ export class CAuthManager {
     return auth ? auth.user : null;
   }
 
+  getUserId() {
+    const auth = this.getAuth();
+    return auth ? auth.user.getUserId() : null;
+  }
+
+
   /**
    * JWT-Payload auslesen (ohne Verifizierung!).
    * @returns {object | null} z.B. { exp, iat, userId, admin, ... }

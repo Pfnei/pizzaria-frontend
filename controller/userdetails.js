@@ -3,10 +3,12 @@
 import {userService} from "../services/userService.js";
 import {authManager} from "../services/authManager.js";
 import {fileService} from "../services/fileService.js";
+import {loginService} from "../services/loginService.js";
 
 let hasSubmittedForm = false;
 let liveCheckFields = false;
 let currentUserId = null;
+const form = document.getElementById('userForm');
 
 initPage();
 
@@ -33,10 +35,10 @@ function initPage() {
             if (activeCb) activeCb.disabled = true;
         }
 
-        const form = document.getElementById('userForm');
-        if (typeof changeEnterToTab === "function") {
-            changeEnterToTab(form);
-        }
+
+
+
+
 
         setupDiversDetails();
 
@@ -65,7 +67,9 @@ function initPage() {
             }
         });
 
-        form?.addEventListener('submit', handleFormSubmit);
+        changeEnterToTab(form);
+
+        form.addEventListener('submit', handleFormSubmit);
     });
 
     const deleteBtn = document.getElementById('deleteUserBtn');
@@ -157,9 +161,36 @@ async function saveUser() {
 
     try {
         await userService.update(currentUserId, payload);
-        showSuccessAndRedirect();
+        const msgDiv = document.getElementById('successMessage');
+        if (msgDiv) {
+            msgDiv.textContent = 'Benutzer erfolgreich upgedated!';
+            msgDiv.className = 'alert alert-success mt-3';
+        }
+
+
+
+            setTimeout(() => {
+                // Admins zurück zur Liste, User zum Menü
+                window.location.href = authManager.isAdmin() ? "../views/userlist.html" : "../views/menu.html";
+            }, 2500);
+
+
+
     } catch (err) {
         console.error("Fehler beim Speichern:", err);
+        const msgDiv = document.getElementById('successMessage');
+        if (msgDiv) {
+            msgDiv.textContent = 'Fehler beim Updeten des Benutzers! ' ;
+            msgDiv.className = 'alert alert-danger mt-3';
+            msgDiv.style = 'block';
+            setTimeout(() => {msgDiv.textContent = ''
+                msgDiv.className = '';
+                msgDiv.style = 'none';
+            }, 2000);
+
+        } else {
+            alert('Fehler beim Updaten des Benutzers!', err);
+        }
     }
 }
 
@@ -175,7 +206,18 @@ function getVal(id) {
 
 function handleFormSubmit(event) {
     event.preventDefault();
-    if (validateForm()) saveUser();
+    const form = event.target;
+    const isValid = validateForm();
+
+    form.classList.add('was-validated');
+
+    if (!hasSubmittedForm) {
+        hasSubmittedForm = true;
+        bindLiveValidation();
+    }
+
+    if (isValid) saveUser();
+
 }
 
 function setupDiversDetails() {
@@ -191,16 +233,80 @@ function setupDiversDetails() {
 }
 
 function validateForm() {
-    // Deine validateStringInput Logik hier...
-    return true; // Vereinfacht für dieses File
+    let isFormValid = true;
+
+       isFormValid = validateStringInput('vorname', false, 3, 30) && isFormValid;
+    isFormValid = validateStringInput('nachname', false, 2, 100) && isFormValid;
+    isFormValid = validateStringInput('username', true, 5, 30) && isFormValid;
+    isFormValid = validateStringInput('email', true, 5, 100, false, false, false, true) && isFormValid;
+    isFormValid = validateStringInput('telefon', false, 7, 30) && isFormValid;
+    isFormValid = validateStringInput('plz', false, 2, 10) && isFormValid;
+
+
+    const detailsGroup = document.getElementById('diversDetailsGroup');
+    if (detailsGroup && detailsGroup.style.display !== 'none') {
+        isFormValid = validateStringInput('diversDetails', false, 4, 30) && isFormValid;
+    } else {
+        const details = document.getElementById('diversDetails');
+        if (details && typeof clearValidation === "function") {
+            clearValidation(details);
+        }
+    }
+    return isFormValid;
 }
 
-function showSuccessAndRedirect() {
-    const msg = document.getElementById('successMessage');
-    if (msg) msg.style.display = 'block';
 
-    setTimeout(() => {
-        // Admins zurück zur Liste, User zum Menü
-        window.location.href = authManager.isAdmin() ? "../views/userlist.html" : "../views/menu.html";
-    }, 1500);
+function bindLiveValidation() {
+    if (liveCheckFields) return;
+    liveCheckFields = true;
+
+    if (typeof validateStringInput !== "function") return;
+
+    const validators = {
+        vorname:   () => validateStringInput('vorname', false, 3, 30),
+        nachname:  () => validateStringInput('nachname', false, 2, 100),
+        username:  () => validateStringInput('username', true, 5, 30),
+        email:     () => validateStringInput('email', true, 5, 100, false, false, false, true),
+        telefon:   () => validateStringInput('telefon', false, 7, 30),
+        plz:       () => validateStringInput('plz', false, 2, 10),
+        passwort:  () => {
+            const a = validateStringInput('passwort', true, 8, 100, true, true, true, false);
+            // beim Tippen im Passwort auch Gleichheit neu prüfen
+            const b = checkPasswordEquality('passwort', 'passwortWdh');
+            return a && b;
+        },
+        passwortWdh: () => checkPasswordEquality('passwort', 'passwortWdh'),
+        // anrede:    () => validateSelectRequired('anrede'),
+        // land:      () => validateSelectRequired('land'),
+        diversDetails: () => {
+            const grp = document.getElementById('diversDetailsGroup');
+            if (grp && grp.style.display !== 'none') {
+                return validateStringInput('diversDetails', false, 4, 30);
+            } else {
+                const details = document.getElementById('diversDetails');
+                if (details && typeof clearValidation === "function") {
+                    clearValidation(details);
+                }
+                return true;
+            }
+        }
+    };
+
+    Object.keys(validators).forEach((fieldId) => {
+        const element = document.getElementById(fieldId);
+        if (!element) return;
+
+        const handler = () => {
+            if (!hasSubmittedForm) return;
+            validators[fieldId]();
+        };
+
+        if (element.tagName === 'SELECT') {
+            element.addEventListener('change', handler);
+        } else {
+            element.addEventListener('input', handler);
+            element.addEventListener('blur', handler);
+        }
+    });
 }
+

@@ -151,29 +151,14 @@ async function saveUser() {
   }
 }
 
-/* ----- Divers-Details ----- */
-
 function setupDiversDetails() {
   const anrede = document.getElementById('anrede');
   const detailsGroup = document.getElementById('diversDetailsGroup');
-  const detailsInput = document.getElementById('diversDetails');
-
   if (!anrede || !detailsGroup) return;
 
   const toggle = () => {
-    if (anrede.value === 'MX') {
-      detailsGroup.style.display = 'block';
-    } else {
-      detailsGroup.style.display = 'none';
-      if (detailsInput) {
-        detailsInput.value = '';
-        if (typeof clearValidation === "function") {
-          clearValidation(detailsInput);
-        }
-      }
-    }
+    detailsGroup.style.display = (anrede.value === 'MX') ? 'block' : 'none';
   };
-
   anrede.addEventListener('change', toggle);
   toggle();
 }
@@ -181,7 +166,7 @@ function setupDiversDetails() {
 function validateForm() {
   let isFormValid = true;
 
-  if (typeof validateStringInput !== "function") return true;
+
 
   isFormValid = validateStringInput('vorname', false, 3, 30) && isFormValid;
   isFormValid = validateStringInput('nachname', false, 2, 100) && isFormValid;
@@ -265,7 +250,6 @@ function showSuccessAndRedirect() {
   const btn = document.querySelector('#userForm button[type="submit"]');
   if (btn) btn.disabled = true;
 
- // setTimeout(() => {
-   //  window.location.href = "../views/menu.html";
- //  }, 1000);
+   setTimeout(() => { window.location.href = "../views/menu.html";
+  }, 1000);
 }
