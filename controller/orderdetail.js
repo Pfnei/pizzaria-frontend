@@ -78,88 +78,6 @@ function setText(id, value) {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-function updateSubmitEnabledState() {
-    const cart = getCart();
-    const btn = document.querySelector('#checkoutSubmitForm button[type="submit"]');
-    if (!btn) return;
-
-    btn.disabled = !cart.items.length;
-    btn.title = cart.items.length ? "" : "Warenkorb ist leer.";
-}
-
-async function handleFormSubmit(event) {
-    event.preventDefault();
-    const form = event.target;
-    const isValid = validateForm();
-
-    form.classList.add('was-validated');
-
-    if (!hasSubmittedForm) {
-        bindLiveValidation();
-    }
-
-    if (!isValid) return;
-
-    const cart = getCart();
-    if (!cart.items.length) {
-        alert("Warenkorb ist leer. Bitte füge Produkte hinzu.");
-        updateSubmitEnabledState();
-        return;
-    }
-
-    const btn = document.querySelector('#checkoutSubmitForm button[type="submit"]');
-    if (btn) btn.disabled = true;
-
-    try {
-        const dto = buildOrderCreateDto(cart);
-        await orderService.create(dto);
-
-        clearCart();
-        showSuccessAndRedirect();
-    } catch (err) {
-        console.error("Order create failed:", err);
-        alert(err?.message || "Bestellung fehlgeschlagen.");
-        if (btn) btn.disabled = false;
-    }
-}
-
-function buildOrderCreateDto(cart) {
-    const firstname = (document.getElementById('vorname')?.value || "").trim();
-    const lastname = (document.getElementById('nachname')?.value || "").trim();
-    const phoneNumber = (document.getElementById('telefon')?.value || "").trim();
-    const address = (document.getElementById('adresse')?.value || "").trim();
-    const zipcode = (document.getElementById('plz')?.value || "").trim();
-    const city = (document.getElementById('ort')?.value || "").trim();
-    const deliveryNote = (document.getElementById('anmerkung')?.value || "").trim();
-
-    return {
-        firstname,
-        lastname,
-        phoneNumber,
-        address,
-        zipcode,
-        city,
-        deliveryNote,
-        total: getCartTotal(),
-        items: cart.items.map(it => ({
-            productId: String(it.productId),
-            quantity: Number(it.quantity) || 1
-        }))
-    };
-}
-
-
-
 function formatEuro(value) {
     return '€' + value.toFixed(2).replace('.', ',');
 }
@@ -182,7 +100,7 @@ function renderOrderDetails(order) {
     order.items.forEach(item => {
         const qty = Number(item.quantity) || 0;
         const price = Number(item.price) || 0;
-        const itemTotal = qty * price;
+        const itemTotal =  price;
         total += itemTotal;
 
         const row = `
