@@ -66,7 +66,7 @@ function render(list) {
 
     // Tabellenzeile
     tbody.append(`
-      <tr class="order-row">
+      <tr class="order-row" data-order-id="${o.orderId}">
         <td>${date}</td>
         <td>€ ${Number(total).toFixed(2)}</td>
         <td>${username}</td>
@@ -79,7 +79,7 @@ function render(list) {
 
     // Card-Ansicht (mobil)
     cards.append(`
-      <div class="col-12 col-sm-6 col-md-4">
+      <div class="col-12 col-sm-6 col-md-4" data-order-id="${o.orderId}">
         <div class="card h-100 order-card">
           <div class="card-body p-2">
             <p class="mb-1">${date}</p>
@@ -92,6 +92,23 @@ function render(list) {
       </div>
     `);
   });
+
+
+// Klick auf Row oder Card
+$(document)
+    .off("click.orderNav")
+    .on("click.orderNav", ".order-row, .order-card", function () {
+      const id = $(this).data("orderId");
+      if (!id) return;
+      let url;
+      if (authManager.isAdmin()) {
+        url = `../views/orderdetail.html?id=${encodeURIComponent(id)}`;
+      }
+      else {
+        url = `../views/menu}`;
+      }
+      window.location.href = url;
+    });
 }
 
 function registerFilter() {
