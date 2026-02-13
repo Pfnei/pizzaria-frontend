@@ -85,7 +85,7 @@ const sortedList = Enumerable.from(list)
 
     // Tabelle (Zeile klickbar)
     tbody.append(`
-      <tr class="product-row" data-product-id="${p.productId}"">
+      <tr class="product-row" data-product-id="${p.productId}">
         <td>${name}</td>
         <td>${mainCategory}</td>
         <td>${subCategory}</td>
@@ -96,7 +96,7 @@ const sortedList = Enumerable.from(list)
 
     // Cards (Card klickbar)
     cards.append(`
-      <div class="col-12 col-sm-6 col-md-4" data-product-id="${p.productId}"" >
+      <div class="col-12 col-sm-6 col-md-4" data-product-id="${p.productId}" >
         <div class="card h-100 product-card">
           <div class="card-body p-2">
             <p class="mb-1 fw-semibold">${name}</p>
