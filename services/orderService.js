@@ -7,9 +7,12 @@ class COrderService extends CBaseCrudService {
     super("/orders", http);
   }
 
-//   async getMyOrders() {
-//     return await this.http.get("/orders/my");
-//   }
+
+
+  async getMyOrders() {
+    return await this.http.get(`${this.basePath}/mine`);
+  }
+
 }
 
 export const orderService = new COrderService();
