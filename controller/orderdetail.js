@@ -1,11 +1,12 @@
 'use strict';
 
 import { orderService } from "../services/orderService.js";
-import { getCart, clearCart, getCartTotal } from "../utils/cartStorage.js";
+import {addToCart} from "../utils/cartStorage.js";
 
 import {formatDate, formatUserName} from "../utils/helpers.js";
 
 let currentOrderId = null;
+let currentOrder = null;
 
 initPage();
 
@@ -26,7 +27,9 @@ function initPage() {
 
         await loadOrder(currentOrderId);
 
+        const addToCart = document.getElementById('addToCart');
 
+        addToCart?.addEventListener('click', () => addOrderItemsToCart());
 
     });
 }
@@ -34,6 +37,7 @@ function initPage() {
 async function loadOrder(orderId) {
     try {
         const order = await orderService.getById(orderId);
+        currentOrder = order;
         console.log(order);
 
       if (!order) {
@@ -63,6 +67,32 @@ async function loadOrder(orderId) {
         console.error("Fehler beim Laden:", err);
         //window.location.href = "../views/menu.html";
     }
+}
+
+
+
+function addOrderItemsToCart() {
+    if (!currentOrder || !Array.isArray(currentOrder.items) || currentOrder.items.length === 0) return;
+
+
+    currentOrder.items.forEach((item) => {
+        const productId = item.product.productId
+        if (!productId) return;
+
+        const qty =  item.quantity || 0;
+
+        addToCart(
+            {
+                productId: String(productId),
+                productName: item.product.productName,
+                price: Number(item.product.price ?? 0),
+                vegetarian: Boolean(item.product.vegetarian),
+            },
+            qty
+        );
+    });
+
+    alert("Produkte wurden in den Warenkorb übernommen");
 }
 
 
