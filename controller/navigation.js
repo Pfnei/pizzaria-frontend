@@ -1,4 +1,4 @@
-import { authManager } from "../services/authManager.js";
+import {authManager, CAuthManager} from "../services/authManager.js";
 import { getMainEndpoint, getMainEndpointFromUrl, someEndpoint } from "../utils/checkEndpoints.js";
 
 $(function () {
@@ -41,6 +41,7 @@ function navBarVisibility() {
 
         // WICHTIG: Link zum eigenen Profil (ohne ID-Parameter für /me)
         $('#navMyProfile').attr('href', '../views/userdetail.html');
+
 
         const nbr = $('#navbar-right');
         nbr.removeClass("mt-3").addClass("mt-1");
