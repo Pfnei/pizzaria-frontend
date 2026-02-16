@@ -19,49 +19,56 @@
 
 <main>
     <section>
-        <div class="container pt-5 mt-5 mb-5">
-            <div class="row justify-content-center">
-                <div class="col-lg-6 col-md-8">
-                    <h3 class="text-center my-4">Warenkorb</h3>
+        <div class="wrapper pt-5 mt-5 mb-5">
+            <div class="box">
+                <div class="row justify-content-center">
+                    <div class="col-10">
+                        <h3 class="text-center my-4">Warenkorb</h3>
 
-                    <div id="cartItems" class="card border-0 mb-3"></div>
+                        <div id="cartItems" class="card border-0 mb-3"></div>
 
-                    <div class="d-flex justify-content-between align-items-center mt-2 mb-3">
-                        <div class="fw-bold">Gesamtsumme</div>
-                        <div id="totalPrice" class="fw-bold text-end">€ 0,00</div>
-                    </div>
+                        <div class="d-flex justify-content-between align-items-center mt-2 mb-3">
+                            <div class="fw-bold">Gesamtsumme</div>
+                            <div id="totalPrice" class="fw-bold text-end">€ 0,00</div>
+                        </div>
 
-                    <div class="text-center mb-4 d-flex justify-content-end">
-                        <!-- WICHTIG: id="btnCheckout" -->
-                        <button id="btnCheckout" class="btn btn-sm btn-primary" type="button">
-                            Zur Kasse
-                        </button>
-                    </div>
+                        <div class="text-center mb-4 d-flex justify-content-end">
+                            <!-- WICHTIG: id="btnCheckout" -->
+                            <button id="btnCheckout" class="btn btn-sm btn-primary" type="button">
+                                Zur Kasse
+                            </button>
+                        </div>
 
-                    <!-- Modal wird nur gezeigt, wenn NICHT eingeloggt -->
-                    <div class="modal fade" id="checkOutModal" tabindex="-1" data-bs-backdrop="static" aria-labelledby="checkOutModalLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content bg-dark text-light">
-                                <div class="modal-header d-flex justify-content-center border-0">
-                                    <div class="col-11 text-center">
-                                        <h1 class="modal-title text-light fs-6" id="checkOutModalLabel">Wie möchtest du fortfahren?</h1>
+                        <!-- Modal wird nur gezeigt, wenn NICHT eingeloggt -->
+                        <div class="modal fade" id="checkOutModal" tabindex="-1" data-bs-backdrop="static"
+                             aria-labelledby="checkOutModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content bg-dark text-light">
+                                    <div class="modal-header d-flex justify-content-center border-0">
+                                        <div class="col-11 text-center">
+                                            <h1 class="modal-title text-light fs-6" id="checkOutModalLabel">Wie möchtest
+                                                du fortfahren?</h1>
+                                        </div>
+                                        <div class="col-1 justify-content-end">
+                                            <button type="button" class="btn-close btn-close-white"
+                                                    data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
                                     </div>
-                                    <div class="col-1 justify-content-end">
-                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    <div class="modal-footer border-0 d-flex justify-content-center">
+                                        <button type="button" id="btnGuest" class="btn btn-outline-light btn-sm col-10"
+                                                data-bs-dismiss="modal">
+                                            Als Gast fortfahren
+                                        </button>
+                                        <button type="button" id="btnLoginOrRegister"
+                                                class="btn btn-light btn-sm col-10">
+                                            Anmeldung oder Registrieren
+                                        </button>
                                     </div>
-                                </div>
-                                <div class="modal-footer border-0 d-flex justify-content-center">
-                                    <button type="button" id="btnGuest" class="btn btn-outline-light btn-sm col-10" data-bs-dismiss="modal">
-                                        Als Gast fortfahren
-                                    </button>
-                                    <button type="button" id="btnLoginOrRegister" class="btn btn-light btn-sm col-10">
-                                        Anmeldung oder Registrieren
-                                    </button>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
+                    </div>
                 </div>
             </div>
         </div>
@@ -71,7 +78,8 @@
 <footer id="footer"></footer>
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        crossorigin="anonymous"></script>
 
 <script type="module" src="../controller/shoppingcarts.js"></script>
 <script type="module" src="../controller/navigation.js"></script>
