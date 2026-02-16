@@ -39,7 +39,9 @@ function initPage() {
 
 
         deleteButton.addEventListener('click', () => {
-            deleteProduct();
+            if (confirm("Möchtest du diese Produkt wirklich löschen?")) {
+                deleteProduct();
+            }
         });
 
         productImage.addEventListener('click', () => {
@@ -257,6 +259,9 @@ async function deleteProduct() {
 
 
     try {
+
+
+
         console.log("Hallo");
         const orders = await orderService.getAll({params: {productId: currentProductId}});
         console.log('Orders !', orders);
