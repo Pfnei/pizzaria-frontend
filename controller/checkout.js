@@ -137,7 +137,8 @@ function showSuccessAndRedirect() {
         title: "Vielen Dank!",
         text: "Deine Bestellung wird zubereitet",
         icon: "success",
-        timer: 2500
+        timer: 2500,
+        showConfirmButton: false
     });
     setTimeout(()=> {window.location.href = "../views/menu.html"}, 3000);
 }
