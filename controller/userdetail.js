@@ -3,11 +3,14 @@
 import {userService} from "../services/userService.js";
 import {authManager} from "../services/authManager.js";
 import {fileService} from "../services/fileService.js";
-import {loginService} from "../services/loginService.js";
+
 
 let hasSubmittedForm = false;
 let liveCheckFields = false;
 let currentUserId = null;
+let isOwnUser = false;
+let oldUser;
+
 const form = document.getElementById('userForm');
 
 initPage();
@@ -23,23 +26,21 @@ function initPage() {
         const params = new URLSearchParams(window.location.search);
         currentUserId = params.get("id"); // Kann null sein
 
+        // USER LADEN (ID oder /me)
+        await loadUser(currentUserId);
+
+        isOwnUser = (authManager.getUserId() == currentUserId);
+
         // Admin-Elemente verstecken/deaktivieren für normale User
-        if (!authManager.isAdmin()) {
+        if (!authManager.isAdmin() || isOwnUser) {
             const adminSection = document.getElementById('adminSection'); // ID deines Containers im HTML
             if (adminSection) adminSection.style.display = 'none';
 
-            // Falls keine Section da ist, direkt die Inputs deaktivieren
-            const adminCb = document.getElementById('admin');
-            const activeCb = document.getElementById('active');
-            if (adminCb) adminCb.disabled = true;
-            if (activeCb) activeCb.disabled = true;
         }
 
 
         setupDiversDetails();
-        console.log(currentUserId);
-        // USER LADEN (ID oder /me)
-        await loadUser(currentUserId);
+
 
         // Events für Profilbild (jetzt ist currentUserId sicher gesetzt)
         const profileImage = document.getElementById('profileImage');
@@ -64,7 +65,9 @@ function initPage() {
         });
 
         const deleteBtn = document.getElementById('deleteUserBtn');
-        const isOwnUser = (authManager.getUserId() == currentUserId);
+
+
+
         if (authManager.isAdmin() && !isOwnUser) {
             deleteBtn.style.display = 'block'; // Oder 'inline-block'
             deleteBtn.onclick = async () => {
@@ -94,7 +97,10 @@ async function loadUser(userId) {
             // User-Modus: Lade eigenes Profil per /me
             user = await userService.getMe();
             currentUserId = user.userId; // Wichtig für den Upload & Update
+
         }
+
+        oldUser = user; // wichtig für Update eigener User
 
         if (!user) throw new Error("Benutzer nicht gefunden.");
 
@@ -153,8 +159,10 @@ async function saveUser() {
         salutationDetail: getVal("diversDetails") || null,
         country: getVal("land") || null, // Passwort nur mitschicken, wenn Feld ausgefüllt
         password: getVal("password") || null, // Status nur für Admins erlauben
-        admin: isAdmin ? document.getElementById("admin")?.checked : null,
-        active: isAdmin ? document.getElementById("active")?.checked : null
+
+
+        admin: (isAdmin && !isOwnUser) ? document.getElementById("admin")?.checked : null,
+        active: (isAdmin && !isOwnUser) ? document.getElementById("active")?.checked : null
     };
 
     try {
@@ -165,8 +173,21 @@ async function saveUser() {
             msgDiv.className = 'alert alert-success mt-3';
         }
 
+        // werden die Claims im Token verändert, ist ein neuer Login erforderlich
+        if (isOwnUser) {
 
-        setTimeout(() => {
+            if (oldUser.email !== payload.email ||
+                oldUser.username !== payload.username
+            ) {
+                setTimeout(() => {
+
+                    window.location.href = "../views/login.html";
+                }, 1000);
+            }
+
+        }
+
+       setTimeout(() => {
             // Admins zurück zur Liste, User zum Menü
             window.location.href = authManager.isAdmin() ? "../views/userlist.html" : "../views/menu.html";
         }, 2500);
