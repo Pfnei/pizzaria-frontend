@@ -67,15 +67,26 @@ function initPage() {
         const deleteBtn = document.getElementById('deleteUserBtn');
 
 
-
         if (authManager.isAdmin() && !isOwnUser) {
             deleteBtn.style.display = 'block'; // Oder 'inline-block'
             deleteBtn.onclick = async () => {
-                if (confirm("Möchtest du diesen Benutzer wirklich löschen?")) {
+                const result = await Swal.fire({
+                                                   title: 'Möchtest du den Benutzer wirklich löschen?',
+                                                   text: 'Dieser Vorgang kann nicht rückgängig gemacht werden!',
+                                                   icon: 'warning',
+                                                   showCancelButton: true,
+                                                   confirmButtonText: 'Ja, löschen',
+                                                   cancelButtonText: 'Abbrechen',
+                                                   confirmButtonColor: '#dc3545'
+                                               });
+
+                if (result.isConfirmed) {
                     await userService.delete(currentUserId);
                     window.location.href = "userlist.html";
                 }
             };
+
+
         }
 
 
@@ -176,9 +187,7 @@ async function saveUser() {
         // werden die Claims im Token verändert, ist ein neuer Login erforderlich
         if (isOwnUser) {
 
-            if (oldUser.email !== payload.email ||
-                oldUser.username !== payload.username
-            ) {
+            if (oldUser.email !== payload.email || oldUser.username !== payload.username) {
                 setTimeout(() => {
 
                     window.location.href = "../views/login.html";
@@ -187,7 +196,7 @@ async function saveUser() {
 
         }
 
-       setTimeout(() => {
+        setTimeout(() => {
             // Admins zurück zur Liste, User zum Menü
             window.location.href = authManager.isAdmin() ? "../views/userlist.html" : "../views/menu.html";
         }, 2500);
