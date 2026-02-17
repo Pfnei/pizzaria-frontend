@@ -7,6 +7,7 @@ import {formatDate, formatUserName} from '../utils/helpers.js';
 import {orderService} from "../services/orderService.js";
 
 
+
 redirectToMenu();
 
 let hasSubmittedForm = false;
@@ -38,56 +39,72 @@ function initPage() {
         }
 
 
-        deleteButton.addEventListener('click', () => {
-            if (confirm("Möchtest du diese Produkt wirklich löschen?")) {
+        deleteButton.addEventListener('click', async () => {
+
+            const result = await Swal.fire({
+                                               title: 'Möchtest du diese Produkt wirklich löschen?',
+                                               text: 'Dieser Vorgang kann nicht rückgängig gemacht werden!',
+                                               icon: 'warning',
+                                               showCancelButton: true,
+                                               confirmButtonText: 'Ja, löschen',
+                                               cancelButtonText: 'Abbrechen',
+                                               confirmButtonColor: '#dc3545'
+                                           });
+
+            if (result.isConfirmed) {
                 deleteProduct();
             }
         });
 
-        productImage.addEventListener('click', () => {
-            if (productUploadInput) productUploadInput.click();
-        });
 
 
-        productUploadInput.addEventListener('change', async (event) => {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            try {
-                // 1. Upload zum Server
-                await fileService.uploadProductPicture(currentProductId, file);
+    productImage.addEventListener('click', () => {
+        if (productUploadInput) productUploadInput.click();
+    });
 
 
-                // 2. Alten Speicher (Blob-URL) im Browser freigeben
-                if (productImage.src.startsWith('blob:')) {
-                    URL.revokeObjectURL(productImage.src);
-                }
+    productUploadInput.addEventListener('change', async (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
 
-                // 3. Neue lokale Vorschau erstellen
-                const localUrl = URL.createObjectURL(file);
-                productImage.src = localUrl;
+        try {
+            // 1. Upload zum Server
+            await fileService.uploadProductPicture(currentProductId, file);
 
 
-                console.log("Upload erfolgreich!");
-
-            } catch (err) {
-                // Hier wird der Fehler gefangen, falls der Upload fehlschlägt
-                console.error("Fehler beim Hochladen des Produktbilds:", err);
-                console.log("Fehler beim Hochladen des Produktbilds.");
+            // 2. Alten Speicher (Blob-URL) im Browser freigeben
+            if (productImage.src.startsWith('blob:')) {
+                URL.revokeObjectURL(productImage.src);
             }
 
+            // 3. Neue lokale Vorschau erstellen
+            const localUrl = URL.createObjectURL(file);
+            productImage.src = localUrl;
 
-        });
 
-        await loadProduct(currentProductId);
+            console.log("Upload erfolgreich!");
 
-        // Form setup
+        } catch (err) {
+            // Hier wird der Fehler gefangen, falls der Upload fehlschlägt
+            console.error("Fehler beim Hochladen des Produktbilds:", err);
+            console.log("Fehler beim Hochladen des Produktbilds.");
+        }
 
-        changeEnterToTab(form);
-
-        form.addEventListener('submit', handleFormSubmit);
 
     });
+
+    await loadProduct(currentProductId);
+
+    // Form setup
+
+    changeEnterToTab(form);
+
+    form.addEventListener('submit', handleFormSubmit);
+
+}
+
+)
+;
 }
 
 async function loadProduct(productId) {
@@ -259,7 +276,6 @@ async function deleteProduct() {
 
 
     try {
-
 
 
         console.log("Hallo");

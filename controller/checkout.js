@@ -1,7 +1,9 @@
 'use strict';
 
-import { orderService } from "../services/orderService.js";
-import { getCart, clearCart, getCartTotal } from "../utils/cartStorage.js";
+import {orderService} from "../services/orderService.js";
+import {getCart, clearCart, getCartTotal} from "../utils/cartStorage.js";
+import {userService} from "../services/userService.js";
+import {authManager} from "../services/authManager.js";
 
 let hasSubmittedForm = false;
 let liveCheckFields = false;
@@ -15,6 +17,11 @@ function initCheckout() {
 
         changeEnterToTab(deliveryForm);
         submitForm.addEventListener('submit', handleFormSubmit);
+
+        if (authManager.isLoggedIn()) {
+            loadUserDetails();
+        }
+
 
         renderOrderSummary();
         updateSubmitEnabledState();
@@ -79,17 +86,8 @@ function buildOrderCreateDto(cart) {
     const deliveryNote = (document.getElementById('anmerkung')?.value || "").trim();
 
     return {
-        firstname,
-        lastname,
-        phoneNumber,
-        address,
-        zipcode,
-        city,
-        deliveryNote,
-        total: getCartTotal(),
-        items: cart.items.map(it => ({
-            productId: String(it.productId),
-            quantity: Number(it.quantity) || 1
+        firstname, lastname, phoneNumber, address, zipcode, city, deliveryNote, total: getCartTotal(), items: cart.items.map(it => ({
+            productId: String(it.productId), quantity: Number(it.quantity) || 1
         }))
     };
 }
@@ -134,13 +132,9 @@ function bindLiveValidation() {
 
 function showSuccessAndRedirect() {
     Swal.fire({
-        title: "Vielen Dank!",
-        text: "Deine Bestellung wird zubereitet",
-        icon: "success",
-        timer: 2500,
-        showConfirmButton: false
-    });
-    setTimeout(()=> {window.location.href = "../views/menu.html"}, 3000);
+                  title: "Vielen Dank!", text: "Deine Bestellung wird zubereitet", icon: "success", timer: 2500, showConfirmButton: false
+              });
+    setTimeout(() => {window.location.href = "../views/menu.html"}, 3000);
 }
 
 function formatEuro(value) {
@@ -186,3 +180,32 @@ function renderOrderSummary() {
     `;
     tbody.append(totalRow);
 }
+
+
+async function loadUserDetails() {
+    try {
+        let user;
+        user = await userService.getMe();
+
+        if (!user) throw new Error("Benutzer nicht gefunden.");
+
+        // Formular befüllen
+        setValue("vorname", user.firstname || "");
+        setValue("nachname", user.lastname || "");
+        setValue("telefon", user.phoneNumber || "");
+        setValue("adresse", user.address || "");
+        setValue("plz", user.zipcode || "");
+        setValue("ort", user.city || "");
+
+
+    } catch (err) {
+        console.error("Fehler beim Laden0:", err);
+
+    }
+}
+
+function setValue(id, value) {
+    const el = document.getElementById(id);
+    if (el) el.value = value;
+}
+
