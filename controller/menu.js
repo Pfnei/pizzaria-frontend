@@ -56,8 +56,23 @@ function renderProducts(container, products) {
     const sections = Object.entries(groups).map(([cat, items]) => {
         const title = categoryLabel(cat);
         const cards = items.map(productCardHtml).join("");
+        let idVar;
+        switch (title) {
+            case "Vorspeisen":
+                idVar = "item-1";
+                break;
+            case "Hauptspeisen":
+                idVar = "item-2";
+                break;
+            case "Nachspeisen":
+                idVar = "item-3";
+                break;
+            case "Getränke":
+                idVar = "item-4";
+                break;
+        }
         return `
-          <div class="product-div mb-4">
+          <div class="product-div mb-4" id=${idVar}>
             <h4 class="mb-3">${escapeHtml(title)}</h4>
             ${cards}
           </div>
@@ -65,7 +80,7 @@ function renderProducts(container, products) {
     }).join("");
 
     container.innerHTML = `
-      <div class="container">
+      <div class="container sc" data-bs-target="sidebar-nav" data-bs-spy="scroll" data-bs-smooth-scroll="true" tabindex="0">
         ${sections}
       </div>
     `;
