@@ -3,7 +3,7 @@
 import {userService} from "../services/userService.js";
 import {authManager} from "../services/authManager.js";
 import {fileService} from "../services/fileService.js";
-import {loginService} from "../services/loginService.js";
+
 
 let hasSubmittedForm = false;
 let liveCheckFields = false;
@@ -28,11 +28,6 @@ function initPage() {
             const adminSection = document.getElementById('adminSection'); // ID deines Containers im HTML
             if (adminSection) adminSection.style.display = 'none';
 
-            // Falls keine Section da ist, direkt die Inputs deaktivieren
-            const adminCb = document.getElementById('admin');
-            const activeCb = document.getElementById('active');
-            if (adminCb) adminCb.disabled = true;
-            if (activeCb) activeCb.disabled = true;
         }
 
 
@@ -65,6 +60,7 @@ function initPage() {
 
         const deleteBtn = document.getElementById('deleteUserBtn');
         const isOwnUser = (authManager.getUserId() == currentUserId);
+
         if (authManager.isAdmin() && !isOwnUser) {
             deleteBtn.style.display = 'block'; // Oder 'inline-block'
             deleteBtn.onclick = async () => {
