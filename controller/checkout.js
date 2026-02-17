@@ -18,6 +18,7 @@ function initCheckout() {
 
         renderOrderSummary();
         updateSubmitEnabledState();
+
     });
 }
 
@@ -40,6 +41,7 @@ async function handleFormSubmit(event) {
     if (!hasSubmittedForm) {
         hasSubmittedForm = true;
         bindLiveValidation();
+
     }
 
     if (!isValid) return;
@@ -131,7 +133,13 @@ function bindLiveValidation() {
 }
 
 function showSuccessAndRedirect() {
-    window.location.href = "../views/menu.html";
+    Swal.fire({
+        title: "Vielen Dank!",
+        text: "Deine Bestellung wird zubereitet",
+        icon: "success",
+        timer: 2500
+    });
+    setTimeout(()=> {window.location.href = "../views/menu.html"}, 3000);
 }
 
 function formatEuro(value) {
