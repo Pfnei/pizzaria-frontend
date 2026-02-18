@@ -57,7 +57,7 @@ function navBarVisibility() {
         $('#navUserList').show();
         $('#navProductList').show();
         $('#navOrderList').show();
-        // Falls auf Mobile: Toggler anzeigen
+        // Falls auf Mobile: Als bars toggler anzeigen.
         if ($(window).width() < 768) {
             $('#navTogglerSupportContent').show();
         }
@@ -65,6 +65,7 @@ function navBarVisibility() {
         $('#navUserList').hide();
         $('#navProductList').hide();
         $('#navOrderList').hide();
+        $('#navTogglerSupportContent').hide();
     }
 
     // Back-Button Steuerung

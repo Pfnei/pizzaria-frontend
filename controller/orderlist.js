@@ -26,7 +26,7 @@ $(async function () {
 async function loadOrders(onlyOwn) {
     try {
         let data;
-        if (onlyOwn == 'true') {
+        if (onlyOwn === 'true') {
             data = await orderService.getMyOrders();
 
         } else {
