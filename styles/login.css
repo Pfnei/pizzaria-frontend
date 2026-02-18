@@ -64,11 +64,5 @@ html, body {
     text-decoration: underline;
 }
 
-/* Footer */
-#footer {
-    text-align: center;
-    color: #fff;
-    background: transparent; /* bleibt durchsichtig – Hintergrundbild vom Body scheint durch */
-    margin-top: auto;
-}
+
 
