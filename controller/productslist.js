@@ -3,11 +3,12 @@
 
 import { productService } from "../services/productService.js";
 import { authManager } from "../services/authManager.js";
+import {sortList} from "../utils/helpers.js";
 
 
 
 let products = [];
-
+let currentSort = {key: "", asc: true};
 
 
 
@@ -21,12 +22,12 @@ $(async function () {
     return;
   }
 
-  enableAddingProductsUi();
+
 
   await loadProducts();
-  disableFilterAndSortUi(); // optional: Bedienelemente visuell deaktivieren
 
-  switchToProductsListView();
+  enableAddingProductsUi();
+  registerUiEvents();
 });
 
 async function loadProducts() {
@@ -59,12 +60,9 @@ function renderProducts(list) {
     return;
   }
 
-const sortedList = Enumerable.from(list)
-    .orderBy(p => p.mainCategory) // Erst nach Kategorie
-    .thenBy(p => p.productName)   // Dann nach Name
-    .toArray();
 
-  sortedList.forEach(p => {
+
+  list.forEach(p => {
     // DTO-Felder gemäß ProductResponseDTO
     const name = p.productName || "";
     const mainCategory = p.mainCategory || "";
@@ -90,7 +88,8 @@ const sortedList = Enumerable.from(list)
         <td>${mainCategory}</td>
         <td>${subCategory}</td>
         <td>€ ${Number(price).toFixed(2)}</td>
-        <td class="text-center">${statusBadge} ${vegBadge}</td>
+        <td class="text-center">${vegBadge}</td>
+        <td class="text-center">${statusBadge}</td>
       </tr>
     `);
 
@@ -128,32 +127,67 @@ const sortedList = Enumerable.from(list)
 
 
 
+function applyFilterAndSort() {
+  const rawFilter = $("#filter-all").val() || "";
+  const filter = rawFilter.toLowerCase();
 
+  const filtered = products.filter(u => {
+    const values = Object.values(u);
 
-function disableFilterAndSortUi() {
-  //filter vorerstal komplett still legen
-  $("#filter-all").prop("disabled", true);
-  $("#sort-dropdown").prop("disabled", true);
-  $("th.sortable").addClass("text-muted");
+    return values.some(val => {
+      const text = String(val).toLowerCase();
+      return text.includes(filter);
+    });
+  });
+
+  const sorted = currentSort.key
+      ? sortList(filtered, currentSort.key, currentSort.asc)
+      : filtered;
+
+  renderProducts(sorted);
 }
+
+
+
+
 
 function enableAddingProductsUi() {
   if(!$("#addingProductAdmin")) return;
   const addButton = $("#addingProductAdmin");
   if(authManager.isLoggedIn() && authManager.isAdmin()) {
     addButton.show();
+    addButton.on("click", function() {
+      window.location.href = "../views/productdetailnew.html";});
   } else {
     addButton.hide();
   }
   $("#addingProductAdmin").prop("disabled", false);
+
 }
 
-function switchToProductsListView() {
-  if(!authManager.isLoggedIn() || !authManager.isAdmin()) return;
-  if(!$("#addingProductAdmin")) return;
-  const addButton = $("#addingProductAdminbtn");
-  addButton.on("click", function() {
-    window.location.href = "../views/productdetailnew.html";
+
+
+function registerUiEvents() {
+  // Filter
+  $("#filter-all").on("input", applyFilterAndSort);
+
+  // Dropdown-Sortierung
+  $("#sort-dropdown").on("change", function () {
+    currentSort.key = $(this).val();
+    currentSort.asc = true;
+    applyFilterAndSort();
   });
-  
+
+  // Klick auf Tabellen-Header
+  $(document).on("click", "th.sortable", function () {
+    const key = $(this).data("key");
+    if (currentSort.key === key) {
+      currentSort.asc = !currentSort.asc;
+    } else {
+      currentSort = {key, asc: true};
+    }
+    applyFilterAndSort();
+  });
+
+
 }
