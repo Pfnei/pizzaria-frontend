@@ -4,36 +4,34 @@ import { productService } from "../services/productService.js";
 import { addToCart } from "../utils/cartStorage.js";
 
 
+let products = [];
+let container;
+
 document.addEventListener("DOMContentLoaded", async function () {
+
+
     const adminspace = document.getElementById("adminspace");
     if (adminspace) {
         adminspace.style.display = authManager.isAdmin() ? "block" : "none";
     }
 
-    const container = document.getElementById("products-container");
+    container = document.getElementById("products-container");
+
     if (!container) {
         console.error("products-container not found");
         return;
     }
 
     try {
-        const products = await productService.getAllProducts(); // GET /products
-        const list = Array.isArray(products) ? products.filter(p => p?.active !== false) : [];
+        products = await productService.getAllProducts(); // GET /products
+        products = Array.isArray(products) ? products.filter(p => p?.active !== false) : [];
         console.log(products);
 
-        renderProducts(container, list);
+        renderProducts(container, products);
 
-        const vegFlip = document.getElementById("veg-flip");
+        registerUiEvents();
 
-        if (vegFlip) {
-            vegFlip.addEventListener("change", () => {
-                const filtered = vegFlip.checked
-                    ? list.filter(p => p.vegetarian === true)
-                    : list;
 
-                renderProducts(container, filtered);
-            });
-        }
 
     } catch (err) {
         console.error("Failed loading products:", err);
@@ -194,3 +192,37 @@ function escapeHtmlAttr(str) {
     return escapeHtml(str).replaceAll("\n", " ").replaceAll("\r", " ");
 }
 
+function applyFilter() {
+    const rawFilter = $("#filter-all").val() || "";
+    const filter = rawFilter.toLowerCase();
+
+    const filtered = products.filter(u => {
+        const values = Object.values(u);
+
+        return values.some(val => {
+            const text = String(val).toLowerCase();
+            return text.includes(filter);
+        });
+    });
+
+
+    renderProducts(container, filtered);
+}
+
+function registerUiEvents() {
+
+    $("#filter-all").on("input", applyFilter);
+
+    const vegFlip = document.getElementById("veg-flip");
+
+    if (vegFlip) {
+        vegFlip.addEventListener("change", () => {
+            const filtered = vegFlip.checked
+                ? products.filter(p => p.vegetarian === true)
+                : products;
+
+            renderProducts(container, filtered);
+        });
+    }
+
+}
