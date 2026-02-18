@@ -3,8 +3,10 @@
 
 import {orderService} from "../services/orderService.js";
 import {authManager} from "../services/authManager.js";
+import {sortList} from "../utils/helpers.js";
 
 let orders = [];
+let currentSort = {key: "", asc: true};
 
 $(async function () {
 
@@ -18,7 +20,7 @@ $(async function () {
         }
     }
     await loadOrders(onlyOwn);
-    registerFilter();
+    registerUiEvents();
 });
 
 async function loadOrders(onlyOwn) {
@@ -36,8 +38,12 @@ async function loadOrders(onlyOwn) {
         }
 
         console.log("Orders vom Server:", data);
-        orders = data;
-        render(orders);
+        orders = data.map(o => ({
+            ...o,
+            username: (o.createdBy && o.createdBy.username) ? o.createdBy.username : "",
+            email: (o.createdBy && o.createdBy.email) ? o.createdBy.email : ""
+        }));
+        renderOrders(orders);
     } catch (err) {
         console.error("Fehler beim Laden der Bestellungen:", err);
         alert("Fehler beim Laden der Bestellungen: " + (err.message || err));
@@ -53,7 +59,7 @@ function formatDate(instantString) {
     return d.toLocaleDateString("de-AT"); // z.B. 01.03.2025
 }
 
-function render(list) {
+function renderOrders(list) {
     const tbody = $("#table-body");
     const cards = $("#card-container");
     tbody.empty();
@@ -71,8 +77,8 @@ function render(list) {
         const city = o.city || "";
 
         const createdBy = o.createdBy || {};
-        const username = createdBy.username || "";
-        const email = createdBy.email || "";
+        const username = o.username || "";
+        const email = o.email || "";
 
         // Tabellenzeile
         tbody.append(`
@@ -114,29 +120,49 @@ function render(list) {
         });
 }
 
-function registerFilter() {
-    $("#filter-all").on("input", () => {
-        const q = ($("#filter-all").val() || "").toLowerCase();
-        if (!q) {
-            render(orders);
-            return;
-        }
 
-        const filtered = orders.filter((o) => {
-            const createdBy = o.createdBy || {};
+function applyFilterAndSort() {
+    const rawFilter = $("#filter-all").val() || "";
+    const filter = rawFilter.toLowerCase();
 
-            const values = [o.orderId, o.firstname, o.lastname, o.phoneNumber, o.address, o.zipcode, o.city, o.deliveryNote, o.total, formatDate(o.createdAt), formatDate(o.deliveredAt), createdBy.username, createdBy.firstname, createdBy.lastname, createdBy.email, createdBy.zipcode,];
+    const filtered = orders.filter(u => {
+        const values = Object.values(u);
 
-            return values
-                .filter((v) => v != null)
-                .some((v) => String(v).toLowerCase().includes(q));
+        return values.some(val => {
+            const text = String(val).toLowerCase();
+            return text.includes(filter);
         });
-
-        render(filtered);
     });
 
-    // Sort-Dropdown & Header sind im HTML noch da, machen aber nix:
-    // falls du magst, kannst du sie hier auch deaktivieren:
-    $("#sort-dropdown").prop("disabled", true);
-    $("th.sortable").addClass("text-muted");
+    const sorted = currentSort.key
+        ? sortList(filtered, currentSort.key, currentSort.asc)
+        : filtered;
+
+    renderOrders(sorted);
+}
+
+
+
+function registerUiEvents() {
+    // Filter
+    $("#filter-all").on("input", applyFilterAndSort);
+
+    // Dropdown-Sortierung
+    $("#sort-dropdown").on("change", function () {
+        currentSort.key = $(this).val();
+        currentSort.asc = true;
+        applyFilterAndSort();
+    });
+
+    // Klick auf Tabellen-Header
+    $(document).on("click", "th.sortable", function () {
+        const key = $(this).data("key");
+        if (currentSort.key === key) {
+            currentSort.asc = !currentSort.asc;
+        } else {
+            currentSort = {key, asc: true};
+        }
+        applyFilterAndSort();
+    });
+
 }

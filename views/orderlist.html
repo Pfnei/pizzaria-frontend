@@ -20,18 +20,18 @@
         <h5 class="text-center mb-0 sticky-header py-2">Bestellungen</h5>
         <div class="row g-2 sticky-filter">
             <div class="col-12 col-md-6">
-                <input id="filter-all" class="form-control form-control-sm" placeholder="Filtern...">
+                <input id="filter-all" class="form-control form-control-sm" placeholder="Suche...">
             </div>
             <div class="col-12 col-md-6">
                 <select id="sort-dropdown" class="form-select form-select-sm">
                     <option value="">Sortieren nach...</option>
-                    <option value="datum">Geliefert</option>
-                    <option value="summe">Summe</option>
-                    <option value="benutzername">Benutzername</option>
-                    <option value="vorname">Vorname</option>
-                    <option value="nachname">Nachname</option>
+                    <option value="date">Geliefert</option>
+                    <option value="total">Summe</option>
+                    <option value="username">Benutzername</option>
+                    <option value="firstname">Vorname</option>
+                    <option value="lastname">Nachname</option>
                     <option value="email">E-Mail</option>
-                    <option value="plz">PLZ</option>
+                    <option value="zipcode">PLZ</option>
                 </select>
             </div>
         </div>
@@ -39,13 +39,13 @@
             <table class="table table-sm table-striped table-hover">
                 <thead class="table-light">
                 <tr>
-                    <th class="sortable" data-key="datum">geliefert</th>
-                    <th class="sortable" data-key="summe">Summe</th>
-                    <th class="sortable" data-key="benutzername">Benutzername</th>
-                    <th class="sortable" data-key="vorname">Vorname</th>
-                    <th class="sortable" data-key="nachname">Nachname</th>
+                    <th class="sortable" data-key="date">geliefert</th>
+                    <th class="sortable" data-key="total">Summe</th>
+                    <th class="sortable" data-key="username">Benutzername</th>
+                    <th class="sortable" data-key="firstname">Vorname</th>
+                    <th class="sortable" data-key="lastname">Nachname</th>
                     <th class="sortable" data-key="email">E-Mail</th>
-                    <th class="sortable" data-key="plz">PLZ</th>
+                    <th class="sortable" data-key="zipcode">PLZ</th>
                 </tr>
                 </thead>
                 <tbody id="table-body" class="table-group-divider"></tbody>
