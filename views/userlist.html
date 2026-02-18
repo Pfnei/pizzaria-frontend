@@ -21,7 +21,7 @@
     <!-- Filter & Sortierung -->
     <div class="row g-2 sticky-filter">
         <div class="col-12 col-md-6">
-            <input id="filter-all" class="form-control form-control-sm" placeholder="Filtern..." />
+            <input id="filter-all" class="form-control form-control-sm" placeholder="Suche..." />
         </div>
         <div class="col-12 col-md-6">
             <select id="sort-dropdown" class="form-select form-select-sm">
@@ -39,7 +39,7 @@
 
     <!-- Tabelle (Desktop) -->
     <div class="table-responsive table-view mt-3">
-        <table class="table table-sm table-striped" id="user-table">
+        <table class="table table-sm table-striped table-hover" id="user-table">
             <thead class="table-light">
             <tr>
                 <th class="sortable" data-key="username">Benutzername</th>
@@ -51,7 +51,7 @@
                 <th class="sortable text-center" data-key="admin">Admin</th>
             </tr>
             </thead>
-            <tbody id="table-body"></tbody>
+            <tbody id="table-body" class="table-group-divider"></tbody>
         </table>
     </div>
 
