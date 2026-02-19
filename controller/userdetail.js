@@ -168,8 +168,8 @@ async function saveUser() {
         zipcode: getVal("plz") || null,
         salutation: getVal("anrede") || null,
         salutationDetail: getVal("diversDetails") || null,
-        country: getVal("land") || null, // Passwort nur mitschicken, wenn Feld ausgefüllt
-        password: getVal("password") || null, // Status nur für Admins erlauben
+        country: getVal("land") || null,
+        password: getVal("passwort") || null,
 
 
         admin: (isAdmin && !isOwnUser) ? document.getElementById("admin")?.checked : null,
@@ -268,6 +268,10 @@ function validateForm() {
     isFormValid = validateStringInput('email', true, 5, 100, false, false, false, true) && isFormValid;
     isFormValid = validateStringInput('telefon', false, 7, 30) && isFormValid;
     isFormValid = validateStringInput('plz', false, 2, 10) && isFormValid;
+    isFormValid = validateStringInput('passwort', false, 8, 100 ,true, true,true) && isFormValid;
+    isFormValid = validateStringInput('passwortWdh', false, 2,100,true, true,true) && isFormValid;
+
+    isFormValid = checkPasswordEquality ('passwort','passwortWdh' )  && isFormValid;
 
 
     const detailsGroup = document.getElementById('diversDetailsGroup');
@@ -297,13 +301,12 @@ function bindLiveValidation() {
         telefon: () => validateStringInput('telefon', false, 7, 30),
         plz: () => validateStringInput('plz', false, 2, 10),
         passwort: () => {
-            const a = validateStringInput('passwort', true, 8, 100, true, true, true, false);
+            const a = validateStringInput('passwort', false, 8, 100, true, true, true, false);
             // beim Tippen im Passwort auch Gleichheit neu prüfen
             const b = checkPasswordEquality('passwort', 'passwortWdh');
             return a && b;
         },
-        passwortWdh: () => checkPasswordEquality('passwort', 'passwortWdh'), // anrede:    () => validateSelectRequired('anrede'),
-        // land:      () => validateSelectRequired('land'),
+        passwortWdh: () => checkPasswordEquality('passwort', 'passwortWdh'),
         diversDetails: () => {
             const grp = document.getElementById('diversDetailsGroup');
             if (grp && grp.style.display !== 'none') {
