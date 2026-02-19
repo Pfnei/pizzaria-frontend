@@ -82,33 +82,51 @@ export class CHttpClient {
   patch(path, body, options) { return this.request("PATCH", path, { ...(options || {}), body }); }
   delete(path, options) { return this.request("DELETE", path, options); }
 }
-
 /**
- * DYNAMISCHE URL-ERMITTLUNG
+ * DYNAMISCHE URL-ERMITTLUNG MIT AUTO-PROBE
  */
-const getBaseUrl = () => {
-  if (typeof window !== "undefined") {
-    const host = window.location.hostname;
-    const port = window.location.port; // Der Port, auf dem das FRONTEND läuft
+const discoverBackendUrl = async () => {
+  const host = window.location.hostname;
 
-    // 1. Falls Codespaces
-    if (host.includes("github.dev") || host.includes("app.github.dev")) {
-      return window.location.origin.replace("-8080", "-8082");
-    }
-
-    // 2. Lokal / Docker Desktop
-    // Wenn das Frontend auf 8080 läuft (Docker), ist das Backend auf 8082
-    if (port === "8080") {
-      return `http://${host}:8082`;
-    }
-
-    // 3. Fallback für lokale Entwicklung (z.B. Live Server auf 5500)
-    // Hier kannst du entscheiden, ob es 8081 (lokal) oder 8082 (docker) sein soll
-    return `http://${host}:8081`;
+  // 1. Spezialfall: GitHub Codespaces
+  if (host.includes("github.dev") || host.includes("app.github.dev")) {
+    // In Codespaces ist 8082 meist der Standard für Docker-Backend
+    return window.location.origin.replace("-8080", "-8082");
   }
-  return "http://localhost:8081";
+
+  // 2. Lokal: Wir testen 8081 und 8082 parallel
+  const ports = ["8081", "8082"];
+
+  // Wir erstellen für jeden Port einen kleinen Test-Request (Ping)
+  const checks = ports.map(async (port) => {
+    try {
+      const url = `http://${host}:${port}`;
+      // mode: 'no-cors' reicht uns, um zu sehen ob der Port "lebt"
+      await fetch(`${url}/auth/login`, { method: 'OPTIONS', mode: 'cors' });
+      return url;
+    } catch (e) {
+      return null;
+    }
+  });
+
+  // Wir warten, welcher Port zuerst antwortet
+  const results = await Promise.all(checks);
+  const activeUrl = results.find(url => url !== null);
+
+  if (activeUrl) {
+    console.log("Backend gefunden auf:", activeUrl);
+    return activeUrl;
+  }
+
+  // Fallback falls gar nichts antwortet
+  console.warn("Kein Backend gefunden, nutze Standard 8081");
+  return `http://${host}:8081`;
 };
 
-// Instanz sofort mit der richtigen URL erstellen
-export const http = new CHttpClient(getBaseUrl());
-console.log("HttpClient nutzt API:", http.getBaseUrl()); // Zur Kontrolle in der Browser-Konsole
+// Instanz mit temporärer URL (wird sofort überschrieben)
+export const http = new CHttpClient("http://localhost:8081");
+
+// Starte die Suche und update die Instanz
+discoverBackendUrl().then(url => {
+  http.setBaseUrl(url);
+});
