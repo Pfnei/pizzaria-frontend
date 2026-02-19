@@ -1,4 +1,3 @@
-// services/httpClient.js
 import { authManager } from "./authManager.js";
 
 export class CHttpClient {
@@ -16,22 +15,21 @@ export class CHttpClient {
 
   joinUrl(...parts) {
     const clean = parts
-      .filter(p => p !== null && p !== undefined)
-      .map(p => String(p))
-      .filter(s => s.length > 0);
+        .filter(p => p !== null && p !== undefined)
+        .map(p => String(p))
+        .filter(s => s.length > 0);
 
     if (clean.length === 0) return this.baseUrl;
 
     const base = this.baseUrl.replace(/\/+$/, "");
     const rest = clean
-      .map(s => s.replace(/^\/+|\/+$/g, ""))
-      .join("/");
+        .map(s => s.replace(/^\/+|\/+$/g, ""))
+        .join("/");
 
     return base + "/" + rest;
   }
 
   _buildHeaders(extraHeaders = {}) {
-    // kein Content-Type Standard mehr!
     return authManager.buildAuthHeaders({
       ...extraHeaders
     });
@@ -47,7 +45,6 @@ export class CHttpClient {
       ...fetchOptionsRest
     };
 
-    //  FormData muss unverändert bleiben
     if (body instanceof FormData) {
       delete fetchOptions.headers["Content-Type"];
       fetchOptions.body = body;
@@ -58,7 +55,6 @@ export class CHttpClient {
 
     const response = await fetch(url, fetchOptions);
 
-    // Fehlerbehandlung
     if (!response.ok) {
       const text = await response.text().catch(() => "");
       let message = `HTTP ${response.status}`;
@@ -73,7 +69,6 @@ export class CHttpClient {
       return null;
     }
 
-    // JSON parsen
     const ct = response.headers.get("Content-Type") || "";
     if (ct.includes("application/json")) {
       return await response.json();
@@ -82,22 +77,53 @@ export class CHttpClient {
     return await response.blob();
   }
 
-  get(path, options) {
-    return this.request("GET", path, options);
-  }
-
-  post(path, body, options) {
-    return this.request("POST", path, { ...(options || {}), body });
-  }
-
-  patch(path, body, options) {
-    return this.request("PATCH", path, { ...(options || {}), body });
-  }
-
-  delete(path, options) {
-    return this.request("DELETE", path, options);
-  }
+  get(path, options) { return this.request("GET", path, options); }
+  post(path, body, options) { return this.request("POST", path, { ...(options || {}), body }); }
+  patch(path, body, options) { return this.request("PATCH", path, { ...(options || {}), body }); }
+  delete(path, options) { return this.request("DELETE", path, options); }
 }
 
-const baseurlforconstructor = "http://localhost:8081";
-export const http = new CHttpClient(baseurlforconstructor);
+/**
+ * DYNAMISCHE URL-ERMITTLUNG
+ * Prüft auf Codespaces, Docker-Ports und lokale Entwicklung.
+ */
+const getBaseUrl = () => {
+  // Wir definieren die möglichen Ports
+  const DOCKER_BACKEND_PORT = "8082";
+  const LOCAL_BACKEND_PORT = "8081";
+
+  if (typeof window !== "undefined") {
+    const host = window.location.hostname;
+    const protocol = window.location.protocol;
+
+    // 1. Logik für GitHub Codespaces
+    if (host.includes("github.dev") || host.includes("app.github.dev")) {
+      // In Codespaces gehen wir davon aus, dass du das "fully-dockerized" Setup nutzt (8082)
+      // Falls nicht, erkennt man das leider schwer automatisch ohne Request-Check.
+      // Wir nehmen hier den Standard-Docker-Port für Codespaces:
+      return window.location.origin.replace("-8080", `-${DOCKER_BACKEND_PORT}`);
+    }
+
+    // 2. Logik für Lokal (Browser greift auf localhost zu)
+    if (host === "localhost" || host === "127.0.0.1") {
+      /* HINWEIS: Da JS im Browser nicht "riechen" kann, welcher Port offen ist,
+         müssen wir uns hier für einen Standard entscheiden oder eine Logik bauen.
+
+         Strategie: Wenn das Frontend selbst auf Port 8080 läuft (Docker),
+         will es meistens auf das Docker-Backend (8082).
+      */
+      const frontendPort = window.location.port;
+      const targetBackendPort = (frontendPort === "8080") ? DOCKER_BACKEND_PORT : LOCAL_BACKEND_PORT;
+
+      return `${protocol}//${host}:${targetBackendPort}`;
+    }
+
+    // Fallback für andere Setups
+    return `${protocol}//${host}:${DOCKER_BACKEND_PORT}`;
+  }
+
+  return `http://localhost:${LOCAL_BACKEND_PORT}`;
+};
+
+// Instanz mit der dynamischen URL exportieren
+export const http = new CHttpClient(getBaseUrl());

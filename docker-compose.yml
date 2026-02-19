@@ -1,0 +1,9 @@
+services:
+  pizza-frontend:
+    build: .
+    container_name: pizza-frontend-container
+    ports:
+      - "8080:80"  # Du erreichst die App unter http://localhost:8080
+    volumes:
+      - .:/usr/share/nginx/html # "Live-Reload": Code-Änderungen sind sofort sichtbar
+    restart: always
