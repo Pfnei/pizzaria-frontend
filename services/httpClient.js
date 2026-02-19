@@ -3,7 +3,6 @@ import { authManager } from "./authManager.js";
 export class CHttpClient {
   constructor(baseUrl) {
     this.baseUrl = String(baseUrl || "");
-    this.readyPromise = null; // Versprechen für die dynamische Port-Suche
   }
 
   setBaseUrl(url) {
@@ -31,17 +30,10 @@ export class CHttpClient {
   }
 
   _buildHeaders(extraHeaders = {}) {
-    return authManager.buildAuthHeaders({
-      ...extraHeaders
-    });
+    return authManager.buildAuthHeaders({ ...extraHeaders });
   }
 
   async request(method, path, options = {}) {
-    // Falls die Port-Suche noch läuft, warten wir hier kurz
-    if (this.readyPromise) {
-      await this.readyPromise;
-    }
-
     const { body, headers, ...fetchOptionsRest } = options;
     const url = this.joinUrl(path);
 
@@ -71,14 +63,10 @@ export class CHttpClient {
       throw new Error(message);
     }
 
-    if (response.status === 204) {
-      return null;
-    }
+    if (response.status === 204) return null;
 
     const ct = response.headers.get("Content-Type") || "";
-    if (ct.includes("application/json")) {
-      return await response.json();
-    }
+    if (ct.includes("application/json")) return await response.json();
 
     return await response.blob();
   }
@@ -88,54 +76,33 @@ export class CHttpClient {
   patch(path, body, options) { return this.request("PATCH", path, { ...(options || {}), body }); }
   delete(path, options) { return this.request("DELETE", path, options); }
 }
-
 /**
- * INTELLIGENTE PORT-SUCHE
- * Prüft nacheinander 8081 (IDE) und 8082 (Docker).
+ * INTELLIGENTE URL-LOGIK
+ * 1. Prüft auf Codespaces (Händisch oder Automatisch)
+ * 2. Prüft auf Docker (8082)
+ * 3. Fallback auf Lokal (8081)
  */
-const discoverBackendUrl = async () => {
+const getBaseUrl = () => {
   const host = window.location.hostname;
+  const currentPort = window.location.port;
 
-  // 1. Spezialfall GitHub Codespaces
+  // --- CODESPACE LOGIK ---
   if (host.includes("github.dev") || host.includes("app.github.dev")) {
-    // Codespaces nutzt meistens 8082 für das Docker-Backend
+    // Wenn du es händisch machen willst, kannst du hier deine URL eintragen:
+    // return "https://dein-backend-8082.app.github.dev";
+
+    // Oder automatisch (ersetzt den Frontend-Port 8080 durch Backend-Port 8081 oder 8082)
     return window.location.origin.replace("-8080", "-8082");
   }
 
-  // 2. Lokal: Wir testen 8082 (Docker) und 8081 (IDE)
-  const ports = ["8082", "8081"];
-
-  for (const port of ports) {
-    try {
-      const testUrl = `http://${host}:${port}`;
-
-      // Kurzer Timeout-Check (500ms), damit die Suche nicht ewig dauert
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 500);
-
-      // Wir pingen den Auth-Endpunkt (oder einen anderen öffentlichen Endpunkt)
-      await fetch(`${testUrl}/auth/login`, {
-        method: 'OPTIONS',
-        signal: controller.signal
-      });
-
-      clearTimeout(timeoutId);
-      console.log(`%c✔ Backend auf Port ${port} gefunden.`, "color: #4CAF50; font-weight: bold;");
-      return testUrl;
-    } catch (e) {
-      // Port antwortet nicht, versuche den nächsten
-    }
+  // --- LOKALE DOCKER LOGIK ---
+  if (currentPort === "8080") {
+    return `http://${host}:8082`;
   }
 
-  // Fallback falls nichts gefunden wurde
+  // --- LOKALE IDE LOGIK ---
   return `http://${host}:8081`;
 };
 
-// Instanz mit vorläufigem Standard erstellen
-export const http = new CHttpClient("http://localhost:8081");
-
-// Start der Suche und Blockierung von Requests bis Ergebnis da ist
-http.readyPromise = discoverBackendUrl().then(url => {
-  http.setBaseUrl(url);
-  http.readyPromise = null; // Suche abgeschlossen
-});
+export const http = new CHttpClient(getBaseUrl());
+console.log("%c📡 API-Ziel gesetzt auf: " + http.getBaseUrl(), "color: orange; font-weight: bold;");
