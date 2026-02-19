@@ -1,78 +1,83 @@
 'use strict';
 
 
-import { registerService } from "../services/registerService.js";
+import {registerService} from "../services/registerService.js";
 
+
+let hasSubmittedForm = false;
+let liveCheckFields = false;
 
 document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("registrationForm");
-    if (form) {
-        form.addEventListener("submit", handleSubmit);
-    }
+
 
     setupDiversDetails();
+    changeEnterToTab(form);
+
+    form.addEventListener('submit', handleFormSubmit);
 });
 
 
-// -------------------------------
-// Divers details anzeigen/ausblenden
-// -------------------------------
+
 function setupDiversDetails() {
-    var anredeEle = document.getElementById("anrede");
-    var groupEle = document.getElementById("diversDetailsGroup");
-    var detailsEle = document.getElementById("diversDetails");
+    const anrede = document.getElementById('anrede');
+    const detailsGroup = document.getElementById('diversDetailsGroup');
+    if (!anrede || !detailsGroup) return;
 
-    if (!anredeEle || !groupEle) {
-        return;
-    }
-
-    function toggle() {
-        if (anredeEle.value === "Divers") {
-            groupEle.style.display = "block";
-        } else {
-            groupEle.style.display = "none";
-            if (detailsEle) {
-                detailsEle.value = "";
-            }
-        }
-    }
-
-    anredeEle.addEventListener("change", toggle);
+    const toggle = () => {
+        detailsGroup.style.display = (anrede.value === 'MX') ? 'block' : 'none';
+    };
+    anrede.addEventListener('change', toggle);
     toggle();
 }
 
 
-// -------------------------------
-// Form submit
-// -------------------------------
-async function handleSubmit(event) {
+function handleFormSubmit(event) {
     event.preventDefault();
+    const form = event.target;
+    const isValid = validateForm();
 
-    var form = document.getElementById("registrationForm");
-    var errorDiv = document.getElementById("errorDiv");
-    var successDiv = document.getElementById("successMessage");
+    form.classList.add('was-validated');
 
-    if (errorDiv) errorDiv.textContent = "";
-    if (successDiv) successDiv.style.display = "none";
+    if (!hasSubmittedForm) {
+        hasSubmittedForm = true;
+        bindLiveValidation();
+    }
+
+    if (isValid) saveUser();
+
+}
+
+
+async function saveUser() {
 
     var payload = collectFormData();
 
-    var validationError = validate(payload);
-    if (validationError) {
-        if (errorDiv) errorDiv.textContent = validationError;
-        return;
-    }
-    
     try {
-        
-        const data =  await registerService.register(payload);
+
+        await registerService.register(payload);
+
 
         setTimeout(function () {
             window.location.href = "../views/login.html";
         }, 500);
 
     } catch (err) {
-        if (errorDiv) errorDiv.textContent = "Netzwerkfehler oder Server nicht erreichbar.";
+        console.error("Fehler bei der Registrierung:", err);
+        const msgDiv = document.getElementById('successMessage');
+        if (msgDiv) {
+            msgDiv.textContent = 'Fehler bei der Registrierung! ';
+            msgDiv.className = 'alert alert-danger mt-3';
+            msgDiv.style = 'block';
+            setTimeout(() => {
+                msgDiv.textContent = ''
+                msgDiv.className = '';
+                msgDiv.style = 'none';
+            }, 2000);
+
+        } else {
+            alert('Fehler bei der Registrierung!', err);
+        }
     }
 }
 
@@ -89,7 +94,7 @@ function collectFormData() {
     var emailEle = document.getElementById("email");
     var telefonEle = document.getElementById("telefon");
     var passEle = document.getElementById("passwort");
-    var passwdWdhEle = document.getElementById("passwortWdh");
+
 
     var anredeEle = document.getElementById("anrede");
     var diversEle = document.getElementById("diversDetails");
@@ -114,8 +119,6 @@ function collectFormData() {
     dto.password = "";
     if (passEle) dto.password = passEle.value;
 
-    dto.passwordRepeat = "";
-    if (passwdWdhEle) dto.passwordRepeat = passwdWdhEle.value;
 
     dto.salutation = null;
     if (anredeEle) dto.salutation = anredeEle.value;
@@ -129,39 +132,87 @@ function collectFormData() {
     return dto;
 }
 
+function validateForm() {
+    let isFormValid = true;
 
-// -------------------------------
-// SIMPLE VALIDIERUNG (optional)
-// -------------------------------
-function validate(dto) {
+    isFormValid = validateStringInput('vorname', false, 3, 30) && isFormValid;
+    isFormValid = validateStringInput('nachname', false, 2, 100) && isFormValid;
+    isFormValid = validateStringInput('username', true, 5, 30) && isFormValid;
+    isFormValid = validateStringInput('email', true, 5, 100, false, false, false, true) && isFormValid;
+    isFormValid = validateStringInput('telefon', false, 7, 30) && isFormValid;
+    isFormValid = validateStringInput('plz', false, 2, 10) && isFormValid;
+    isFormValid = validateStringInput('passwort', true, 8, 100 ,true, true,true) && isFormValid;
+    isFormValid = validateStringInput('passwortWdh', true, 2,100,true, true,true) && isFormValid;
 
-    if (!dto.firstname || dto.firstname.length < 3) {
-        return "Vorname ungültig.";
+    console.log(isFormValid);
+
+        isFormValid = checkPasswordEquality ('passwort','passwortWdh' )  && isFormValid;
+        console.log(isFormValid);
+
+
+
+
+    const detailsGroup = document.getElementById('diversDetailsGroup');
+    if (detailsGroup && detailsGroup.style.display !== 'none') {
+        isFormValid = validateStringInput('diversDetails', false, 4, 30) && isFormValid;
+    } else {
+        const details = document.getElementById('diversDetails');
+        if (details && typeof clearValidation === "function") {
+            clearValidation(details);
+        }
     }
+    return isFormValid;
+}
 
-    if (!dto.lastname || dto.lastname.length < 2) {
-        return "Nachname ungültig.";
-    }
 
-    if (!dto.username || dto.username.length < 5) {
-        return "Username muss mindestens 5 Zeichen haben.";
-    }
+function bindLiveValidation() {
+    if (liveCheckFields) return;
+    liveCheckFields = true;
 
-    if (!dto.email || dto.email.indexOf("@") === -1) {
-        return "Ungültige Email.";
-    }
+    if (typeof validateStringInput !== "function") return;
 
-    if (!dto.password || dto.password.length < 12) {
-        return "Passwort muss mindestens 12 Zeichen haben.";
-    }
+    const validators = {
+        vorname: () => validateStringInput('vorname', false, 3, 30),
+        nachname: () => validateStringInput('nachname', false, 2, 100),
+        username: () => validateStringInput('username', true, 5, 30),
+        email: () => validateStringInput('email', true, 5, 100, false, false, false, true),
+        telefon: () => validateStringInput('telefon', false, 7, 30),
+        plz: () => validateStringInput('plz', false, 2, 10),
+        passwort: () => {
+            const a = validateStringInput('passwort', true, 8, 100, true, true, true, false);
+            // beim Tippen im Passwort auch Gleichheit neu prüfen
+            const b = checkPasswordEquality('passwort', 'passwortWdh');
+            return a && b;
+        },
+        passwortWdh: () => checkPasswordEquality('passwort', 'passwortWdh'),
+        diversDetails: () => {
+            const grp = document.getElementById('diversDetailsGroup');
+            if (grp && grp.style.display !== 'none') {
+                return validateStringInput('diversDetails', false, 4, 30);
+            } else {
+                const details = document.getElementById('diversDetails');
+                if (details && typeof clearValidation === "function") {
+                    clearValidation(details);
+                }
+                return true;
+            }
+        }
+    };
 
-    if (dto.password !== dto.passwordRepeat) {
-        return "Passwörter stimmen nicht überein.";
-    }
+    Object.keys(validators).forEach((fieldId) => {
+        const element = document.getElementById(fieldId);
+        if (!element) return;
 
-    if (dto.salutation === "Divers" && (!dto.salutationDetail || dto.salutationDetail.length < 3)) {
-        return "Bitte Divers-Details ausfüllen.";
-    }
+        const handler = () => {
+            if (!hasSubmittedForm) return;
+            validators[fieldId]();
+        };
 
-    return null;
+        if (element.tagName === 'SELECT') {
+            element.addEventListener('change', handler);
+        } else {
+            element.addEventListener('input', handler);
+            element.addEventListener('blur', handler);
+        }
+    });
 }

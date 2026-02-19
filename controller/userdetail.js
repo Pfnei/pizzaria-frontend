@@ -168,8 +168,8 @@ async function saveUser() {
         zipcode: getVal("plz") || null,
         salutation: getVal("anrede") || null,
         salutationDetail: getVal("diversDetails") || null,
-        country: getVal("land") || null, // Passwort nur mitschicken, wenn Feld ausgefüllt
-        password: getVal("password") || null, // Status nur für Admins erlauben
+        country: getVal("land") || null,
+        password: getVal("passwort") || null,
 
 
         admin: (isAdmin && !isOwnUser) ? document.getElementById("admin")?.checked : null,
