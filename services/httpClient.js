@@ -3,6 +3,7 @@ import { authManager } from "./authManager.js";
 export class CHttpClient {
   constructor(baseUrl) {
     this.baseUrl = String(baseUrl || "");
+    this.readyPromise = null; // Versprechen für die dynamische Port-Suche
   }
 
   setBaseUrl(url) {
@@ -36,6 +37,11 @@ export class CHttpClient {
   }
 
   async request(method, path, options = {}) {
+    // Falls die Port-Suche noch läuft, warten wir hier kurz
+    if (this.readyPromise) {
+      await this.readyPromise;
+    }
+
     const { body, headers, ...fetchOptionsRest } = options;
     const url = this.joinUrl(path);
 
@@ -82,51 +88,54 @@ export class CHttpClient {
   patch(path, body, options) { return this.request("PATCH", path, { ...(options || {}), body }); }
   delete(path, options) { return this.request("DELETE", path, options); }
 }
+
 /**
- * DYNAMISCHE URL-ERMITTLUNG MIT AUTO-PROBE
+ * INTELLIGENTE PORT-SUCHE
+ * Prüft nacheinander 8081 (IDE) und 8082 (Docker).
  */
 const discoverBackendUrl = async () => {
   const host = window.location.hostname;
 
-  // 1. Spezialfall: GitHub Codespaces
+  // 1. Spezialfall GitHub Codespaces
   if (host.includes("github.dev") || host.includes("app.github.dev")) {
-    // In Codespaces ist 8082 meist der Standard für Docker-Backend
+    // Codespaces nutzt meistens 8082 für das Docker-Backend
     return window.location.origin.replace("-8080", "-8082");
   }
 
-  // 2. Lokal: Wir testen 8081 und 8082 parallel
-  const ports = ["8081", "8082"];
+  // 2. Lokal: Wir testen 8082 (Docker) und 8081 (IDE)
+  const ports = ["8082", "8081"];
 
-  // Wir erstellen für jeden Port einen kleinen Test-Request (Ping)
-  const checks = ports.map(async (port) => {
+  for (const port of ports) {
     try {
-      const url = `http://${host}:${port}`;
-      // mode: 'no-cors' reicht uns, um zu sehen ob der Port "lebt"
-      await fetch(`${url}/auth/login`, { method: 'OPTIONS', mode: 'cors' });
-      return url;
+      const testUrl = `http://${host}:${port}`;
+
+      // Kurzer Timeout-Check (500ms), damit die Suche nicht ewig dauert
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 500);
+
+      // Wir pingen den Auth-Endpunkt (oder einen anderen öffentlichen Endpunkt)
+      await fetch(`${testUrl}/auth/login`, {
+        method: 'OPTIONS',
+        signal: controller.signal
+      });
+
+      clearTimeout(timeoutId);
+      console.log(`%c✔ Backend auf Port ${port} gefunden.`, "color: #4CAF50; font-weight: bold;");
+      return testUrl;
     } catch (e) {
-      return null;
+      // Port antwortet nicht, versuche den nächsten
     }
-  });
-
-  // Wir warten, welcher Port zuerst antwortet
-  const results = await Promise.all(checks);
-  const activeUrl = results.find(url => url !== null);
-
-  if (activeUrl) {
-    console.log("Backend gefunden auf:", activeUrl);
-    return activeUrl;
   }
 
-  // Fallback falls gar nichts antwortet
-  console.warn("Kein Backend gefunden, nutze Standard 8081");
+  // Fallback falls nichts gefunden wurde
   return `http://${host}:8081`;
 };
 
-// Instanz mit temporärer URL (wird sofort überschrieben)
+// Instanz mit vorläufigem Standard erstellen
 export const http = new CHttpClient("http://localhost:8081");
 
-// Starte die Suche und update die Instanz
-discoverBackendUrl().then(url => {
+// Start der Suche und Blockierung von Requests bis Ergebnis da ist
+http.readyPromise = discoverBackendUrl().then(url => {
   http.setBaseUrl(url);
+  http.readyPromise = null; // Suche abgeschlossen
 });
