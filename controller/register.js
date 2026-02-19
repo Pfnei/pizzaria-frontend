@@ -144,10 +144,8 @@ function validateForm() {
     isFormValid = validateStringInput('passwort', true, 8, 100 ,true, true,true) && isFormValid;
     isFormValid = validateStringInput('passwortWdh', true, 2,100,true, true,true) && isFormValid;
 
-    console.log(isFormValid);
+    isFormValid = checkPasswordEquality ('passwort','passwortWdh' )  && isFormValid;
 
-        isFormValid = checkPasswordEquality ('passwort','passwortWdh' )  && isFormValid;
-        console.log(isFormValid);
 
 
 
