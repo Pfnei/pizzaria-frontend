@@ -85,45 +85,30 @@ export class CHttpClient {
 
 /**
  * DYNAMISCHE URL-ERMITTLUNG
- * Prüft auf Codespaces, Docker-Ports und lokale Entwicklung.
  */
 const getBaseUrl = () => {
-  // Wir definieren die möglichen Ports
-  const DOCKER_BACKEND_PORT = "8082";
-  const LOCAL_BACKEND_PORT = "8081";
-
   if (typeof window !== "undefined") {
     const host = window.location.hostname;
-    const protocol = window.location.protocol;
+    const port = window.location.port; // Der Port, auf dem das FRONTEND läuft
 
-    // 1. Logik für GitHub Codespaces
+    // 1. Falls Codespaces
     if (host.includes("github.dev") || host.includes("app.github.dev")) {
-      // In Codespaces gehen wir davon aus, dass du das "fully-dockerized" Setup nutzt (8082)
-      // Falls nicht, erkennt man das leider schwer automatisch ohne Request-Check.
-      // Wir nehmen hier den Standard-Docker-Port für Codespaces:
-      return window.location.origin.replace("-8080", `-${DOCKER_BACKEND_PORT}`);
+      return window.location.origin.replace("-8080", "-8082");
     }
 
-    // 2. Logik für Lokal (Browser greift auf localhost zu)
-    if (host === "localhost" || host === "127.0.0.1") {
-      /* HINWEIS: Da JS im Browser nicht "riechen" kann, welcher Port offen ist,
-         müssen wir uns hier für einen Standard entscheiden oder eine Logik bauen.
-
-         Strategie: Wenn das Frontend selbst auf Port 8080 läuft (Docker),
-         will es meistens auf das Docker-Backend (8082).
-      */
-      const frontendPort = window.location.port;
-      const targetBackendPort = (frontendPort === "8080") ? DOCKER_BACKEND_PORT : LOCAL_BACKEND_PORT;
-
-      return `${protocol}//${host}:${targetBackendPort}`;
+    // 2. Lokal / Docker Desktop
+    // Wenn das Frontend auf 8080 läuft (Docker), ist das Backend auf 8082
+    if (port === "8080") {
+      return `http://${host}:8082`;
     }
 
-    // Fallback für andere Setups
-    return `${protocol}//${host}:${DOCKER_BACKEND_PORT}`;
+    // 3. Fallback für lokale Entwicklung (z.B. Live Server auf 5500)
+    // Hier kannst du entscheiden, ob es 8081 (lokal) oder 8082 (docker) sein soll
+    return `http://${host}:8081`;
   }
-
-  return `http://localhost:${LOCAL_BACKEND_PORT}`;
+  return "http://localhost:8081";
 };
 
-// Instanz mit der dynamischen URL exportieren
+// Instanz sofort mit der richtigen URL erstellen
 export const http = new CHttpClient(getBaseUrl());
+console.log("HttpClient nutzt API:", http.getBaseUrl()); // Zur Kontrolle in der Browser-Konsole
