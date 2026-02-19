@@ -1,4 +1,3 @@
-// services/httpClient.js
 import { authManager } from "./authManager.js";
 
 export class CHttpClient {
@@ -10,44 +9,27 @@ export class CHttpClient {
     this.baseUrl = String(url || "");
   }
 
-  getBaseUrl() {
-    return this.baseUrl;
-  }
-
   joinUrl(...parts) {
-    const clean = parts
-      .filter(p => p !== null && p !== undefined)
-      .map(p => String(p))
-      .filter(s => s.length > 0);
-
+    const clean = parts.filter(p => p != null).map(String);
     if (clean.length === 0) return this.baseUrl;
-
     const base = this.baseUrl.replace(/\/+$/, "");
-    const rest = clean
-      .map(s => s.replace(/^\/+|\/+$/g, ""))
-      .join("/");
-
+    const rest = clean.map(s => s.replace(/^\/+|\/+$/g, "")).join("/");
     return base + "/" + rest;
   }
 
   _buildHeaders(extraHeaders = {}) {
-    // kein Content-Type Standard mehr!
-    return authManager.buildAuthHeaders({
-      ...extraHeaders
-    });
+    return authManager.buildAuthHeaders({ ...extraHeaders });
   }
 
   async request(method, path, options = {}) {
-    const { body, headers, ...fetchOptionsRest } = options;
     const url = this.joinUrl(path);
-
+    const { body, headers, ...rest } = options;
     const fetchOptions = {
       method,
       headers: this._buildHeaders(headers),
-      ...fetchOptionsRest
+      ...rest
     };
 
-    //  FormData muss unverändert bleiben
     if (body instanceof FormData) {
       delete fetchOptions.headers["Content-Type"];
       fetchOptions.body = body;
@@ -57,47 +39,34 @@ export class CHttpClient {
     }
 
     const response = await fetch(url, fetchOptions);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    if (response.status === 204) return null;
 
-    // Fehlerbehandlung
-    if (!response.ok) {
-      const text = await response.text().catch(() => "");
-      let message = `HTTP ${response.status}`;
-      try {
-        const json = text ? JSON.parse(text) : null;
-        if (json && json.message) message = json.message;
-      } catch {}
-      throw new Error(message);
-    }
-
-    if (response.status === 204) {
-      return null;
-    }
-
-    // JSON parsen
     const ct = response.headers.get("Content-Type") || "";
-    if (ct.includes("application/json")) {
-      return await response.json();
-    }
-
-    return await response.blob();
+    return ct.includes("application/json") ? await response.json() : await response.blob();
   }
 
-  get(path, options) {
-    return this.request("GET", path, options);
-  }
-
-  post(path, body, options) {
-    return this.request("POST", path, { ...(options || {}), body });
-  }
-
-  patch(path, body, options) {
-    return this.request("PATCH", path, { ...(options || {}), body });
-  }
-
-  delete(path, options) {
-    return this.request("DELETE", path, options);
-  }
+  get(path, options) { return this.request("GET", path, options); }
+  post(path, body, options) { return this.request("POST", path, { ...options, body }); }
+  patch(path, body, options) { return this.request("PATCH", path, { ...options, body }); }
+  delete(path, options) { return this.request("DELETE", path, options); }
 }
 
-const baseurlforconstructor = "http://localhost:8081";
-export const http = new CHttpClient(baseurlforconstructor);
+/**
+ * LOGIK FÜR LOKALE ENTWICKLUNG
+ */
+const getBaseUrl = () => {
+  const host = window.location.hostname; // localhost
+  const port = window.location.port;     // Frontend-Port
+
+  // Szenario A: Frontend läuft im Docker (Port 8080) -> Backend ist Docker (8082)
+  if (port === "8080") {
+    return `http://${host}:8082`;
+  }
+
+  // Szenario B: Frontend läuft in IDE/Live-Server -> Backend ist IDE (8081)
+  return `http://${host}:8081`;
+};
+
+export const http = new CHttpClient(getBaseUrl());
+console.log("%c📡 API-Ziel:", "color: orange; font-weight: bold;", http.baseUrl);
