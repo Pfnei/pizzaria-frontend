@@ -1,25 +1,56 @@
 #!/bin/bash
 
-echo " Starte kompletten Docker-Wipe..."
+echo "======================================="
+echo "   Docker Full Reset + Speichercheck   "
+echo "======================================="
 
-# 1. Alle laufenden Container stoppen
-echo "Stoppe alle Container..."
+read -p "⚠️  Wirklich ALLES löschen? (y/N): " confirm
+if [[ "$confirm" != "y" && "$confirm" != "Y" ]]; then
+    echo "Abgebrochen."
+    exit 0
+fi
+
+echo ""
+echo "📊 Speicherverbrauch VORHER:"
+docker system df
+
+# Gesamtgröße vorher (Bytes)
+BEFORE=$(docker system df --format "{{.Size}}" | \
+    awk '{sum+=$1} END {print sum}')
+
+echo ""
+echo "🔥 Starte kompletten Wipe..."
+
+# Container stoppen & löschen
 docker stop $(docker ps -aq) 2>/dev/null
-
-# 2. Alle Container entfernen
-echo " Entferne alle Container..."
 docker rm $(docker ps -aq) 2>/dev/null
 
-# 3. Alle ungenutzten Netzwerke löschen (behebt das "Resource still in use" Problem)
-echo   Räume Netzwerke auf..."
+# Images löschen
+docker rmi -f $(docker images -aq) 2>/dev/null
+
+# Netzwerke
 docker network prune -f
 
-# 4. Alle ungenutzten Volumes löschen (Vorsicht: Datenbank-Daten gehen verloren!)
-echo "Lösche Volumes..."
+# Volumes (ACHTUNG: DB-Daten!)
 docker volume prune -f
 
-# 5. Build-Cache löschen (stellt sicher, dass JS-Änderungen wirklich übernommen werden)
-echo " Leere Build-Cache..."
-docker builder prune -f
+# Build Cache
+docker builder prune -a -f
 
-echo " Alles sauber! Du kannst jetzt mit 'docker compose up --build -d' neu starten."
+# Komplett-Prune
+docker system prune -a --volumes -f
+
+echo ""
+echo "📊 Speicherverbrauch NACHHER:"
+docker system df
+
+# Gesamtgröße nachher (Bytes)
+AFTER=$(docker system df --format "{{.Size}}" | \
+    awk '{sum+=$1} END {print sum}')
+
+FREED=$((BEFORE - AFTER))
+
+echo ""
+echo "======================================="
+echo "💾 Freigegebener Speicher: $FREED Bytes"
+echo "======================================="
