@@ -3,6 +3,8 @@
 import {userService} from "../services/userService.js";
 import {authManager} from "../services/authManager.js";
 import {fileService} from "../services/fileService.js";
+import {orderService} from "../services/orderService.js";
+import {productService} from "../services/productService.js";
 
 
 let hasSubmittedForm = false;
@@ -10,6 +12,8 @@ let liveCheckFields = false;
 let currentUserId = null;
 let isOwnUser = false;
 let oldUser;
+
+const deleteBtn = document.getElementById('deleteUserBtn');
 
 const form = document.getElementById('userForm');
 
@@ -30,6 +34,7 @@ function initPage() {
         await loadUser(currentUserId);
 
         isOwnUser = (authManager.getUserId() == currentUserId);
+        console.log("ownUser", isOwnUser);
 
         // Admin-Elemente verstecken/deaktivieren für normale User
         if (!authManager.isAdmin() || isOwnUser) {
@@ -64,8 +69,6 @@ function initPage() {
             }
         });
 
-        const deleteBtn = document.getElementById('deleteUserBtn');
-
 
         if (authManager.isAdmin() && !isOwnUser) {
             deleteBtn.style.display = 'block'; // Oder 'inline-block'
@@ -81,8 +84,7 @@ function initPage() {
                                                });
 
                 if (result.isConfirmed) {
-                    await userService.delete(currentUserId);
-                    window.location.href = "userlist.html";
+                    await deleteUser();
                 }
             };
 
@@ -221,6 +223,84 @@ async function saveUser() {
     }
 }
 
+
+async function deleteUser() {
+    console.log("Delete Button geklickt");
+
+    if (!currentUserId) {
+        console.log("Keine User-ID vorhanden.");
+        return;
+    }
+
+    try {
+
+        let canBeDeleted = true;
+
+        const orders = await orderService.getAll({params: {createdBy: currentUserId}});
+        console.log('Orders !', orders);
+
+        const products = await productService.getAll({params: {createdBy: currentUserId}});
+        console.log('Products !', products);
+
+        if (orders.length > 0) {
+
+            console.log('User kann nicht gelöscht werden, da er bereits Bestellungen durchgeführt hat', orders);
+            canBeDeleted = false;
+        }
+
+
+        if (products.length > 0) {
+
+            console.log('User kann nicht gelöscht werden, da er ein Produkt angelegt hat');
+            canBeDeleted = false;
+        }
+
+
+        if (!canBeDeleted) {
+            const result = await userService.update(currentUserId, {
+                active: false
+            });
+
+
+            const msgDiv = document.getElementById('successMessage');
+            if (msgDiv) {
+                msgDiv.textContent = 'User hat Bestellungen oder Produkt angelegt - kann nicht gelöscht werden. User wurde INAKTIV gesetzt!';
+                msgDiv.className = 'alert alert-warning mt-3';
+            }
+
+            setTimeout(() => {
+                window.location.href = "userlist.html";
+            }, 5000);
+        } else {
+            const result = await userService.delete(currentUserId);
+            console.log('Produkt erfolgreich gelöscht!', result);
+
+            const msgDiv = document.getElementById('successMessage');
+            if (msgDiv) {
+                msgDiv.textContent = 'User erfolgreich gelöscht!';
+                msgDiv.className = 'alert alert-success mt-3';
+            }
+
+            setTimeout(() => {
+                window.location.href = "userlist.html";
+            }, 2000);
+
+        }
+
+
+    } catch (error) {
+        console.error('Fehler beim Löschen des Users:', error.response?.data || error);
+        const msgDiv = document.getElementById('productMessage');
+        if (msgDiv) {
+            msgDiv.textContent = 'Fehler beim Löschen Users!';
+            msgDiv.className = 'alert alert-danger mt-3';
+        } else {
+            alert('Fehler beim Löschen des Users!');
+        }
+    }
+}
+
+
 function setValue(id, value) {
     const el = document.getElementById(id);
     if (el) el.value = value;
@@ -268,10 +348,10 @@ function validateForm() {
     isFormValid = validateStringInput('email', true, 5, 100, false, false, false, true) && isFormValid;
     isFormValid = validateStringInput('telefon', false, 7, 30) && isFormValid;
     isFormValid = validateStringInput('plz', false, 2, 10) && isFormValid;
-    isFormValid = validateStringInput('passwort', false, 8, 100 ,true, true,true) && isFormValid;
-    isFormValid = validateStringInput('passwortWdh', false, 2,100,true, true,true) && isFormValid;
+    isFormValid = validateStringInput('passwort', false, 8, 100, true, true, true) && isFormValid;
+    isFormValid = validateStringInput('passwortWdh', false, 2, 100, true, true, true) && isFormValid;
 
-    isFormValid = checkPasswordEquality ('passwort','passwortWdh' )  && isFormValid;
+    isFormValid = checkPasswordEquality('passwort', 'passwortWdh') && isFormValid;
 
 
     const detailsGroup = document.getElementById('diversDetailsGroup');

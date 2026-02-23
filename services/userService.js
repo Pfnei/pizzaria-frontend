@@ -21,6 +21,8 @@ class CUserService extends CBaseCrudService {
     // Ruft GET /users/me auf
     return await this.http.get(`${this.basePath}/me`);
   }
+
+
 }
 
 export const userService = new CUserService();
