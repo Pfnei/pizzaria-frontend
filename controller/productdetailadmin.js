@@ -181,6 +181,7 @@ function setText(id, value) {
 }
 
 
+
 if (toProductListBtn) {
     directToProductList();
 }

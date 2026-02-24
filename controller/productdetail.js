@@ -68,7 +68,7 @@ async function loadProduct(productId) {
         setValue("productDescription", product.productDescription || "");
 
         setValue("price", product.price.toFixed(2) || "");
-        setValue("mainCategory", product.mainCategory || "");
+        setValue("mainCategory", categoryLabel(product.mainCategory || ""));
 
         setText("createdAt", formatDate(product.createdAt));
         setText("createdBy", formatUserName(product.createdBy));
@@ -111,6 +111,14 @@ function setText(id, value) {
     if (el) el.textContent = value ?? "";
 }
 
-
+function categoryLabel(mainCategory) {
+    switch (String(mainCategory)) {
+        case "STARTER": return "Vorspeise";
+        case "MAIN_COURSE": return "Hauptspeise"; // Korrigiert passend zum JSON
+        case "DESSERT": return "Nachspeise";
+        case "DRINK": return "Getränk";
+        default: return String(mainCategory);
+    }
+}
 
 

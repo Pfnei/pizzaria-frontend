@@ -84,7 +84,7 @@ function renderProducts(list) {
     tbody.append(`
       <tr class="product-row" data-product-id="${p.productId}">
         <td>${name}</td>
-        <td>${mainCategory}</td>
+        <td>${categoryLabel(mainCategory)}</td>
         <td>€ ${Number(price).toFixed(2)}</td>
         <td class="text-center">${vegBadge}</td>
         <td class="text-center">${statusBadge}</td>
@@ -122,7 +122,15 @@ function renderProducts(list) {
       });
 }
 
-
+function categoryLabel(mainCategory) {
+  switch (String(mainCategory)) {
+    case "STARTER": return "Vorspeise";
+    case "MAIN_COURSE": return "Hauptspeise"; // Korrigiert passend zum JSON
+    case "DESSERT": return "Nachspeise";
+    case "DRINK": return "Getränk";
+    default: return String(mainCategory);
+  }
+}
 
 function applyFilterAndSort() {
   const rawFilter = $("#filter-all").val() || "";
