@@ -66,7 +66,6 @@ function renderProducts(list) {
     // DTO-Felder gemäß ProductResponseDTO
     const name = p.productName || "";
     const mainCategory = p.mainCategory || "";
-    const subCategory = p.subCategory || "";
     const price = p.price ?? 0;
     const active = !!p.active;
     const vegetarian = !!p.vegetarian;
@@ -85,8 +84,7 @@ function renderProducts(list) {
     tbody.append(`
       <tr class="product-row" data-product-id="${p.productId}">
         <td>${name}</td>
-        <td>${mainCategory}</td>
-        <td>${subCategory}</td>
+        <td>${categoryLabel(mainCategory)}</td>
         <td>€ ${Number(price).toFixed(2)}</td>
         <td class="text-center">${vegBadge}</td>
         <td class="text-center">${statusBadge}</td>
@@ -99,7 +97,6 @@ function renderProducts(list) {
         <div class="card h-100 product-card">
           <div class="card-body p-2">
             <p class="mb-1 fw-semibold">${name}</p>
-            <p class="mb-1">${mainCategory}${subCategory ? " – " + subCategory : ""}</p>
             <p class="mb-1">€ ${Number(price).toFixed(2)}</p>
             <p class="mb-0">${statusBadge} ${vegBadge}</p>
           </div>
@@ -125,7 +122,15 @@ function renderProducts(list) {
       });
 }
 
-
+function categoryLabel(mainCategory) {
+  switch (String(mainCategory)) {
+    case "STARTER": return "Vorspeise";
+    case "MAIN_COURSE": return "Hauptspeise"; // Korrigiert passend zum JSON
+    case "DESSERT": return "Nachspeise";
+    case "DRINK": return "Getränk";
+    default: return String(mainCategory);
+  }
+}
 
 function applyFilterAndSort() {
   const rawFilter = $("#filter-all").val() || "";
