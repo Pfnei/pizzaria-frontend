@@ -136,7 +136,6 @@ async function loadProduct(productId) {
 
         setValue("price", product.price.toFixed(2) || "");
         setValue("mainCategory", product.mainCategory || "");
-        setValue("subCategory", product.subCategory || "");
 
         setText("createdAt", formatDate(product.createdAt));
         setText("createdBy", formatUserName(product.createdBy));
@@ -195,12 +194,7 @@ function mapMainCategoryToEnum(value) {
     return mapping[value] || null;
 }
 
-// Mapping SubCategory Dropdown -> Enum
-function mapSubCategoryToEnum(value) {
-    const validSubCategories = ['PIZZA', 'PASTA', 'BOWL', 'ALCOHOL_FREE', 'BEER', 'WINE', 'COFFEE', 'SPIRIT'];
-    const val = value?.toUpperCase();
-    return validSubCategories.includes(val) ? val : null;
-}
+
 
 
 // Save-Button Handler
@@ -224,7 +218,6 @@ async function saveFormData() {
         vegetarian: document.getElementById('isVegetarian')?.checked || false,
         active: document.getElementById('isActive')?.checked || false,
         mainCategory: mapMainCategoryToEnum(document.getElementById('mainCategory')?.value),
-        subCategory: mapSubCategoryToEnum(document.getElementById('subCategory')?.value),
         allergens: Array.from(document.querySelectorAll('#allergen-container input[type="checkbox"]:checked'))
                         .map(el => el.value)
     };

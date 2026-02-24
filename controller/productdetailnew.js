@@ -93,12 +93,7 @@ function mapMainCategoryToEnum(value) {
     return mapping[value] || null;
 }
 
-// Mapping SubCategory Dropdown -> Enum
-function mapSubCategoryToEnum(value) {
-    const validSubCategories = ['PIZZA', 'PASTA', 'BOWL', 'ALCOHOL_FREE', 'BEER', 'WINE', 'COFFEE', 'SPIRIT'];
-    const val = value?.toUpperCase();
-    return validSubCategories.includes(val) ? val : null;
-}
+
 
 // Reset-Funktion für alle Inputs
 function resetProductForm() {
@@ -106,7 +101,6 @@ function resetProductForm() {
     document.getElementById('productDescription').value = '';
     document.getElementById('price').value = '';
     document.getElementById('mainCategory').selectedIndex = 0;
-    document.getElementById('subCategory').selectedIndex = 0;
     document.getElementById('isVegetarian').checked = false;
     document.getElementById('isActive').checked = false;
     productImage.src = "../pictures/ProductAvatar.png";
@@ -152,7 +146,6 @@ async function saveFormData() {
         vegetarian: document.getElementById('isVegetarian')?.checked || false,
         active: document.getElementById('isActive')?.checked || false,
         mainCategory: mapMainCategoryToEnum(document.getElementById('mainCategory')?.value),
-        subCategory: mapSubCategoryToEnum(document.getElementById('subCategory')?.value),
         allergens: Array.from(document.querySelectorAll('#allergen-container input[type="checkbox"]:checked'))
                         .map(el => el.value)
     };

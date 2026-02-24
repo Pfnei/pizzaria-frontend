@@ -69,7 +69,6 @@ async function loadProduct(productId) {
 
         setValue("price", product.price.toFixed(2) || "");
         setValue("mainCategory", product.mainCategory || "");
-        setValue("subCategory", product.subCategory || "");
 
         setText("createdAt", formatDate(product.createdAt));
         setText("createdBy", formatUserName(product.createdBy));
