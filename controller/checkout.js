@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 import {orderService} from "../services/orderService.js";
 import {getCart, clearCart, getCartTotal} from "../utils/cartStorage.js";
@@ -189,14 +189,12 @@ async function loadUserDetails() {
 
         if (!user) throw new Error("Benutzer nicht gefunden.");
 
-        // Formular befüllen
         setValue("vorname", user.firstname || "");
         setValue("nachname", user.lastname || "");
         setValue("telefon", user.phoneNumber || "");
         setValue("adresse", user.address || "");
         setValue("plz", user.zipcode || "");
         setValue("ort", user.city || "");
-
 
     } catch (err) {
         console.error("Fehler beim Laden0:", err);

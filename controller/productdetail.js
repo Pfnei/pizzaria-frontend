@@ -7,11 +7,7 @@ import {formatDate, formatUserName} from '../utils/helpers.js';
 
 let currentProductId = null;
 
-
 const toMenuBtn = document.getElementById('toMenuBtn');
-const form = document.getElementById('productInformationForm');
-
-const BACKEND = "http://localhost:8081";
 
 initPage();
 
@@ -36,7 +32,6 @@ function initPage() {
         });
 
 
-
     });
 }
 
@@ -44,25 +39,19 @@ async function loadProduct(productId) {
     try {
         const product = await productService.getById(productId);
 
-
         if (!product) {
-            console.log("Produkt nicht gefunden.");
             window.location.href = "../views/menu.html";
             return;
         }
 
         const productImg = document.getElementById("productImage");
 
-
         try {
             const blob = await fileService.downloadProductPicture(productId);
             const url = URL.createObjectURL(blob);
             productImg.src = url;
         } catch (e) {
-            console.error("Produktbild konnte nicht geladen werden:", e);
-
         }
-
 
         setValue("productName", product.productName || "");
         setValue("productDescription", product.productDescription || "");
@@ -75,12 +64,9 @@ async function loadProduct(productId) {
         setText("lastUpdatedAt", formatDate(product.lastUpdatedAt));
         setText("lastUpdatedBy", formatUserName(product.lastUpdatedBy));
 
-
-
         const vegetarianEl = document.getElementById("isVegetarian");
         if (vegetarianEl) vegetarianEl.checked = !!product.vegetarian;
 
-        // Allergene zurücksetzen
         document.querySelectorAll('#allergen-container input[type="checkbox"]').forEach(el => el.checked = false);
 
 
@@ -95,7 +81,6 @@ async function loadProduct(productId) {
         }
 
     } catch (err) {
-        console.error("Fehler beim Laden:", err);
         window.location.href = "../views/menu.html";
     }
 }
@@ -113,11 +98,16 @@ function setText(id, value) {
 
 function categoryLabel(mainCategory) {
     switch (String(mainCategory)) {
-        case "STARTER": return "Vorspeise";
-        case "MAIN_COURSE": return "Hauptspeise"; // Korrigiert passend zum JSON
-        case "DESSERT": return "Nachspeise";
-        case "DRINK": return "Getränk";
-        default: return String(mainCategory);
+        case "STARTER":
+            return "Vorspeise";
+        case "MAIN_COURSE":
+            return "Hauptspeise";
+        case "DESSERT":
+            return "Nachspeise";
+        case "DRINK":
+            return "Getränk";
+        default:
+            return String(mainCategory);
     }
 }
 

@@ -1,9 +1,9 @@
-'use strict';
+"use strict";
 
-import { orderService } from "../services/orderService.js";
+import {orderService} from "../services/orderService.js";
 import {addToCart} from "../utils/cartStorage.js";
 
-import {formatDate, formatUserName} from "../utils/helpers.js";
+import {formatDate} from "../utils/helpers.js";
 
 let currentOrderId = null;
 let currentOrder = null;
@@ -13,15 +13,11 @@ initPage();
 function initPage() {
     document.addEventListener('DOMContentLoaded', async () => {
 
-
         const params = new URLSearchParams(window.location.search);
         currentOrderId = params.get("id");
-        console.log (currentOrderId);
 
-
-        if (! currentOrderId) {
+        if (!currentOrderId) {
             console.warn("Keine id in der URL");
-           // window.location.href = "../views/menu.html";
             return;
         }
 
@@ -38,16 +34,10 @@ async function loadOrder(orderId) {
     try {
         const order = await orderService.getById(orderId);
         currentOrder = order;
-        console.log(order);
 
-      if (!order) {
-            console.log("Bestellung nicht gefunden.");
-          //  window.location.href = "../views/menu.html";
+        if (!order) {
             return;
         }
-
-
-
 
         setValue("vorname", order.firstname || "");
         setValue("nachname", order.lastname || "");
@@ -55,20 +45,17 @@ async function loadOrder(orderId) {
         setValue("telefon", order.phoneNumber || "");
         setValue("adresse", order.address || "");
         setValue("ort", order.city || "");
-         setValue("anmerkung", order.deliveryNote || "");
+        setValue("anmerkung", order.deliveryNote || "");
 
-         setText("createdAt", formatDate(order.deliveredAt));
+        setText("createdAt", formatDate(order.deliveredAt));
 
         if (Array.isArray(order.items)) {
-            renderOrderDetails (order)
+            renderOrderDetails(order)
         }
 
     } catch (err) {
-        console.error("Fehler beim Laden:", err);
-        //window.location.href = "../views/menu.html";
     }
 }
-
 
 
 function addOrderItemsToCart() {
@@ -79,17 +66,11 @@ function addOrderItemsToCart() {
         const productId = item.product.productId
         if (!productId) return;
 
-        const qty =  item.quantity || 0;
+        const qty = item.quantity || 0;
 
-        addToCart(
-            {
-                productId: String(productId),
-                productName: item.product.productName,
-                price: Number(item.product.price ?? 0),
-                vegetarian: Boolean(item.product.vegetarian),
-            },
-            qty
-        );
+        addToCart({
+                      productId: String(productId), productName: item.product.productName, price: Number(item.product.price ?? 0), vegetarian: Boolean(item.product.vegetarian),
+                  }, qty);
     });
 
     alert("Produkte wurden in den Warenkorb übernommen");
@@ -130,7 +111,7 @@ function renderOrderDetails(order) {
     order.items.forEach(item => {
         const qty = Number(item.quantity) || 0;
         const price = Number(item.price) || 0;
-        const itemTotal =  price;
+        const itemTotal = price;
         total += itemTotal;
 
         const row = `

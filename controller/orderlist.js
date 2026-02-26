@@ -1,4 +1,3 @@
-// controller/orderlist.js
 "use strict";
 
 import {orderService} from "../services/orderService.js";
@@ -37,26 +36,21 @@ async function loadOrders(onlyOwn) {
             throw new Error("Unerwartete Serverantwort (keine Orderliste)");
         }
 
-        console.log("Orders vom Server:", data);
         orders = data.map(o => ({
-            ...o,
-            username: (o.createdBy && o.createdBy.username) ? o.createdBy.username : "",
-            email: (o.createdBy && o.createdBy.email) ? o.createdBy.email : ""
+            ...o, username: (o.createdBy && o.createdBy.username) ? o.createdBy.username : "", email: (o.createdBy && o.createdBy.email) ? o.createdBy.email : ""
         }));
         renderOrders(orders);
     } catch (err) {
-        console.error("Fehler beim Laden der Bestellungen:", err);
         alert("Fehler beim Laden der Bestellungen: " + (err.message || err));
         window.location.href = "../views/menu.html";
     }
 }
 
-// Instant (createdAt / deliveredAt) → hübsches Datum
 function formatDate(instantString) {
     if (!instantString) return "";
     const d = new Date(instantString);
     if (Number.isNaN(d.getTime())) return "";
-    return d.toLocaleDateString("de-AT"); // z.B. 01.03.2025
+    return d.toLocaleDateString("de-AT");
 }
 
 function renderOrders(list) {
@@ -66,7 +60,6 @@ function renderOrders(list) {
     cards.empty();
 
     list.forEach((o) => {
-        // OrderResponseDTO-Felder
         const deliveredOrCreated = o.deliveredAt || o.createdAt;
         const date = formatDate(deliveredOrCreated);
         const total = o.total ?? 0;
@@ -76,11 +69,9 @@ function renderOrders(list) {
         const zipcode = o.zipcode || "";
         const city = o.city || "";
 
-        const createdBy = o.createdBy || {};
-        const username = o.username || "";
+               const username = o.username || "";
         const email = o.email || "";
 
-        // Tabellenzeile
         tbody.append(`
       <tr class="order-row" data-order-id="${o.orderId}">
         <td>${date}</td>
@@ -93,7 +84,7 @@ function renderOrders(list) {
       </tr>
     `);
 
-        // Card-Ansicht (mobil)
+
         cards.append(`
       <div class="col-12 col-sm-6 col-md-4" data-order-id="${o.orderId}">
         <div class="card h-100 order-card">
@@ -110,7 +101,6 @@ function renderOrders(list) {
     });
 
 
-// Klick auf Row oder Card
     $(document)
         .off("click.orderNav")
         .on("click.orderNav", ".order-row, .order-card", function () {
@@ -134,27 +124,21 @@ function applyFilterAndSort() {
         });
     });
 
-    const sorted = currentSort.key
-        ? sortList(filtered, currentSort.key, currentSort.asc)
-        : filtered;
+    const sorted = currentSort.key ? sortList(filtered, currentSort.key, currentSort.asc) : filtered;
 
     renderOrders(sorted);
 }
 
 
-
 function registerUiEvents() {
-    // Filter
     $("#filter-all").on("input", applyFilterAndSort);
 
-    // Dropdown-Sortierung
     $("#sort-dropdown").on("change", function () {
         currentSort.key = $(this).val();
         currentSort.asc = true;
         applyFilterAndSort();
     });
 
-    // Klick auf Tabellen-Header
     $(document).on("click", "th.sortable", function () {
         const key = $(this).data("key");
         if (currentSort.key === key) {

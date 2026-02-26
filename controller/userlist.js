@@ -1,3 +1,6 @@
+'use strict';
+
+
 import {userService} from "../services/userService.js";
 import {authManager} from "../services/authManager.js";
 import {sortList} from "../utils/helpers.js";
@@ -5,17 +8,14 @@ import {sortList} from "../utils/helpers.js";
 let users = [];
 let currentSort = {key: "", asc: true};
 
-// Entry-Point, wenn DOM fertig ist
-$(async function () {
-    console.log("isAdmin:", authManager.isAdmin());
-    console.log("currentUser:", authManager.getUser());
 
-    // nur admins jo
+$(async function () {
+
+
     if (!authManager.isLoggedIn() || !authManager.isAdmin()) {
         window.location.href = "../views/menu.html";
         return;
     }
-
     await loadUsers();
     registerUiEvents();
 });
@@ -28,11 +28,9 @@ async function loadUsers() {
             throw new Error("Unerwartete Serverantwort (keine Userliste)");
         }
 
-        console.log("Benutzerliste vom Server:", data);
         users = data;
         renderUsers(users);
     } catch (err) {
-        console.error("Fehler beim Laden der User:", err);
         alert("Fehler beim Laden der User: " + err.message);
         window.location.href = "../views/menu.html";
     }
@@ -56,7 +54,6 @@ function renderUsers(list) {
         ${user.admin ? "Admin" : "Benutzer"}
       </span>`.trim();
 
-        // Tabelle (Zeile klickbar)
         tbody.append(`
       <tr class="user-row" data-user-id="${user.userId}">
         <td>${user.username}</td>
@@ -69,7 +66,6 @@ function renderUsers(list) {
       </tr>
     `);
 
-        // Cards (Card klickbar)
         cards.append(`
       <div class="col-12 col-sm-6 col-md-4">
         <div class="card h-100 user-card" data-user-id="${user.userId}">
@@ -85,7 +81,7 @@ function renderUsers(list) {
     `);
     });
 
-    // Klick auf Row oder Card → Userdetails (Bearbeiten)
+
     $(document)
         .off("click.userNav")
         .on("click.userNav", ".user-row, .user-card", function () {
@@ -95,7 +91,6 @@ function renderUsers(list) {
             window.location.href = url;
         });
 }
-
 
 
 function applyFilterAndSort() {
@@ -111,25 +106,20 @@ function applyFilterAndSort() {
         });
     });
 
-    const sorted = currentSort.key
-        ? sortList(filtered, currentSort.key, currentSort.asc)
-        : filtered;
+    const sorted = currentSort.key ? sortList(filtered, currentSort.key, currentSort.asc) : filtered;
 
     renderUsers(sorted);
 }
 
 function registerUiEvents() {
-    // Filter
     $("#filter-all").on("input", applyFilterAndSort);
 
-    // Dropdown-Sortierung
     $("#sort-dropdown").on("change", function () {
         currentSort.key = $(this).val();
         currentSort.asc = true;
         applyFilterAndSort();
     });
 
-    // Klick auf Tabellen-Header
     $(document).on("click", "th.sortable", function () {
         const key = $(this).data("key");
         if (currentSort.key === key) {

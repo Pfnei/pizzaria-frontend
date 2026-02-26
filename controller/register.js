@@ -1,8 +1,6 @@
 'use strict';
 
-
 import {registerService} from "../services/registerService.js";
-
 
 let hasSubmittedForm = false;
 let liveCheckFields = false;
@@ -18,7 +16,6 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 
-
 function setupDiversDetails() {
     const anrede = document.getElementById('anrede');
     const detailsGroup = document.getElementById('diversDetailsGroup');
@@ -30,7 +27,6 @@ function setupDiversDetails() {
     anrede.addEventListener('change', toggle);
     toggle();
 }
-
 
 function handleFormSubmit(event) {
     event.preventDefault();
@@ -48,10 +44,9 @@ function handleFormSubmit(event) {
 
 }
 
-
 async function saveUser() {
 
-    var payload = collectFormData();
+    let payload = collectFormData();
 
     try {
 
@@ -63,7 +58,6 @@ async function saveUser() {
         }, 500);
 
     } catch (err) {
-        console.error("Fehler bei der Registrierung:", err);
         const msgDiv = document.getElementById('successMessage');
         if (msgDiv) {
             msgDiv.textContent = 'Fehler bei der Registrierung! ';
@@ -76,61 +70,34 @@ async function saveUser() {
             }, 2000);
 
         } else {
-            alert('Fehler bei der Registrierung!', err);
+            alert('Fehler bei der Registrierung!');
         }
     }
 }
 
 
-// -------------------------------
-// Form Daten einsammeln
-// -------------------------------
 function collectFormData() {
-    var dto = {};
 
-    var firstnameEle = document.getElementById("vorname");
-    var lastnameEle = document.getElementById("nachname");
-    var usernameEle = document.getElementById("username");
-    var emailEle = document.getElementById("email");
-    var telefonEle = document.getElementById("telefon");
-    var passEle = document.getElementById("passwort");
-
-
-    var anredeEle = document.getElementById("anrede");
-    var diversEle = document.getElementById("diversDetails");
-    var landEle = document.getElementById("land");
-
-    // klassische if-Schreibweise
-    dto.firstname = "";
-    if (firstnameEle) dto.firstname = firstnameEle.value.trim();
-
-    dto.lastname = "";
-    if (lastnameEle) dto.lastname = lastnameEle.value.trim();
-
-    dto.username = "";
-    if (usernameEle) dto.username = usernameEle.value.trim();
-
-    dto.email = "";
-    if (emailEle) dto.email = emailEle.value.trim();
-
-    dto.phoneNumber = "";
-    if (telefonEle) dto.phoneNumber = telefonEle.value.trim();
-
-    dto.password = "";
-    if (passEle) dto.password = passEle.value;
-
-
-    dto.salutation = null;
-    if (anredeEle) dto.salutation = anredeEle.value;
-
-    dto.salutationDetail = "";
-    if (diversEle) dto.salutationDetail = diversEle.value.trim();
-
-    dto.country = "";
-    if (landEle) dto.country = landEle.value;
-
+    const dto = {
+        firstname: getVal("vorname"),
+        lastname: getVal("nachname"),
+        username: getVal("username"),
+        email: getVal("email"),
+        phoneNumber: getVal("telefon"),
+        password: getVal("passwort"),
+        salutation: getVal("anrede"),
+        salutationDetail: getVal("diversDetails"),
+        country: getVal("land"),
+    };
     return dto;
 }
+
+
+function getVal(id) {
+    const el = document.getElementById(id);
+    return el ? el.value : "";
+}
+
 
 function validateForm() {
     let isFormValid = true;
@@ -141,13 +108,10 @@ function validateForm() {
     isFormValid = validateStringInput('email', true, 5, 100, false, false, false, true) && isFormValid;
     isFormValid = validateStringInput('telefon', false, 7, 30) && isFormValid;
     isFormValid = validateStringInput('plz', false, 2, 10) && isFormValid;
-    isFormValid = validateStringInput('passwort', true, 8, 100 ,true, true,true) && isFormValid;
-    isFormValid = validateStringInput('passwortWdh', true, 2,100,true, true,true) && isFormValid;
+    isFormValid = validateStringInput('passwort', true, 8, 100, true, true, true) && isFormValid;
+    isFormValid = validateStringInput('passwortWdh', true, 2, 100, true, true, true) && isFormValid;
 
-    isFormValid = checkPasswordEquality ('passwort','passwortWdh' )  && isFormValid;
-
-
-
+    isFormValid = checkPasswordEquality('passwort', 'passwortWdh') && isFormValid;
 
 
     const detailsGroup = document.getElementById('diversDetailsGroup');

@@ -1,5 +1,7 @@
-import { authManager } from "../services/authManager.js";
-import { getCart, updateQuantity, removeFromCart, getCartTotal } from "../utils/cartStorage.js";
+'use strict';
+
+import {authManager} from "../services/authManager.js";
+import {getCart, updateQuantity, removeFromCart, getCartTotal} from "../utils/cartStorage.js";
 
 document.addEventListener("DOMContentLoaded", () => {
     const btnCheckout = document.getElementById("btnCheckout");
@@ -8,51 +10,33 @@ document.addEventListener("DOMContentLoaded", () => {
     const modalEl = document.getElementById("checkOutModal");
 
     console.log("shoppingcarts.js loaded", {
-        btnCheckoutFound: !!btnCheckout,
-        modalFound: !!modalEl,
-        isLoggedIn: authManager.isLoggedIn(),
-        validTokenPresent: !!authManager.getValidToken(),
-        href: window.location.href
+        btnCheckoutFound: !!btnCheckout, modalFound: !!modalEl, isLoggedIn: authManager.isLoggedIn(), validTokenPresent: !!authManager.getValidToken(), href: window.location.href
     });
 
-    // Globaler Click-Logger: Wenn du klickst und HIER kommt nichts,
-    // dann liegt ein Overlay drüber oder der Click kommt nicht durch.
-    document.addEventListener(
-        "click",
-        (e) => {
-            const t = e.target;
-            const id = t?.id ? `#${t.id}` : "";
-            const cls = t?.className ? `.${String(t.className).trim().replaceAll(" ", ".")}` : "";
-            console.log("document click:", `${t?.tagName || "?"}${id}${cls}`);
-        },
-        true // capture
-    );
+    document.addEventListener("click", (e) => {
+        const t = e.target;
+        const id = t?.id ? `#${t.id}` : "";
+        const cls = t?.className ? `.${String(t.className).trim().replaceAll(" ", ".")}` : "";
+        console.log("document click:", `${t?.tagName || "?"}${id}${cls}`);
+    }, true);
 
     if (btnCheckout) {
-        console.log("Attaching btnCheckout click handler…");
+
 
         btnCheckout.addEventListener("click", () => {
-            console.log("btnCheckout clicked", {
-                isLoggedIn: authManager.isLoggedIn(),
-                validTokenPresent: !!authManager.getValidToken()
-            });
 
             if (authManager.isLoggedIn()) {
-                // Du bist in /views/shoppingcarts.html -> ./checkout.html ist sicher
                 const target = "./checkout.html";
-                console.log("Navigating to:", target);
                 window.location.assign(target);
                 return;
             }
 
-            // Nicht eingeloggt -> Modal zeigen
             if (modalEl && window.bootstrap?.Modal) {
-                console.log("Showing modal (not logged in) …");
+
                 const modal = window.bootstrap.Modal.getOrCreateInstance(modalEl);
                 modal.show();
             } else {
-                console.log("Bootstrap Modal not available -> fallback to login");
-                window.location.assign("./login.html");
+                        window.location.assign("./login.html");
             }
         });
     }
@@ -65,7 +49,6 @@ document.addEventListener("DOMContentLoaded", () => {
         btnLoginOrRegister.addEventListener("click", () => window.location.assign("./login.html"));
     }
 
-    // Cart actions
     const cartItemsEl = document.getElementById("cartItems");
     if (cartItemsEl) {
         cartItemsEl.addEventListener("click", (e) => {

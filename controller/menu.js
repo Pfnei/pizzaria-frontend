@@ -1,14 +1,14 @@
-// menu.js
-import { authManager } from "../services/authManager.js";
-import { productService } from "../services/productService.js";
-import { addToCart } from "../utils/cartStorage.js";
+"use strict";
+
+import {authManager} from "../services/authManager.js";
+import {productService} from "../services/productService.js";
+import {addToCart} from "../utils/cartStorage.js";
 
 
 let products = [];
 let container;
 
 document.addEventListener("DOMContentLoaded", async function () {
-
 
     const adminspace = document.getElementById("adminspace");
     if (adminspace) {
@@ -18,23 +18,17 @@ document.addEventListener("DOMContentLoaded", async function () {
     container = document.getElementById("products-container");
 
     if (!container) {
-        console.error("products-container not found");
         return;
     }
 
     try {
-        products = await productService.getAllProducts(); // GET /products
+        products = await productService.getAllProducts();
         products = Array.isArray(products) ? products.filter(p => p?.active !== false) : [];
-        console.log(products);
 
         renderProducts(container, products);
-
         registerUiEvents();
 
-
-
     } catch (err) {
-        console.error("Failed loading products:", err);
         container.innerHTML = `
           <div class="alert alert-danger">
             Produkte konnten nicht geladen werden: ${escapeHtml(err?.message || "Unbekannter Fehler")}
@@ -84,7 +78,6 @@ function renderProducts(container, products) {
     `;
 
 
-
     container.querySelectorAll("[data-add]").forEach((btn) => {
         btn.addEventListener("click", () => {
             const productId = btn.getAttribute("data-product-id");
@@ -93,14 +86,10 @@ function renderProducts(container, products) {
             const vegetarian = btn.getAttribute("data-product-vegetarian") === "true";
 
             if (!productId) {
-                console.error("Missing productId on button", btn);
                 return;
             }
 
-            addToCart({ productId, productName, price, vegetarian }, 1);
-
-            // Debug: siehst du sofort im Storage
-            console.log("added to cart:", { productId, productName, price, vegetarian });
+            addToCart({productId, productName, price, vegetarian}, 1);
 
             btn.disabled = true;
             setTimeout(() => (btn.disabled = false), 250);
@@ -110,11 +99,8 @@ function renderProducts(container, products) {
 
 
 function productCardHtml(p) {
-    const vegetarianBadge = p.vegetarian
-        ? ` <i class="bi bi-leaf-fill text-success" title="Vegetarisch"></i>`
-        : "";
+    const vegetarianBadge = p.vegetarian ? ` <i class="bi bi-leaf-fill text-success" title="Vegetarisch"></i>` : "";
 
-    // Allergene als kleine graue Badges
     const allergenBadges = (p.allergens || [])
         .map(a => `<span class="badge bg-light text-muted border me-1" style="font-size: 0.7rem;">${escapeHtml(a)}</span>`)
         .join("");
@@ -157,11 +143,16 @@ function productCardHtml(p) {
 
 function categoryLabel(mainCategory) {
     switch (String(mainCategory)) {
-        case "STARTER": return "Vorspeisen";
-        case "MAIN_COURSE": return "Hauptspeisen"; // Korrigiert passend zum JSON
-        case "DESSERT": return "Nachspeisen";
-        case "DRINK": return "Getränke";
-        default: return String(mainCategory);
+        case "STARTER":
+            return "Vorspeisen";
+        case "MAIN_COURSE":
+            return "Hauptspeisen";
+        case "DESSERT":
+            return "Nachspeisen";
+        case "DRINK":
+            return "Getränke";
+        default:
+            return String(mainCategory);
     }
 }
 
@@ -217,9 +208,7 @@ function registerUiEvents() {
 
     if (vegFlip) {
         vegFlip.addEventListener("change", () => {
-            const filtered = vegFlip.checked
-                ? products.filter(p => p.vegetarian === true)
-                : products;
+            const filtered = vegFlip.checked ? products.filter(p => p.vegetarian === true) : products;
 
             renderProducts(container, filtered);
         });
