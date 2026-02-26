@@ -214,13 +214,9 @@ async function deleteUser() {
 
         let canBeDeleted = true;
         const orders = await orderService.getAll({params: {createdBy: currentUserId}});
-        const products = await productService.getAll({params: {createdBy: currentUserId}});
+
 
         if (orders.length > 0) {
-            canBeDeleted = false;
-        }
-
-        if (products.length > 0) {
             canBeDeleted = false;
         }
 

@@ -1,4 +1,6 @@
 // authManager.js
+import {clearCart} from "../utils/cartStorage.js";
+
 export class CAuthManager {
   /**
    * @param {string} storageKey - Key im localStorage
@@ -147,6 +149,7 @@ export class CAuthManager {
   clearAuth() {
     try {
       localStorage.removeItem(this.storageKey);
+      clearCart();
     } catch (error) {
       console.error(error);
     }
