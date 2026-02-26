@@ -31,7 +31,6 @@
             <input type="file" id="profileUploadInput" accept="image/*" style="display:none;">
         </div>
         <form id="userForm"  novalidate>
-            <!-- Anrede -->
             <div class="mb-3">
                 <select class="form-select" id="anrede">
                     <option value="" disabled selected>Anrede wählen</option>
@@ -40,19 +39,19 @@
                     <option value="MX">Divers</option>
                 </select>
             </div>
-            <!-- Details Divers -->
+
             <div class="mb-3" id="diversDetailsGroup" style="display:none;">
                 <input type="text" class="form-control" id="diversDetails" placeholder="Details zu Divers (optional)"
                        pattern=".*\S.*" minlength="4" maxlength="30">
             </div>
-            <!-- Benutzername -->
+
             <div class="mb-3">
                 <input type="text" class="form-control" id="username" placeholder="Benutzername*" pattern=".*\S.*"
                        minlength="5" maxlength="30">
                 <div class="validation-feedback-ok mt-1">
                 </div>
             </div>
-            <!-- Passwort -->
+
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <input type="password" class="form-control" id="passwort" placeholder="Passwort*" required>
@@ -66,7 +65,7 @@
                     </div>
                 </div>
             </div>
-            <!-- Vorname & Nachname -->
+
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <input type="text" class="form-control" id="vorname" placeholder="Vorname" pattern=".*\S.*"
@@ -81,7 +80,7 @@
                     </div>
                 </div>
             </div>
-            <!-- Email & Telefon -->
+
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <input type="email" class="form-control" id="email" placeholder="E-Mail-Adresse*" required
@@ -96,12 +95,12 @@
                     </div>
                 </div>
             </div>
-            <!-- Adresse -->
+
             <div class="mb-3">
                 <input type="text" class="form-control" id="adresse" name="adresse" placeholder="Adresse" pattern=".*\S.*"
                 >
             </div>
-            <!-- PLZ, Ort, Land -->
+
             <div class="row">
                 <div class="col-md-4 mb-3">
                     <input type="text" class="form-control" id="plz" name="plz" placeholder="PLZ" minlength="2" maxlength="10">
@@ -170,7 +169,7 @@
                     </select>
                 </div>
             </div>
-            <!-- Neue Switches für Admin-Ansicht -->
+
             <div class="form-check form-switch mb-3">
                 <input class="form-check-input" type="checkbox" id="active">
                 <label class="form-check-label" for="active">Konto aktiv</label>

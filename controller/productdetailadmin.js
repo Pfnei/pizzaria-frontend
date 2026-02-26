@@ -7,7 +7,6 @@ import {formatDate, formatUserName} from '../utils/helpers.js';
 import {orderService} from "../services/orderService.js";
 
 
-
 redirectToMenu();
 
 let hasSubmittedForm = false;
@@ -22,7 +21,6 @@ const productUploadInput = document.getElementById('productUploadInput');
 const hreftoProductList = 'productlist.html';
 const form = document.getElementById('productInformationForm');
 
-const BACKEND = "http://localhost:8081";
 
 initPage();
 
@@ -33,7 +31,6 @@ function initPage() {
         currentProductId = params.get("id");
 
         if (!currentProductId) {
-            console.warn("Keine id in der URL");
             window.location.href = "../views/menu.html";
             return;
         }
@@ -52,59 +49,38 @@ function initPage() {
                                            });
 
             if (result.isConfirmed) {
-                deleteProduct();
+                await deleteProduct();
             }
         });
 
+        productImage.addEventListener('click', () => {
+            if (productUploadInput) productUploadInput.click();
+        });
 
 
-    productImage.addEventListener('click', () => {
-        if (productUploadInput) productUploadInput.click();
-    });
+        productUploadInput.addEventListener('change', async (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
 
+            try {
+                await fileService.uploadProductPicture(currentProductId, file);
 
-    productUploadInput.addEventListener('change', async (event) => {
-        const file = event.target.files[0];
-        if (!file) return;
+                if (productImage.src.startsWith('blob:')) {
+                    URL.revokeObjectURL(productImage.src);
+                }
 
-        try {
-            // 1. Upload zum Server
-            await fileService.uploadProductPicture(currentProductId, file);
+                const localUrl = URL.createObjectURL(file);
+                productImage.src = localUrl;
 
-
-            // 2. Alten Speicher (Blob-URL) im Browser freigeben
-            if (productImage.src.startsWith('blob:')) {
-                URL.revokeObjectURL(productImage.src);
+            } catch (err) {
             }
+        });
 
-            // 3. Neue lokale Vorschau erstellen
-            const localUrl = URL.createObjectURL(file);
-            productImage.src = localUrl;
+        await loadProduct(currentProductId);
 
-
-            console.log("Upload erfolgreich!");
-
-        } catch (err) {
-            // Hier wird der Fehler gefangen, falls der Upload fehlschlägt
-            console.error("Fehler beim Hochladen des Produktbilds:", err);
-            console.log("Fehler beim Hochladen des Produktbilds.");
-        }
-
-
+        changeEnterToTab(form);
+        form.addEventListener('submit', handleFormSubmit);
     });
-
-    await loadProduct(currentProductId);
-
-    // Form setup
-
-    changeEnterToTab(form);
-
-    form.addEventListener('submit', handleFormSubmit);
-
-}
-
-)
-;
 }
 
 async function loadProduct(productId) {
@@ -113,7 +89,6 @@ async function loadProduct(productId) {
 
 
         if (!product) {
-            console.log("Produkt nicht gefunden.");
             window.location.href = "../views/menu.html";
             return;
         }
@@ -126,8 +101,6 @@ async function loadProduct(productId) {
             const url = URL.createObjectURL(blob);
             productImg.src = url;
         } catch (e) {
-            console.error("Produktbild konnte nicht geladen werden:", e);
-
         }
 
 
@@ -164,7 +137,6 @@ async function loadProduct(productId) {
         }
 
     } catch (err) {
-        console.error("Fehler beim Laden:", err);
         window.location.href = "../views/menu.html";
     }
 }
@@ -181,7 +153,6 @@ function setText(id, value) {
 }
 
 
-
 if (toProductListBtn) {
     directToProductList();
 }
@@ -196,14 +167,10 @@ function mapMainCategoryToEnum(value) {
 }
 
 
-
-
 // Save-Button Handler
 async function saveFormData() {
-    console.log("Save Button geklickt");
 
     if (!currentProductId) {
-        console.log("Keine Product-ID vorhanden.");
         return;
     }
 
@@ -223,11 +190,8 @@ async function saveFormData() {
                         .map(el => el.value)
     };
 
-    console.log('Produkt DTO:', productDTO);
-
     try {
         const result = await productService.updateProduct(currentProductId, productDTO);
-        console.log('Produkt erfolgreich upgedated!', result);
 
         const msgDiv = document.getElementById('productMessage');
         if (msgDiv) {
@@ -241,7 +205,6 @@ async function saveFormData() {
 
 
     } catch (error) {
-        console.error('Fehler beim Updaten des Produkts:', error.response?.data || error);
         const msgDiv = document.getElementById('productMessage');
         if (msgDiv) {
             msgDiv.textContent = 'Fehler beim Updatendes Produkts!';
@@ -255,10 +218,8 @@ async function saveFormData() {
 
 
 async function deleteProduct() {
-    console.log("Delete Button geklickt");
 
     if (!currentProductId) {
-        console.log("Keine Product-ID vorhanden.");
         return;
     }
 
@@ -270,16 +231,9 @@ async function deleteProduct() {
 
 
     try {
-
-
-        console.log("Hallo");
         const orders = await orderService.getAll({params: {productId: currentProductId}});
-        console.log('Orders !', orders);
 
         if (orders.length > 0) {
-
-            console.log('Produkt kann nicht gelöscht werden, da es in Bestellungen vorhanden ist', orders);
-
             const result = await productService.updateProduct(currentProductId, {
                 active: false
             });
@@ -298,7 +252,6 @@ async function deleteProduct() {
 
         } else {
             const result = await productService.delete(currentProductId);
-            console.log('Produkt erfolgreich gelöscht!', result);
 
             const msgDiv = document.getElementById('productMessage');
             if (msgDiv) {
@@ -314,7 +267,6 @@ async function deleteProduct() {
 
 
     } catch (error) {
-        console.error('Fehler beim Löschen des Produkts:', error.response?.data || error);
         const msgDiv = document.getElementById('productMessage');
         if (msgDiv) {
             msgDiv.textContent = 'Fehler beim Löschen Produkts!';
@@ -353,20 +305,6 @@ function validateForm() {
 }
 
 
-function setSelectsValid(arrayOfIds) {
-    if (!Array.isArray(arrayOfIds)) return;
-
-    let count = 0;
-    for (const id of arrayOfIds) {
-        const element = document.getElementById(id);
-        if (!element) continue;
-
-        element.classList.add('is-valid');
-    }
-    return;
-}
-
-
 function bindLiveValidation() {
     if (liveCheckFields) return;
     liveCheckFields = true;
@@ -400,7 +338,6 @@ function bindLiveValidation() {
 
 function redirectToMenu() {
     if (!authManager.isLoggedIn() || !authManager.isAdmin()) {
-        console.log("Nicht eingeloggt oder kein Admin - Weiterleitung...");
         window.location.href = '../views/menu.html';
     }
 }

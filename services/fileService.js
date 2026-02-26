@@ -43,7 +43,6 @@ class CFileService extends CBaseCrudService {
         return response;
     }
 
-
 }
 
 export const fileService = new CFileService();

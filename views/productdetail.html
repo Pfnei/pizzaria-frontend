@@ -24,113 +24,104 @@
             <div class="product-box">
                 <div>
                     <h3 class="mb-4 fw-bold">Produkt anzeigen</h3>
+                    <div class="d-flex justify-content-between align-items-center mb-3 me-2">
+                        <div class="col-8 mb-0">
+                            <label class="form-label fw-bold">Produktname</label>
+                            <input type="text" class="form-control" id="productName" disabled>
+                        </div>
 
-
-                        <div class="d-flex justify-content-between align-items-center mb-3 me-2">
-                            <div class="col-8 mb-0">
-                                <label class="form-label fw-bold">Produktname</label>
-                                <input type="text" class="form-control" id="productName" disabled>
+                        <div class="col-4 mb-0 ms-2">
+                            <label class="form-label fw-bold">Preis (€)</label>
+                            <div class="input-group">
+                                <input type="number" step="0.01" class="form-control" id="price" disabled>
+                                <span class="input-group-text"><i class="bi bi-currency-euro"></i></span>
                             </div>
-
-                            <div class="col-4 mb-0 ms-2">
-                                <label class="form-label fw-bold">Preis (€)</label>
-                                <div class="input-group">
-                                    <input type="number" step="0.01" class="form-control" id="price"  disabled>
-                                    <span class="input-group-text"><i class="bi bi-currency-euro"></i></span>
+                        </div>
+                    </div>
+                    <div class="d-flex mb-4">
+                        <div class="col-6">
+                            <img
+                                    id="productImage"
+                                    src="../pictures/ProductAvatar.png"
+                                    class="img-fluid"
+                                    alt="Produktbild"
+                            >
+                        </div>
+                        <div class="col-6">
+                            <div class="d-flex justify-content-end align-items-center mb-2">
+                                <label class="form-check-label me-2" for="isVegetarian">
+                                    <i class="bi bi-leaf-fill" style="color: rgb(0, 170, 0);"></i> vegetarisch
+                                </label>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="isVegetarian" disabled>
                                 </div>
                             </div>
+
                         </div>
+                    </div>
+                    <div class="mb-4 fs-6">
+                        <label class="form-label fw-bold">Beschreibung</label>
+                        <textarea class="form-control" id="productDescription" rows="3" disabled></textarea>
+                    </div>
 
-                        <div class="d-flex mb-4">
-                            <div class="col-6">
-                                <img
-                                        id="productImage"
-                                        src="../pictures/ProductAvatar.png"
-                                        class="img-fluid"
-                                        alt="Produktbild"
-                                >
-                            </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Kategorie</label>
+                        <input type="text" class="form-control" id="mainCategory" disabled>
+                    </div>
+                    <div class="mb-5">
+                        <label for="allergen-container" class="form-label fw-bold">Allergene</label>
+                        <div id="allergen-container" class="d-flex flex-wrap gap-2 border p-2 rounded bg-white">
+                            <input type="checkbox" class="btn-check" id="all-a" value="A" disabled>
+                            <label class="btn btn-outline-secondary btn-sm" for="all-a">A (Gluten)</label>
 
-                            <div class="col-6">
-                                <div class="d-flex justify-content-end align-items-center mb-2">
-                                    <label class="form-check-label me-2" for="isVegetarian">
-                                        <i class="bi bi-leaf-fill" style="color: rgb(0, 170, 0);"></i> vegetarisch
-                                    </label>
-                                    <div class="form-check form-switch">
-                                        <input class="form-check-input" type="checkbox" id="isVegetarian" disabled>
-                                    </div>
-                                </div>
+                            <input type="checkbox" class="btn-check" id="all-b" value="B" disabled>
+                            <label class="btn btn-outline-secondary btn-sm" for="all-b">B (Krebstiere)</label>
 
+                            <input type="checkbox" class="btn-check" id="all-c" value="C" disabled>
+                            <label class="btn btn-outline-secondary btn-sm" for="all-c">C (Eier)</label>
 
-                            </div>
+                            <input type="checkbox" class="btn-check" id="all-d" value="D" disabled>
+                            <label class="btn btn-outline-secondary btn-sm" for="all-d">D (Fisch)</label>
+
+                            <input type="checkbox" class="btn-check" id="all-e" value="E" disabled>
+                            <label class="btn btn-outline-secondary btn-sm" for="all-e">E (Erdnüsse)</label>
+
+                            <input type="checkbox" class="btn-check" id="all-f" value="F" disabled>
+                            <label class="btn btn-outline-secondary btn-sm" for="all-f">F (Soja)</label>
+
+                            <input type="checkbox" class="btn-check" id="all-g" value="G" disabled>
+                            <label class="btn btn-outline-secondary btn-sm" for="all-g">G (Milch)</label>
+
+                            <input type="checkbox" class="btn-check" id="all-h" value="H" disabled>
+                            <label class="btn btn-outline-secondary btn-sm" for="all-h">H (Nüsse)</label>
+
+                            <input type="checkbox" class="btn-check" id="all-l" value="L" disabled>
+                            <label class="btn btn-outline-secondary btn-sm" for="all-l">L (Sellerie)</label>
+
+                            <input type="checkbox" class="btn-check" id="all-m" value="M" disabled>
+                            <label class="btn btn-outline-secondary btn-sm" for="all-m">M (Senf)</label>
+
+                            <input type="checkbox" class="btn-check" id="all-n" value="N" disabled>
+                            <label class="btn btn-outline-secondary btn-sm" for="all-n">N (Sesam)</label>
+
+                            <input type="checkbox" class="btn-check" id="all-o" value="O" disabled>
+                            <label class="btn btn-outline-secondary btn-sm" for="all-o">O (Sulfite)</label>
+
+                            <input type="checkbox" class="btn-check" id="all-p" value="P" disabled>
+                            <label class="btn btn-outline-secondary btn-sm" for="all-p">P (Lupinen)</label>
+
+                            <input type="checkbox" class="btn-check" id="all-r" value="R" disabled>
+                            <label class="btn btn-outline-secondary btn-sm" for="all-r">R (Weichtiere)</label>
                         </div>
+                    </div>
 
-                        <div class="mb-4 fs-6">
-                            <label class="form-label fw-bold">Beschreibung</label>
-                            <textarea class="form-control" id="productDescription" rows="3" disabled></textarea>
-                        </div>
+                    <div id="productMessage"></div>
 
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Kategorie</label>
-                            <input type="text" class="form-control" id="mainCategory" disabled>
-                         </div>
-
-
-
-                        <div class="mb-5">
-                            <label for="allergen-container" class="form-label fw-bold">Allergene</label>
-                            <div id="allergen-container" class="d-flex flex-wrap gap-2 border p-2 rounded bg-white">
-                                <input type="checkbox" class="btn-check" id="all-a" value="A" disabled>
-                                <label class="btn btn-outline-secondary btn-sm" for="all-a">A (Gluten)</label>
-
-                                <input type="checkbox" class="btn-check" id="all-b" value="B" disabled>
-                                <label class="btn btn-outline-secondary btn-sm" for="all-b">B (Krebstiere)</label>
-
-                                <input type="checkbox" class="btn-check" id="all-c" value="C" disabled>
-                                <label class="btn btn-outline-secondary btn-sm" for="all-c">C (Eier)</label>
-
-                                <input type="checkbox" class="btn-check" id="all-d" value="D" disabled>
-                                <label class="btn btn-outline-secondary btn-sm" for="all-d">D (Fisch)</label>
-
-                                <input type="checkbox" class="btn-check" id="all-e" value="E" disabled>
-                                <label class="btn btn-outline-secondary btn-sm" for="all-e">E (Erdnüsse)</label>
-
-                                <input type="checkbox" class="btn-check" id="all-f" value="F" disabled>
-                                <label class="btn btn-outline-secondary btn-sm" for="all-f">F (Soja)</label>
-
-                                <input type="checkbox" class="btn-check" id="all-g" value="G" disabled>
-                                <label class="btn btn-outline-secondary btn-sm" for="all-g">G (Milch)</label>
-
-                                <input type="checkbox" class="btn-check" id="all-h" value="H" disabled>
-                                <label class="btn btn-outline-secondary btn-sm" for="all-h">H (Nüsse)</label>
-
-                                <input type="checkbox" class="btn-check" id="all-l" value="L" disabled>
-                                <label class="btn btn-outline-secondary btn-sm" for="all-l">L (Sellerie)</label>
-
-                                <input type="checkbox" class="btn-check" id="all-m" value="M" disabled>
-                                <label class="btn btn-outline-secondary btn-sm" for="all-m">M (Senf)</label>
-
-                                <input type="checkbox" class="btn-check" id="all-n" value="N" disabled>
-                                <label class="btn btn-outline-secondary btn-sm" for="all-n">N (Sesam)</label>
-
-                                <input type="checkbox" class="btn-check" id="all-o" value="O" disabled>
-                                <label class="btn btn-outline-secondary btn-sm" for="all-o">O (Sulfite)</label>
-
-                                <input type="checkbox" class="btn-check" id="all-p" value="P" disabled>
-                                <label class="btn btn-outline-secondary btn-sm" for="all-p">P (Lupinen)</label>
-
-                                <input type="checkbox" class="btn-check" id="all-r" value="R" disabled>
-                                <label class="btn btn-outline-secondary btn-sm" for="all-r">R (Weichtiere)</label>
-                            </div>
-                        </div>
-
-                        <div id="productMessage"></div>
-
-                        <div class="d-flex gap-2 mb-5">
-                            <button id="toMenuBtn" type="button" class="btn btn-primary me-auto">
-                                Zum Menü
-                            </button>
-                        </div>
+                    <div class="d-flex gap-2 mb-5">
+                        <button id="toMenuBtn" type="button" class="btn btn-primary me-auto">
+                            Zum Menü
+                        </button>
+                    </div>
                     </form>
 
                 </div>

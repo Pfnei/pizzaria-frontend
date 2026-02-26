@@ -17,9 +17,7 @@ export function getMainEndpointFromUrl(input, base = urlbase) {
 }
 
 function endpointFromPath(path, base) {
-    // removes base path
     if (base && path.startsWith(base)) path = path.slice(base.length);
-    // removes .html
     if (path.endsWith(".html")) path = path.slice(0, -5);
     const seg = path.split("/").filter(Boolean);
     return seg[0] || "";

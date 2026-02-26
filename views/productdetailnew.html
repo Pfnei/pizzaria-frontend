@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="../utils/validation.css">
 </head>
 
-<body >
+<body>
 <header>
     <div id="navigation"></div>
 </header>
@@ -21,24 +21,26 @@
     <section>
         <div class="product-wrapper container  mb-5">
             <div class="product-box ">
-                <div >
+                <div>
                     <h3 class="mb-4 fw-bold">Produkt bearbeiten</h3>
                     <form id="productInformationForm" novalidate>
                         <div class="d-flex justify-content-between align-items-center mb-3 me-2">
                             <div class="col-8 mb-0">
                                 <label class="form-label fw-bold">Produktname</label>
-                                <input type="text" class="form-control" id="productName" placeholder="z.B. Pizza Inferno" required/>
+                                <input type="text" class="form-control" id="productName"
+                                       placeholder="z.B. Pizza Inferno" required/>
                                 <div class="validation-feedback-ok mt-1"></div>
                             </div>
-                            <div class="col-4 mb-0 ms-2 " >
+                            <div class="col-4 mb-0 ms-2 ">
                                 <label class="form-label fw-bold">Preis (€)</label>
                                 <div class="input-group">
                                     <input type="number" step="0.01" class="form-control" id="price" placeholder="0.00">
                                     <span class="input-group-text"><i class="bi bi-currency-euro"></i></span>
                                 </div>
-                                    <div class="validation-feedback-ok mt-1"></div>
+                                <div class="validation-feedback-ok mt-1"></div>
                             </div>
                         </div>
+
                         <div class="d-flex mb-4">
                             <div class="col-6">
                                 <img
@@ -51,39 +53,7 @@
                                 >
                                 <input type="file" id="productUploadInput" accept="image/*" style="display:none;">
                             </div>
-
-
-
-                            <!--- MODAL           <div class="d-flex mb-4">
-                                            <div class="col-6">
-                                                <img src="../pictures/pizza-3000274_640.jpg"
-                                                     onerror="this.onerror=null; this.src='./pictures/pizza_icon_131067.png';"
-                                                     class="img-fluid"
-                                                     alt="Produktbild"
-                                                     data-bs-toggle="modal"
-                                                     data-bs-target="#uploadProduktBildModal">
-                                            </div>
-                                            <div class="modal fade" id="uploadProduktBildModal" tabindex="-1" aria-labelledby="uploadProduktBildModalLabel" aria-hidden="true">
-                                                <div class="modal-dialog">
-                                                    <div class="modal-content bg-dark text-light">
-                                                        <div class="modal-header border-0">
-                                                            <h1 class="modal-title text-light fs-6" id="uploadProduktBildModalLabel">Produktbild</h1>
-                                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        </div>
-                                                        <div class="modal-body border-0 d-flex justify-content-center">
-                                                            <img src="../pictures/pizza-3000274_640.jpg"
-                                                                 onerror="this.onerror=null; this.src='./pictures/pizza_icon_131067.png';"
-                                                                 class="img-fluid"
-                                                                 alt="Produktbild">
-                                                        </div>
-                                                        <div class="modal-footer border-0">
-                                                            <button type="button" class="btn btn-outline-light me-auto btn-sm" data-bs-dismiss="modal">Foto hinzufügen</button>
-                                                            <button type="button" class="btn btn-outline-light btn-sm">Löschen</button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        --->
+           --->
                             <div class="col-6">
                                 <div class="d-flex justify-content-end align-items-center mb-2">
                                     <label class="form-check-label me-2" for="isVegetarian">
@@ -101,12 +71,12 @@
                                 </div>
                             </div>
                         </div>
+
                         <div class="mb-4 fs-6">
                             <label class="form-label fw-bold">Beschreibung</label>
-                            <textarea class="form-control" id="productDescription" rows="3" placeholder="Zutaten, Besonderheiten..."></textarea>
+                            <textarea class="form-control" id="productDescription" rows="3"
+                                      placeholder="Zutaten, Besonderheiten..."></textarea>
                         </div>
-
-
 
                         <div class=" mb-3">
                             <label class="form-label fw-bold">Kategorie</label>
@@ -118,7 +88,6 @@
                                 <option value="DESSERT">Nachspeise</option>
                             </select>
                         </div>
-
 
                         <div class=" mb-5">
                             <label for="allergen-container" class="form-label fw-bold">Allergene</label>
@@ -167,12 +136,10 @@
                             </div>
                         </div>
 
-                        <!-- Meldungen -->
                         <div id="productMessage"></div>
 
-                        <!-- Zur Produktliste , Speichern, Löschen-->
                         <div class="d-flex gap-2 mb-5">
-                            <button id="toProductListBtn"  type="button"class="btn btn-primary me-auto">
+                            <button id="toProductListBtn" type="button" class="btn btn-primary me-auto">
                                 Zur Produktliste
                             </button>
                             <button id="saveButton" type="submit" class="btn btn-primary">Speichern</button>

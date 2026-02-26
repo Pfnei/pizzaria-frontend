@@ -21,33 +21,27 @@ initPage();
 
 function initPage() {
     document.addEventListener('DOMContentLoaded', async () => {
-        // Sicherheit: Muss eingeloggt sein
         if (!authManager.isLoggedIn()) {
             window.location.href = "../views/login.html";
             return;
         }
 
         const params = new URLSearchParams(window.location.search);
-        currentUserId = params.get("id"); // Kann null sein
+        currentUserId = params.get("id");
 
         // USER LADEN (ID oder /me)
         await loadUser(currentUserId);
 
-        isOwnUser = (authManager.getUserId() == currentUserId);
-        console.log("ownUser", isOwnUser);
+        isOwnUser = (authManager.getUserId() === currentUserId);
 
-        // Admin-Elemente verstecken/deaktivieren für normale User
         if (!authManager.isAdmin() || isOwnUser) {
-            const adminSection = document.getElementById('adminSection'); // ID deines Containers im HTML
+            const adminSection = document.getElementById('adminSection');
             if (adminSection) adminSection.style.display = 'none';
 
         }
 
-
         setupDiversDetails();
 
-
-        // Events für Profilbild (jetzt ist currentUserId sicher gesetzt)
         const profileImage = document.getElementById('profileImage');
         const profileUploadInput = document.getElementById('profileUploadInput');
 
@@ -63,15 +57,13 @@ function initPage() {
                     URL.revokeObjectURL(profileImage.src);
                 }
                 profileImage.src = URL.createObjectURL(file);
-                console.log("Upload erfolgreich!");
             } catch (err) {
-                console.error("Fehler beim Upload:", err);
             }
         });
 
 
         if (authManager.isAdmin() && !isOwnUser) {
-            deleteBtn.style.display = 'block'; // Oder 'inline-block'
+            deleteBtn.style.display = 'block';
             deleteBtn.onclick = async () => {
                 const result = await Swal.fire({
                                                    title: 'Möchtest du den Benutzer wirklich löschen?',
@@ -90,42 +82,30 @@ function initPage() {
 
 
         }
-
-
         changeEnterToTab(form);
-
         form.addEventListener('submit', handleFormSubmit);
     });
-
-
 }
 
 async function loadUser(userId) {
     try {
         let user;
         if (userId) {
-            // Admin-Modus: Lade fremden User per ID
             user = await userService.getById(userId);
         } else {
-            // User-Modus: Lade eigenes Profil per /me
             user = await userService.getMe();
-            currentUserId = user.userId; // Wichtig für den Upload & Update
-
+            currentUserId = user.userId;
         }
-
-        oldUser = user; // wichtig für Update eigener User
+        oldUser = user;
 
         if (!user) throw new Error("Benutzer nicht gefunden.");
 
-        // Profilbild laden
         try {
             const blob = await fileService.downloadProfilePicture(user.userId);
             document.getElementById("profileImage").src = URL.createObjectURL(blob);
         } catch (e) {
-            console.warn("Profilbild konnte nicht geladen werden");
         }
 
-        // Formular befüllen
         setValue("anrede", user.salutation || "");
         setValue("diversDetails", user.salutationDetail || "");
         setValue("username", user.username || "");
@@ -150,7 +130,6 @@ async function loadUser(userId) {
         }
 
     } catch (err) {
-        console.error("Fehler beim Laden:", err);
         window.location.href = "../views/menu.html";
     }
 }
@@ -190,6 +169,8 @@ async function saveUser() {
         if (isOwnUser) {
 
             if (oldUser.email !== payload.email || oldUser.username !== payload.username) {
+                authManager.clearAuth();
+
                 setTimeout(() => {
 
                     window.location.href = "../views/login.html";
@@ -199,13 +180,11 @@ async function saveUser() {
         }
 
         setTimeout(() => {
-            // Admins zurück zur Liste, User zum Menü
             window.location.href = authManager.isAdmin() ? "../views/userlist.html" : "../views/menu.html";
         }, 2500);
 
 
     } catch (err) {
-        console.error("Fehler beim Update:", err);
         const msgDiv = document.getElementById('successMessage');
         if (msgDiv) {
             msgDiv.textContent = 'Fehler beim Updaten des Benutzers! ';
@@ -225,7 +204,6 @@ async function saveUser() {
 
 
 async function deleteUser() {
-    console.log("Delete Button geklickt");
 
     if (!currentUserId) {
         console.log("Keine User-ID vorhanden.");
@@ -235,32 +213,17 @@ async function deleteUser() {
     try {
 
         let canBeDeleted = true;
-
         const orders = await orderService.getAll({params: {createdBy: currentUserId}});
-        console.log('Orders !', orders);
 
-        const products = await productService.getAll({params: {createdBy: currentUserId}});
-        console.log('Products !', products);
 
         if (orders.length > 0) {
-
-            console.log('User kann nicht gelöscht werden, da er bereits Bestellungen durchgeführt hat', orders);
             canBeDeleted = false;
         }
-
-
-        if (products.length > 0) {
-
-            console.log('User kann nicht gelöscht werden, da er ein Produkt angelegt hat');
-            canBeDeleted = false;
-        }
-
 
         if (!canBeDeleted) {
             const result = await userService.update(currentUserId, {
                 active: false
             });
-
 
             const msgDiv = document.getElementById('successMessage');
             if (msgDiv) {
@@ -273,7 +236,6 @@ async function deleteUser() {
             }, 5000);
         } else {
             const result = await userService.delete(currentUserId);
-            console.log('Produkt erfolgreich gelöscht!', result);
 
             const msgDiv = document.getElementById('successMessage');
             if (msgDiv) {
@@ -289,7 +251,6 @@ async function deleteUser() {
 
 
     } catch (error) {
-        console.error('Fehler beim Löschen des Users:', error.response?.data || error);
         const msgDiv = document.getElementById('productMessage');
         if (msgDiv) {
             msgDiv.textContent = 'Fehler beim Löschen Users!';

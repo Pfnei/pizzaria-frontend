@@ -1,5 +1,7 @@
-import {authManager, CAuthManager} from "../services/authManager.js";
-import { getMainEndpoint, getMainEndpointFromUrl, someEndpoint } from "../utils/checkEndpoints.js";
+"use strict";
+
+import {authManager} from "../services/authManager.js";
+import {getMainEndpoint, getMainEndpointFromUrl, someEndpoint} from "../utils/checkEndpoints.js";
 
 $(function () {
     logoutOnRegisterPage();
@@ -23,26 +25,20 @@ function navBarVisibility() {
     const isLoggedIn = authManager.isLoggedIn();
     const isAdmin = authManager.isAdmin();
 
-    // Support-Inhalte ausblenden auf Login/Register
     if (someEndpoint(["register", "login"])) {
         $('#navTogglerSupportContent').hide();
     }
 
-    // Login Button Steuerung
     if (someEndpoint(["register", "login"]) || isLoggedIn) {
         $('#navLogin').hide();
     } else {
         $('#navLogin').show();
     }
 
-    // User-Spezifische Menüs
+
     if (isLoggedIn) {
         $('#navUserMenu').show();
-
-        // WICHTIG: Link zum eigenen Profil (ohne ID-Parameter für /me)
         $('#navMyProfile').attr('href', '../views/userdetail.html');
-
-
         const nbr = $('#navbar-right');
         nbr.removeClass("mt-3").addClass("mt-1");
     } else {
@@ -52,12 +48,10 @@ function navBarVisibility() {
         nbr.removeClass("mt-1").addClass("mt-3");
     }
 
-    // Admin-Spezifische Menüs
     if (isLoggedIn && isAdmin) {
         $('#navUserList').show();
         $('#navProductList').show();
         $('#navOrderList').show();
-        // Falls auf Mobile: Als bars toggler anzeigen.
         if ($(window).width() < 768) {
             $('#navTogglerSupportContent').show();
         }
@@ -68,12 +62,7 @@ function navBarVisibility() {
         $('#navTogglerSupportContent').hide();
     }
 
-    // Back-Button Steuerung
-    if (
-        getMainEndpointFromUrl(document.referrer) === "index" ||
-        getMainEndpointFromUrl(document.referrer) === "login" ||
-        getMainEndpointFromUrl(document.referrer) === getMainEndpoint()
-    ) {
+    if (getMainEndpointFromUrl(document.referrer) === "index" || getMainEndpointFromUrl(document.referrer) === "login" || getMainEndpointFromUrl(document.referrer) === getMainEndpoint()) {
         $('#navBack').hide();
     } else {
         $('#navBack').show();
@@ -83,8 +72,11 @@ function navBarVisibility() {
 function registerEvents() {
     $("#logoutLink").on("click", function (e) {
         e.preventDefault();
+        console.log("outpath")
+        setTimeout(1000);
         try {
             authManager.clearAuth();
+            console.log("out")
         } catch {}
         window.location.href = this.href;
     });

@@ -26,9 +26,6 @@ export function formatUserName(user) {
 }
 
 
-
-// Sortierung
-
 export function sortList(list, key, asc) {
     const copy = list.slice();
     copy.sort(function (a, b) {

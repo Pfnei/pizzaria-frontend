@@ -1,9 +1,5 @@
-// utils/cartStorage.js
 const CART_KEY = "pizzeria_cart_v1";
 
-/**
- * cart = { items: [{ productId, productName, price, vegetarian, quantity }] }
- */
 export function getCart() {
   try {
     return JSON.parse(localStorage.getItem(CART_KEY)) ?? { items: [] };
@@ -75,9 +71,4 @@ export function getCartTotal() {
     (sum, it) => sum + (Number(it.price) || 0) * (Number(it.quantity) || 0),
     0
   );
-}
-
-export function getCartCount() {
-  const cart = getCart();
-  return cart.items.reduce((sum, it) => sum + (Number(it.quantity) || 0), 0);
 }
