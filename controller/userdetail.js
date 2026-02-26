@@ -169,6 +169,8 @@ async function saveUser() {
         if (isOwnUser) {
 
             if (oldUser.email !== payload.email || oldUser.username !== payload.username) {
+                authManager.clearAuth();
+
                 setTimeout(() => {
 
                     window.location.href = "../views/login.html";

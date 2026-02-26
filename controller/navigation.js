@@ -72,8 +72,11 @@ function navBarVisibility() {
 function registerEvents() {
     $("#logoutLink").on("click", function (e) {
         e.preventDefault();
+        console.log("outpath")
+        setTimeout(1000);
         try {
             authManager.clearAuth();
+            console.log("out")
         } catch {}
         window.location.href = this.href;
     });

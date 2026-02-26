@@ -69,4 +69,3 @@ const getBaseUrl = () => {
 };
 
 export const http = new CHttpClient(getBaseUrl());
-console.log("%c📡 API-Ziel:", "color: orange; font-weight: bold;", http.baseUrl);
