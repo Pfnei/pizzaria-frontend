@@ -138,33 +138,6 @@ function validateNumeric(fieldId, isRequired = true) {
     }
 }
 
-function validateSelect(fieldId, isRequired = true) {
-    const element = document.getElementById(fieldId);
-    if (!element) return true;
-    const value = (element.value || "").trim();
-    let messages = [];
-
-    if (!isRequired && value.length === 0) {
-        clearValidation(element);
-        return true;
-    }
-
-    if (value.length === 0) {
-        messages.push("Bitte eine Auswahl treffen.");
-    }
-
-    if (messages.length > 0) {
-        showInvalidFeedback(element, messages.join("\n"));
-        console.log("Validation false", element, messages);
-        return false;
-    } else {
-        clearValidation(element);
-        return true;
-    }
-}
-
-
-
 function clearValidation(field) {
     field.classList.remove('is-valid', 'is-invalid');
     field.classList.add('is-valid');
@@ -175,7 +148,6 @@ function clearValidation(field) {
         feedback.classList.add('validation-feedback-ok');
     }
 }
-
 
 function showInvalidFeedback(field, message) {
     field.classList.remove('is-valid');
