@@ -9,9 +9,6 @@ class CProductService extends CBaseCrudService {
     return this.getAll();
   }
 
-  async addProduct(productData) {
-    return this.create(productData);
-  }
   async updateProduct(productId, productData) {
     return this.update(productId, productData);
   }

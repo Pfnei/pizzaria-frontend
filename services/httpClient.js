@@ -5,9 +5,6 @@ export class CHttpClient {
     this.baseUrl = String(baseUrl || "");
   }
 
-  setBaseUrl(url) {
-    this.baseUrl = String(url || "");
-  }
 
   joinUrl(...parts) {
     const clean = parts.filter(p => p != null).map(String);
@@ -52,9 +49,7 @@ export class CHttpClient {
   delete(path, options) { return this.request("DELETE", path, options); }
 }
 
-/**
- * LOGIK FÜR LOKALE ENTWICKLUNG
- */
+
 const getBaseUrl = () => {
   const host = window.location.hostname; // localhost
   const port = window.location.port;     // Frontend-Port

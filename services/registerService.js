@@ -1,4 +1,3 @@
-// services/registerService.js
 import { http } from "./httpClient.js";
 import { CBaseCrudService } from "./baseCrudService.js";
 
@@ -8,7 +7,6 @@ class CRegisterService extends CBaseCrudService {
   }
 
   async register(payload) {
-    // POST /auth/register mit Body = payload
     return this.create(payload);
   }
 }

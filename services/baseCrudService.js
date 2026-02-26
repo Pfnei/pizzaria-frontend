@@ -1,8 +1,7 @@
-// services/baseCrudService.js
 export class CBaseCrudService {
   constructor(basePath, httpClient) {
-    this.basePath = basePath;  // z.B. "/users"
-    this.http = httpClient;    // z.B. http-Singleton
+    this.basePath = basePath;
+    this.http = httpClient;
   }
 
   async getAll(options) {
