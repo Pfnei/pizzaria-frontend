@@ -6,7 +6,7 @@
     flex-wrap: wrap;
     gap: 1rem;
 }
-@media (max-width: 767.98px) {
+@media (max-width: 768px) {
     .table-view {
         display: none;
     }

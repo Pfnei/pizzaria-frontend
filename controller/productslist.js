@@ -63,7 +63,7 @@ function renderProducts(list) {
         const vegBadge = vegetarian ? `<span class="badge bg-success ms-1">vegi</span>` : "";
 
         tbody.append(`
-      <tr class="product-row" data-product-id="${p.productId}">
+      <tr class="product-row" style="cursor:pointer;" data-product-id="${p.productId}">
         <td>${name}</td>
         <td>${categoryLabel(mainCategory)}</td>
         <td>€ ${Number(price).toFixed(2)}</td>
@@ -73,9 +73,9 @@ function renderProducts(list) {
     `);
 
         cards.append(`
-      <div class="col-12 col-sm-6 col-md-4" data-product-id="${p.productId}" >
+      <div class="col-12 col-sm-12 col-md-4" data-product-id="${p.productId}" >
         <div class="card h-100 product-card">
-          <div class="card-body p-2">
+          <div class="card-body p-2" style="cursor:pointer;">
             <p class="mb-1 fw-semibold">${name}</p>
             <p class="mb-1">€ ${Number(price).toFixed(2)}</p>
             <p class="mb-0">${statusBadge} ${vegBadge}</p>

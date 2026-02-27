@@ -18,7 +18,7 @@
 <body>
 <header>
     <nav id="navigation"></nav>
-    <div class="navbar bg-body-tertiary space d-flex space-between">
+    <div class="navbar bg-body-tertiary space d-flex space-between" style="z-index:1000;">
         <div class="container-fluid">
             <div class="d-flex">
                 <button class="navbar-toggler justify-content-start me-3" type="button" data-bs-toggle="offcanvas"
@@ -31,8 +31,10 @@
                         <input type="checkbox" id="veg-flip">
                         <span class="slider round"></span>
                     </label>
-                    <p id="vegbtn" tabindex="-1" aria-label="Vegetarisch-Switch" class="m-auto ms-2 "><i
-                            class="bi bi-leaf-fill" style="color: rgb(0, 170, 0);"></i> vegetarisch</p>
+                    <label for="veg-flip" class="ms-2 m-auto">
+                        <i class="bi bi-leaf-fill text-success"></i>
+                        vegetarisch
+                    </label>
                 </div>
                 <div class="offcanvas offcanvas-start" style="width: 300px;" tabindex="-1" id="offcanvasNavbar"
                      aria-labelledby="offcanvasNavbarLabel">
@@ -64,7 +66,7 @@
     </div>
 </header>
 <main>
-    <div id="products-container" class="container" style="margin-top:200px;"></div>
+    <div id="products-container" class="container" style="margin-top:70px;"></div>
 </main>
 <footer id="footer"></footer>
 

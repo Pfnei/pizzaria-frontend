@@ -55,7 +55,7 @@ function renderUsers(list) {
       </span>`.trim();
 
         tbody.append(`
-      <tr class="user-row" data-user-id="${user.userId}">
+      <tr class="user-row" style="cursor:pointer;" data-user-id="${user.userId}">
         <td>${user.username}</td>
         <td>${user.firstname}</td>
         <td>${user.lastname}</td>
@@ -67,8 +67,8 @@ function renderUsers(list) {
     `);
 
         cards.append(`
-      <div class="col-12 col-sm-6 col-md-4">
-        <div class="card h-100 user-card" data-user-id="${user.userId}">
+      <div class="col-12 col-sm-12 col-md-4">
+        <div class="card h-100 user-card" style="cursor:pointer;" data-user-id="${user.userId}">
           <div class="card-body p-2">
             <p class="mb-1 fw-semibold">${user.username}</p>
             <p class="mb-1">${user.firstname} ${user.lastname}</p>
