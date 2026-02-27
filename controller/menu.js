@@ -110,7 +110,7 @@ function productCardHtml(p) {
         <div class="card-body">
           <div class="d-flex justify-content-between mb-1">
             <h5 class="card-title mb-0">${escapeHtml(p.productName)}${vegetarianBadge} 
-              <a href="../views/productdetail.html?id=${encodeURIComponent(p.productId)}">
+              <a href="../views/productdetail.html?id=${encodeURIComponent(p.productId)}" aria-label="${escapeHtmlAttr(p.productName)}-Information">
                 <i class="bi bi-info-circle-fill"></i>
               </a>
             </h5>
@@ -132,6 +132,7 @@ function productCardHtml(p) {
               data-product-name="${escapeHtmlAttr(p.productName)}"
               data-product-price="${String(Number(p.price) || 0)}"
               data-product-vegetarian="${String(Boolean(p.vegetarian))}"
+              aria-label="${escapeHtmlAttr(p.productName)} in den Warenkorb"
             >
               <i class="bi bi-cart4 me-1"></i> In den Warenkorb
             </button>

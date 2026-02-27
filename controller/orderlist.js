@@ -73,7 +73,7 @@ function renderOrders(list) {
         const email = o.email || "";
 
         tbody.append(`
-      <tr class="order-row" data-order-id="${o.orderId}">
+      <tr class="order-row" style="cursor:pointer;" data-order-id="${o.orderId}">
         <td>${date}</td>
         <td>€ ${Number(total).toFixed(2)}</td>
         <td>${username}</td>
@@ -86,8 +86,8 @@ function renderOrders(list) {
 
 
         cards.append(`
-      <div class="col-12 col-sm-6 col-md-4" data-order-id="${o.orderId}">
-        <div class="card h-100 order-card">
+      <div class="col-12 col-sm-12 col-md-12" data-order-id="${o.orderId}">
+        <div class="card h-100 order-card" style="cursor:pointer;">
           <div class="card-body p-2">
             <p class="mb-1">${date}</p>
             <p class="mb-1">€ ${Number(total).toFixed(2)}</p>
