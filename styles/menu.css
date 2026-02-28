@@ -36,7 +36,7 @@ main {
 
 .product-div {
     margin-bottom: 3rem;
-    scroll-margin-top: 150px; /* WICHTIG: Damit Scrollspy nicht hinter dem Header landet */
+    scroll-margin-top: 150px;
 }
 
 .product-div h4 {
@@ -95,17 +95,12 @@ main {
 input:checked + .slider { background-color: #198754; }
 input:checked + .slider:before { transform: translateX(14px); }
 
-/* --- OFFCANVAS (Sidebar) --- */
+
 .offcanvas {
-    z-index: 2100; /* Muss über den Navbars liegen */
+    z-index: 2100;
 }
 
-/* --- MOBILE ANPASSUNG --- */
 @media screen and (max-width: 768px) {
-    /*body {
-        padding-top: 50px;
-    }*/
-
     .space {
         height: auto;
         padding: 10px 0;
