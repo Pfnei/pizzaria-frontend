@@ -90,4 +90,11 @@ function registerEvents() {
         logoutOnRegisterPage();
         renderNavbar();
     });
+    $("#navLogin").on("click", function (e) {
+        const isLoggedIn = authManager.isLoggedIn();
+        if (!isLoggedIn) {
+            e.preventDefault();
+            window.location.href = "../views/login.html";
+        }
+    });
 }
