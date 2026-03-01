@@ -107,7 +107,7 @@ input:checked + .slider:before { transform: translateX(14px); }
     font-family: "JetBrains Mono ExtraBold";
     font-size: xx-large;
     font-weight: 900;
-    text-decoration: underline;
+
 
 
 
