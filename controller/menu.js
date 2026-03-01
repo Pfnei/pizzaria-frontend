@@ -64,15 +64,17 @@ function renderProducts(container, products) {
                 break;
         }
         return `
-          <div class="product-div mb-4" id=${idVar}>
-            <h4 class="mb-3">${escapeHtml(title)}</h4>
+          <div class="product-div mb-5" id=${idVar}>
+            <div class="py-auto mb-2 category-style">
+                <h4 class="ms-2">${escapeHtml(title)}:</h4>
+            </div>            
             ${cards}
           </div>
         `;
     }).join("");
 
     container.innerHTML = `
-      <div class="container sc" data-bs-target="sidebar-nav" data-bs-spy="scroll" data-bs-smooth-scroll="true" tabindex="0">
+      <div class="sc" data-bs-target="sidebar-nav" data-bs-spy="scroll" data-bs-smooth-scroll="true"
         ${sections}
       </div>
     `;

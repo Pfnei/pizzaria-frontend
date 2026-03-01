@@ -39,12 +39,11 @@ main {
     scroll-margin-top: 150px;
 }
 
-.product-div h4 {
-    border-bottom: 2px solid #212529;
+/*.product-div h4 {
     padding-bottom: 0.5rem;
     margin-bottom: 1.5rem;
     font-weight: bold;
-}
+}*/
 
 
 .cardstyle {
@@ -98,6 +97,24 @@ input:checked + .slider:before { transform: translateX(14px); }
 
 .offcanvas {
     z-index: 2100;
+}
+.category-style {
+    border-radius: 15px;
+    border: 3px solid white;
+    background-color: rgba(1,1,1,0.5);
+    padding: 20px;
+    color:white;
+    font-family: "JetBrains Mono ExtraBold";
+    font-size: xx-large;
+    font-weight: 900;
+    text-decoration: underline;
+
+
+
+}
+h4 {
+    font-size: 3rem;
+    font-weight: 1000;
 }
 
 @media screen and (max-width: 768px) {
