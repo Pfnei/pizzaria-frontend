@@ -40,7 +40,7 @@ function initPage() {
 
         }
 
-        setupDiversDetails();
+
 
         const profileImage = document.getElementById('profileImage');
         const profileUploadInput = document.getElementById('profileUploadInput');
@@ -83,6 +83,7 @@ function initPage() {
 
         }
         changeEnterToTab(form);
+        setupDiversDetails();
         form.addEventListener('submit', handleFormSubmit);
     });
 }
