@@ -87,7 +87,7 @@ main {
     border-radius: 50%;
 }
 .switch input:focus-visible + .slider {
-    outline: 2px solid #0d6efd;
+    outline: 2px solid black;
     outline-offset: 1px;
 }
 
