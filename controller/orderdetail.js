@@ -45,6 +45,7 @@ async function loadOrder(orderId) {
         setValue("telefon", order.phoneNumber || "");
         setValue("adresse", order.address || "");
         setValue("ort", order.city || "");
+        setValue("plz", order.zipcode || "");
         setValue("anmerkung", order.deliveryNote || "");
 
         setText("createdAt", formatDate(order.deliveredAt));
